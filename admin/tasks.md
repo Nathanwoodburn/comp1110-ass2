@@ -5,19 +5,19 @@ Use the entries below as an example.
 
 ## Week 4
 
-Everyone: create application skeleton - meeting 14:00 19 Mar
+Everyone: create application skeleton
+Sub tasks:
+* admin/B-design.pdf
+* admin/B-originality.yml
+* admin/B-contribution.yml
 
 ## Week 5
 
-Zhang San: Task 3 isPlayerStateWellFormed - 23 Mar
-
+<!-- Zhang San: Task 3 isPlayerStateWellFormed - 23 Mar
 Jane Bloggs: Task 5 drawTileFromBag - 23 Mar
-
-Erika Mustermann: Task 6 refillFactories - 25 Mar (depends on Task 5)
+Erika Mustermann: Task 6 refillFactories - 25 Mar (depends on Task 5) -->
 
 ## Week 6
-
-...
 
 ## Mid-Semester Break
 
