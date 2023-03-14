@@ -5,7 +5,7 @@ Use the entries below as an example.
 
 ## Week 4
 
-Everyone: create application skeleton
+Everyone: create application skeleton  
 Sub tasks:
 * admin/B-design.pdf
 * admin/B-originality.yml
