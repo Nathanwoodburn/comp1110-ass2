@@ -3,6 +3,9 @@
 For each task or sub-task, record who is responsible, the deadline, and any dependencies.
 Use the entries below as an example.
 
+## Meeting Time
+Weekly meeting time: 3-4pm Friday on campus
+
 ## Week 4
 
 Everyone: create application skeleton  
