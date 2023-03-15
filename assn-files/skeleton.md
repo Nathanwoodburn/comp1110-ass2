@@ -88,10 +88,10 @@ Score
 
 ## Setup board
 ## Create player (requires input data, probably from player number and colour)
-## Exploration Phase
+## Phase play
 ## Check Placement (requires input data, probably piece annd returns bool)
 ## Place Piece (requires input data, probably from player and piece type)
-## Exploration Phase over (bool)
+## Phase over (bool)
 
 
 # Objects
