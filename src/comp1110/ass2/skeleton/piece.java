@@ -4,14 +4,15 @@ public class piece {
     enum pieceType {
         Settler, Villager
     }
+
     public final pieceType type;
     public final player owner;
     public tile placedOn;
 
-public piece(pieceType type, player owner) {
+    public piece(pieceType type, player owner) {
+        // Needed to stop the compiler complaining about the final fields not being set
         this.type = type;
         this.owner = owner;
-
     }
 
 }

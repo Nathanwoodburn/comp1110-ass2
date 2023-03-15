@@ -8,6 +8,7 @@ public class resources {
     public final resourceType type;
 
     public resources(resourceType type) {
+        // Needed to stop the compiler complaining about the final fields not being set
         this.type = type;
     }
 }

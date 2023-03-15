@@ -6,9 +6,11 @@ public class player {
     public int score;
     public piece[] pieces;
 
-public player(String name, int age) {
+    public player(String name, int age) {
+        // Needed to stop the compiler complaining about the final fields not being set
         this.name = name;
         this.age = age;
         this.score = 0;
+        this.pieces = null;
     }
 }

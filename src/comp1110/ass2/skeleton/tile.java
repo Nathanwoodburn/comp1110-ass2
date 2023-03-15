@@ -4,12 +4,12 @@ public class tile {
     enum tileType {
         Land, Water
     }
-    public final tileType type;
     public int x;
     public int y;
+    public final tileType type;
     public piece[] pieces;
 
-    public tile(tileType type, int x, int y) {
+    public tile(int x, int y, tileType type) {
         this.type = type;
         this.x = x;
         this.y = y;
