@@ -36,6 +36,33 @@ If one of:
 * No player has any remaining moves available
 
 
+
+# Scoring Exploration Phase
+
+## Island Scoring
+* If player has pieces on > 7 islands, score 20 points
+* If player has pieces on 7 islands, score 10 points
+* Otherwise, score 0 points
+
+## Links Scoring
+1. For each player get largest link
+2. Score 5 points per island in largest link
+
+## Majorities Scoring
+* Player with most pieces on each island type scores points assigned to that island
+* Ties are distributed evenly rounding down
+
+## Resources Scoring
+* For each player
+  * For each resource
+    * If >3 of resource, score 20 points
+    * If 3 of resource, score 10 points
+    * If 2 of resource, score 5 points
+  * If player has all 4 resources, score 10 points
+
+## Statuettes Scoring
+* Each statuette is worth 4 points
+
 # Classes/Fuctions
 
 ## Setup board
