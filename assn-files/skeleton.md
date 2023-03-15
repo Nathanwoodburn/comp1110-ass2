@@ -78,4 +78,3 @@ If one of:
 ## Board
 * Islands (List of Islands)
 * Stone Circles (List of Stone Circles)
-
