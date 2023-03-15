@@ -62,9 +62,20 @@ If one of:
 * Size (x,y)
 * Location (x,y)
 * Point value (int)
+* Tiles (List of Tiles)
 
 ## Stone Circle
 * Location (x,y)
 * Resources (List of Resources)
 * Statuettes (List of Statuettes)
 * Claimed (bool)
+
+## Player
+* Name (string)
+* Age (int)
+* Score (int)
+
+## Board
+* Islands (List of Islands)
+* Stone Circles (List of Stone Circles)
+
