@@ -7,6 +7,8 @@
 * Create islands and assign size and location (on tiles)
 * Create "stone circles" 
   
+
+
 ## On Game start functions
 * Create player data (maybe using enums)
 * Assign villages to players
@@ -37,7 +39,25 @@ If one of:
 
 
 
-# Scoring Exploration Phase
+
+
+# Settlement Phase
+## Setup
+1. Remove pieces from board
+2. Assign resources and statuettes to stone circles
+3. Player after last player from exploration phase goes first
+   
+## Play
+1. Pick player (from setup.3)
+2. Player places piece (use settlement check function to check placement rules)
+3. Repeat with next player (while not Exploration Phase over) 
+
+## End
+Use same conditions as exploration phase over
+Score
+
+
+# Scoring
 
 ## Island Scoring
 * If player has pieces on > 7 islands, score 20 points
@@ -62,6 +82,7 @@ If one of:
 
 ## Statuettes Scoring
 * Each statuette is worth 4 points
+
 
 # Classes/Fuctions
 
