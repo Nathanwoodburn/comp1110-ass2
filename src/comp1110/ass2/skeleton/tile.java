@@ -14,4 +14,7 @@ public class tile {
         this.x = x;
         this.y = y;
     }
+
+    // added comment
+    // a placeOn method here?
 }

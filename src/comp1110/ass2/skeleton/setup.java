@@ -24,6 +24,9 @@ public class setup {
 
     /**
      * This method creates a player.
+     *
+     * [added comment]
+     * According to the amount of players that play, set each of the players' different amount of villagers and settlers
      */
     public void playerSetup() {
 

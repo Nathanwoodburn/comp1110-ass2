@@ -6,6 +6,11 @@ public class player {
     public int score;
     public piece[] pieces;
 
+    /* [Added comment]
+    public resources[] playerResource; // to put into account what the players' resources are at the end of each turn
+    // import the Scoring class to here to process the players' resources and update each of the player's scores accordingly
+     */
+
     public player(String name, int age) {
         // Needed to stop the compiler complaining about the final fields not being set
         this.name = name;
