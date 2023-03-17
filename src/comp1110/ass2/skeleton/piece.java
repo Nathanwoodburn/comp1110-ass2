@@ -2,7 +2,7 @@ package comp1110.ass2.skeleton;
 
 public class piece {
     enum pieceType {
-        Settler, Villager
+        Settler, Village
     }
 
     public final pieceType type;
