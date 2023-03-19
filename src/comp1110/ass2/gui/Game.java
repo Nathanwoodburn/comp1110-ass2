@@ -17,6 +17,8 @@ public class Game extends Application {
     public void start(Stage stage) throws Exception {
         Scene scene = new Scene(this.root, WINDOW_WIDTH, WINDOW_HEIGHT);
         stage.setScene(scene);
+        stage.setTitle("Blue Lagoon");
+        stage.setResizable(false);
         stage.show();
     }
 }
