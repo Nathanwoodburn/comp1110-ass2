@@ -8,10 +8,10 @@ declaration: >-
 # be 100 or 99 (33/33/33 is fine).  (Remove entries if you have fewer than three
 # members).  
 contributions:
-  - uid:  u7492895
+  - uid: u7492895
     contribution: 33
-  - uid:
-    contribution:
+  - uid: u7156831
+    contribution: 33
   - uid:
     contribution:
 
@@ -20,7 +20,7 @@ contributions:
 signatures:
   - name: Justin Ryu
     uid: u7492895
-  - name:
-    uid:
+  - name: Nathan Woodburn
+    uid: u7156831
   - name:
     uid:
