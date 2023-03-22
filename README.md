@@ -215,8 +215,207 @@ the tied players share the victory!
 
 ## Encoding for Testing
 
-*More details of the `BlueLagoon` class and the string encoding used
-for interfacing with tests will be included here after D2B is complete.*
+This section describes a string encoding for the game state and player moves.
+It will be necessary to work with this encoding when writing the methods in
+`BlueLagoon.java`. This encoding has been designed purely for the purpose of
+providing a common representation that both our tests and your game can understand.
+
+**Importantly** we strongly discourage using this string encoding for anything
+other than interfacing with our tests. The backend of your game (that encodes
+the game logic) should have its own internal representation of the game
+state and moves using appropriate classes, enums, and so on. To implement the
+static methods in `BlueLagoon.java`, you should should be converting from
+this string encoding to your internal game representation, performing the
+relevant method calls to perform the desired operation, and then converting
+back to the string encoding to provide a result for the tests.
+
+The **Game State** string is made up of multiple parts segmented into statements. 
+Each statement starts with a lowercase character to identify which statement it is, 
+followed by space-separated information that is outlined below. Multiple statements are 
+separated by a `;` character. *hint: investigate java string methods. split() will be
+very useful...*
+
+### Grammar Hints
+
+The string statements are formally presented using "formal grammar"
+notation (e.g., see [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)).
+If you are not familiar with formal grammars, this section gives a brief overview.
+You don't need to fully understand these grammars so long as you can make sense of the
+examples provided.
+
+The symbols we will use include:
+
+* Double quotes `""` are used to indicate a string literal.
+  * E.g., `"A B"` is a string literal.
+* The comma `,` is used to combine / concatenate strings.
+  * E.g., `"A", "B", "C"` is equivalent to `"ABC"`.
+* The pipe symbol `|` provides alternatives.
+  * E.g., `"A" | "B" | "C"` means `"A"` or `"B"` or `"C"`.
+* Braces `{` and `}` are used to indicate the enclosed can appear zero or
+  more times.
+  * E.g., `{"A"}` can be `""` or `"A"` or `"AA"` or ...
+* Parentheses `(` and `)` allow items to be grouped.
+  * E.g., `("A", " ") | "B"` can be `"A "` or `"B"`.
+
+### Coordinates
+
+To start with we define the form that coordinates take on which will be used in
+other game statements. A coordinate is formally represented by the following
+grammar:
+
+`coordinate = row, ",", col`
+
+where `row` and `col` are both non-negative integers representing a given board
+row and column pair.
+
+Coordinates are 0-indexed from the top left. The top-left tile is at coordinate
+`"0,0"` (row 0, col 0). One tile to the right of this is `"0,1"`. The left-most
+tile of the second row is `"1,0"`. The bottom-right tile is at `"12,11"`
+noting that the number of columns in each row varies.
+
+
+### Game Arrangement Statement
+
+Contains the static board information of this game - you will need this to set up 
+the board and players. This information will not change throughout the game. 
+
+`gameArrangementStatement = "a ", boardHeight, " ", numPlayers, ";"`
+
+where `boardHeight` and `numPlayers` are both positive integers.
+
+> e.g. "a 13 2;"
+>
+> ^ The standard map layout - 13 high, 2 players
+
+
+### Current State Statement
+
+Contains the dynamic info of this game - this will change over the course of the game.
+
+`currentStateStatement = "c ", playerId, " ", phase, ";"`
+
+`phase = "E" | "S"`
+
+and where `playerId` is a non-negative integer that represents the ID of
+the current player whose turn it is.
+
+>e.g. "c 0 E;"
+>
+>^ The current player to move is player 0 in the Exploration phase
+
+### Island Statement
+
+The layout of one island on the board - the board will be made up of a
+number of these. Ths bonus score for an island is provided (see the game
+rules for scoring - majorities). This is followed by a number of coordinates
+that make up the island. Tiles that make up an island will be land tiles.
+Some of the land tiles are also stone circles (see next section).
+Different islands will not overlap tiles.
+The coordinates are ordered in numerically ascending order with row before
+column.
+
+`islandStatement = "i ", bonus, {" ", coordinate}, ";"`
+
+where `bonus` is a non-negative integer.
+
+>e.g. "i 6 0,0 0,1 0,2 0,3 1,0 1,1 1,2 1,3 1,4 2,0 2,1;"
+>
+>^ The first island (top left) of the standard map
+
+>e.g. "i 6 0,5 0,6 0,7 1,6 1,7 1,8 2,6 2,7 2,8 3,7 3,8;"
+>
+>^ The second island (top middle) of the standard map
+
+>e.g. "i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2;"
+>
+>^ A sequence of three island statements appearing in the standard game string
+
+
+### Stones Statement
+
+The coordinates of all stone circles on the board. Stone circles will only 
+appear on tiles belonging to an island. The tile a stone circle is located 
+at will still 'belong' to the island as outlined in the island statement
+for the purpose of scoring. 
+There will always be exactly 32 stone circles. 
+Coordinates are sorted in numerically ascending order.
+*hint: parse all island statements before the stones statement*
+
+`stonesStatement = "s", {" ", coordinate}, ";"`
+
+>e.g. "s 0,0 0,5 0,9 1,4 1,8 1,12 2,1 3,5 3,7 3,10 3,12 4,0 4,2 5,9 5,11 6,3 6,6 7,0 7,8 7,12 8,2 8,5 9,0 9,9 10,3 10,6 10,10 11,0 11,5 12,2 12,8 12,11;"
+>
+>^ The stone circles on the base map
+
+
+### Unclaimed Resources and Statuettes Statement
+
+All resources and statuettes remaining on the board (not in a player's 
+inventory). The statement gives the resource or statuettes type indicated 
+by a capital letter (Coconut, Bamboo, Water, Precious stone, Statuette) 
+followed by the coordinates where that resource or statuette can be found. 
+Coordinates are sorted in numerically ascending order. 
+*hint: you will want some more advanced string methods here. How would you 
+extract just the coordinates of Bamboo? You know they will be between a unique 
+'B' and a unique 'W'...*
+
+`unclaimedResourcesAndStatuettesStatement = "r C", {" ", coordinate}, " B", {" ", coordinate}, " W", {" ", coordinate}, " P", {" ", coordinate}, " S", {" ", coordinate}, ";"`
+
+>e.g. "r C 1,1 B 1,2 W P 1,4 S;"
+>
+>^ Coconut at 1,1, Bamboo at 1,2, Precious Stone at 1,4. No Water or Statuettes
+
+### Player Statement
+
+All player information. We give their ID and score, their 
+resource counts, and the locations of their settlers and villages.
+The settler and village coordinates are sorted in numerically ascending order
+
+`playerStatement = "p ", playerId, " ", score, " ", coconut, " ", bamboo, " ", water, " ", preciousStone, " ", statuette, " S", {" ", coordinate}, " T", {" ", coordinate}, ";"`
+
+where `coconut`, `bamboo`, `water`, `preciousStone`, `statuette`
+are non-negative integers representing the number of each resource or
+statuettes the player has collected during this phase. `score` is the
+total score of the player.
+
+>e.g. "p 1 42 1 2 3 4 5 S 5,6 8,7 T 1,2;"
+>
+>^ player 1 with score: 42, coconuts: 1, bamboo: 2, water: 3, precious stone: 4, statuettes: 5, placed settlers at 5,6 and 8,7, placed villages at 1,2
+
+
+### Game State
+
+The combined game state is made up of the following in order:
+
+- 1 Game Arrangement Statement
+- 1 Current State Statement
+- Many Island Statements (as many as there are Islands on the map) - sorted ascending numerically by the island bonus (ties broken by numerically ascending coordinates)
+- 1 Stones Statement
+- 1 Unclaimed Resources Statement
+- Many Player Statements (as many as there are Players) - sorted ascending numerically by player number
+
+Formally this is:
+
+`gameState = gameArrangementStatement, " ", currentStateStatement, {" ", islandStatement}, " ", stonesStatement, " ", unclaimedResourcesAndStatuettesStatement, {" ", playerStatement}`
+
+>e.g. "a 13 2; c 0 E; i 6 0,0 0,1 0,2 0,3 1,0 1,1 1,2 1,3 1,4 2,0 2,1; i 6 0,5 0,6 0,7 1,6 1,7 1,8 2,6 2,7 2,8 3,7 3,8; i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2; i 8 10,3 10,4 11,0 11,1 11,2 11,3 11,4 11,5 12,0 12,1 12,2 12,3 12,4 12,5; i 10 3,3 3,4 3,5 4,2 4,3 4,4 4,5 5,3 5,4 5,5 5,6 6,3 6,4 6,5 6,6 7,4 7,5 7,6 8,4 8,5; i 10 5,8 5,9 6,8 6,9 7,8 7,9 7,10 8,7 8,8 8,9 9,7 9,8 9,9 10,6 10,7 10,8 11,7 11,8 12,7 12,8; s 0,0 0,5 0,9 1,4 1,8 1,12 2,1 3,5 3,7 3,10 3,12 4,0 4,2 5,9 5,11 6,3 6,6 7,0 7,8 7,12 8,2 8,5 9,0 9,9 10,3 10,6 10,10 11,0 11,5 12,2 12,8 12,11; r C B W P S; p 0 0 0 0 0 0 0 S T; p 1 0 0 0 0 0 0 S T;"
+>
+>^ The initial board. Two players, player 0 to start.
+
+### Move String
+
+We need an encoding for moves to play the game. Once the game is 
+working you will be able to take a state string and create an instance 
+of the game using your classes, then apply each move to your running game, 
+and converting the resulting state back into a string that we can check against. 
+
+`move = pieceType, " ", coordinate`
+
+`pieceType = "S" | "T"`
+
+>e.g. "S 2,3"
+>
+>^ Move: a settler is being played at coordinate 2,3
 
 ## Your High Level Task
 
