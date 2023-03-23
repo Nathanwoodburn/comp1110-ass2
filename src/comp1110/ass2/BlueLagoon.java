@@ -1,7 +1,9 @@
 package comp1110.ass2;
 
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.lang.*;
 
@@ -166,7 +168,55 @@ public class BlueLagoon {
      * @return a string of the game state with resources randomly distributed
      */
     public static String distributeResources(String stateString){
-         return ""; // FIXME Task 6
+        // For testing purposes
+//        System.out.println(stateString);
+
+        // Check if the stateString is well formed
+        if (!isStateStringWellFormed(stateString)) return stateString;
+
+        // Grab the stone circles from the stateString
+        String stoneCircles = stateString.substring(stateString.indexOf("s") + 2, stateString.indexOf("r") - 2);
+        // Split the stone circles into an array of cords
+
+        String[] stoneCircleCords = stoneCircles.split(" ");
+
+        // Check if the stone circles are 32
+        if (stoneCircleCords.length != 32) return stateString;
+
+        // Create a string to store the new resources state
+        String newResourcesState = "r";
+
+        // Create a random number generator to randomly assign the resources
+        Random random = new Random();
+
+        // Randomly assign the resources
+        char[] resources = {'C', 'B', 'W', 'P'};
+
+
+        // For each resource type
+        for (char r:resources){
+            newResourcesState += " " + r;
+            // Assign 6 to a random stone circle
+            for (int i = 0; i < 6; i++){
+                int randomIndex = random.nextInt(32);
+                newResourcesState += " " + stoneCircleCords[randomIndex];
+            }
+        }
+
+        // Assign 8 statuettes to a random stone circle
+        newResourcesState += " S";
+        for (int i = 0; i < 8; i++){
+            int randomIndex = random.nextInt(32);
+            newResourcesState += " " + stoneCircleCords[randomIndex];
+        }
+
+//        System.out.println(newResourcesState);
+
+        // Replace the old resources state with the new one
+        stateString = stateString.replace("r C B W P S", newResourcesState);
+
+
+        return stateString; // FIXME Task 6
     }
 
     /**
