@@ -210,13 +210,11 @@ public class BlueLagoon {
             newResourcesState += " " + stoneCircleCords[randomIndex];
         }
 
-//        System.out.println(newResourcesState);
-
         // Replace the old resources state with the new one
         stateString = stateString.replace("r C B W P S", newResourcesState);
 
 
-        return stateString; // FIXME Task 6
+        return stateString; //! Check this before due date
     }
 
     /**
