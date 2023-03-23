@@ -1,7 +1,9 @@
 package comp1110.ass2;
 
+import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Set;
+import java.lang.*;
 
 public class BlueLagoon {
     // The Game Strings for five maps have been created for you.
@@ -37,10 +39,40 @@ public class BlueLagoon {
      *
      * @param moveString a string representing a player's move
      * @return true if moveString is well-formed and false otherwise
+     *
+     * coordinate = row , col (i.e. "0,1" means row 0 col 1)
      */
-    public static boolean isMoveStringWellFormed(String moveString){
-         return false; // FIXME Task 4
-    }
+    public static boolean isMoveStringWellFormed(String moveString) {
+        // Split the initial string onto 2 parts, before " " and after " "
+        String[] parts = moveString.split(" ");
+
+        // if there's more than one " " after a spllit  return false
+        if (parts.length != 2) return false;
+
+        // Before " " (i.e. checking the pieceType)
+        String pieceType = parts[0];
+        if (!pieceType.equals("S") && !pieceType.equals("T")) return false;
+
+        // After " ", (checking the coords)
+        String[] coords = parts[1].split(",");
+
+        // Check if there's multiples ","
+        if (coords.length != 2) return false;
+
+        // Checks whether the row cords are digits or not and whether the digits fit into the interval
+        // will catch an error and return false if either row coords or col coords are not digits
+        if (coords[0].length() <= 2 || coords[1].length() <= 2) {
+            try {
+                int row = Integer.parseInt(coords[0]);
+                int col = Integer.parseInt(coords[1]);
+
+                if (row < 0 || col < 0) return false;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+            return true; ///FIXME TASK 4
+        }
 
     /**
      * Given a state string which is yet to have resources distributed amongst the stone circles,
