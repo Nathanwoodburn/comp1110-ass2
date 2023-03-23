@@ -144,7 +144,7 @@ public class BlueLagoon {
         } catch (NumberFormatException e) {
             return false;
         }
-        return true; ///FIXME TASK 4.
+        return true;
     }
 
     /**
