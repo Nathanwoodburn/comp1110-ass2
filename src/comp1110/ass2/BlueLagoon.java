@@ -142,7 +142,7 @@ public class BlueLagoon {
                 return false;
             }
         }
-            return true; ///FIXME TASK 4
+            return true; ///FIXME TASK 4.
         }
 
     /**
