@@ -115,35 +115,37 @@ public class BlueLagoon {
      */
     public static boolean isMoveStringWellFormed(String moveString) {
         // Split the initial string onto 2 parts, before " " and after " "
+        // The string will be split onto pieceType and Coords parts
         String[] parts = moveString.split(" ");
 
-        // if there's more than one " " after a spllit  return false
+        // if there's more than one " " after a split return false
         if (parts.length != 2) return false;
 
-        // Before " " (i.e. checking the pieceType)
+        // Before " " (i.e. checking the pieceType. pieceType must be "S" or "T")
         String pieceType = parts[0];
         if (!pieceType.equals("S") && !pieceType.equals("T")) return false;
 
         // After " ", (checking the coords)
+        // The coords array will be split onto checking the row (before ",") and
+        // col cords (after ",")
         String[] coords = parts[1].split(",");
 
         // Check if there's multiples ","
         if (coords.length != 2) return false;
 
-        // Checks whether the row cords are digits or not and whether the digits fit into the interval
+        // Checks whether the row cords are digits or not and whether the digits
+        // fit into the interval ( i.e. row and coll cannot be below 0 )
         // will catch an error and return false if either row coords or col coords are not digits
-        if (coords[0].length() <= 2 || coords[1].length() <= 2) {
-            try {
-                int row = Integer.parseInt(coords[0]);
-                int col = Integer.parseInt(coords[1]);
+        try {
+            int row = Integer.parseInt(coords[0]);
+            int col = Integer.parseInt(coords[1]);
 
-                if (row < 0 || col < 0) return false;
-            } catch (NumberFormatException e) {
-                return false;
-            }
+            if (row < 0 || col < 0) return false;
+        } catch (NumberFormatException e) {
+            return false;
         }
-            return true; ///FIXME TASK 4.
-        }
+        return true; ///FIXME TASK 4.
+    }
 
     /**
      * Given a state string which is yet to have resources distributed amongst the stone circles,
