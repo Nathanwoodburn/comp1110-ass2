@@ -32,7 +32,6 @@ public class BlueLagoon {
     public static boolean isStateStringWellFormed(String stateString){
 
         // Create an array of regex strings to match the state string
-
         // The state string contains 5 parts, each of which is matched by a regex string
         String[] matchArray = new String[6];
 
@@ -54,13 +53,11 @@ public class BlueLagoon {
 
         // Combine the regex strings into one string to match the state string
         String matchString = "";
-        for (String match:matchArray){
+        for (String match:matchArray) {
             matchString += match;
         }
         // Check if the state string matches the regex string
-        if (!stateString.matches(matchString)) {
-            return false;
-        }
+        if (!stateString.matches(matchString)) return false;
 
         return true;
     }
@@ -109,7 +106,7 @@ public class BlueLagoon {
         // For testing purposes
 //        System.out.println(stateString);
 
-        // Check if the stateString is well formed
+        // Check if the stateString is well-formed
         if (!isStateStringWellFormed(stateString)) return stateString;
 
         // Grab the stone circles from the stateString
