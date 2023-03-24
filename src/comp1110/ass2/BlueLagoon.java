@@ -31,74 +31,35 @@ public class BlueLagoon {
      */
     public static boolean isStateStringWellFormed(String stateString){
 
-        // Check if the string is empty
-        if (stateString == ""){
-            return false;
+        // Create an array of regex strings to match the state string
+
+        // The state string contains 5 parts, each of which is matched by a regex string
+        String[] matchArray = new String[6];
+
+        // For the gameArrangementStatement use the following regex string
+        matchArray[0] = "a \\d{1,2} \\d{1,2}; ";
+        // For the currentStateStatement use the following regex string
+        matchArray[1] = "c \\d{1,2} [E|S]; ";
+        // For the islandStatement use the following regex string
+        matchArray[2] = "(i \\d{1,2} (\\d{1,2},\\d{1,2} )*\\d{1,2},\\d{1,2}; )*";
+
+        // For the stonesStatement use the following regex string
+        matchArray[3] = "(s (\\d{1,2},\\d{1,2} )+\\d{1,2},\\d{1,2}; )";
+
+        // For the resources and statuettes use the following regex string
+        matchArray[4] = "r C (\\d{1,2},\\d{1,2} )*B (\\d{1,2},\\d{1,2} )*W (\\d{1,2},\\d{1,2} )*P (\\d{1,2},\\d{1,2} )*S( \\d{1,2},\\d{1,2})*;";
+
+        // For the playersStatement use the following regex string
+        matchArray[5] = "( p \\d \\d{1,3} \\d{1,2} \\d{1,2} \\d{1,2} \\d{1,2} \\d{1,2} S (\\d{1,2},\\d{1,2} )*T( (\\d{1,2},\\d{1,2} ?)*)?;)*";
+
+        // Combine the regex strings into one string to match the state string
+        String matchString = "";
+        for (String match:matchArray){
+            matchString += match;
         }
-
-
-        // Check if the last character is a semicolon
-        if (stateString.charAt(stateString.length()-1) != ';'){
+        // Check if the state string matches the regex string
+        if (!stateString.matches(matchString)) {
             return false;
-        }
-
-        // Split string by semicolon
-        String[] splitStateString = stateString.split("; ");
-
-        for (String sub: splitStateString){
-            switch (sub.substring(0,1)) {
-                case "a": {
-                    // Check if the string is well formed for game arrangement
-                    // string should be a [0-9] [0-9] with each number being 1 or 2 digits
-                    if (!sub.matches("a \\d{1,2} \\d{1,2}")) {
-                        return false;
-                    }
-                    break;
-                }
-                case "c": {
-                    // Check if the string is well formed for current state
-                    // string should be c [0-9] E/S or c [0-9] E/S
-
-                    if (!sub.matches("c \\d{1,2} [E|S]")) {
-                        return false;
-                    }
-                    break;
-                }
-                case "i": {
-                    // Check if the string is well formed for island
-
-                    if (!sub.matches("i \\d{1,2} (\\d{1,2},\\d{1,2} )*\\d{1,2},\\d{1,2}")) {
-                        return false;
-                    }
-                    break;
-                }
-                case "s": {
-                    // Check if the string is well formed for stones
-
-                    if (!sub.matches("s (\\d{1,2},\\d{1,2} )+\\d{1,2},\\d{1,2}")) {
-                        return false;
-                    }
-                    break;
-                }
-                case "r":{
-                    // Check if the string is well formed for the unclaimed resources and statuettes
-                    if (!sub.matches("r C (\\d{1,2},\\d{1,2} )*B (\\d{1,2},\\d{1,2} )*W (\\d{1,2},\\d{1,2} )*P (\\d{1,2},\\d{1,2} )*S( \\d{1,2},\\d{1,2})*")){
-                        return false;
-                    }
-                    break;
-                }
-                case "p": {
-                    // Check if the string is well formed for the player info
-                    if (!sub.matches("p \\d \\d{1,3} \\d{1,2} \\d{1,2} \\d{1,2} \\d{1,2} \\d{1,2} S (\\d{1,2},\\d{1,2} )*T( (\\d{1,2},\\d{1,2} ?)*)?;?")){
-                        return false;
-                    }
-                    break;
-                }
-                default: {
-                    // If the string does not start with any of the above characters, it is not well formed
-                    return false;
-                }
-            }
         }
 
         return true;
