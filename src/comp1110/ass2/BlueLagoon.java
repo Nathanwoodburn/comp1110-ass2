@@ -118,6 +118,12 @@ public class BlueLagoon {
     public static boolean isMoveStringWellFormed(String moveString){
         if(!moveString.matches("[ST] \\d{1,2},\\d{1,2}"))return false;
         return true;
+        // If the 1st element of moveString is neither a "S" nor a "T" return false
+        // if the 2nd element is not a whitespace return false
+        // if the 3rd and/or 4th element (as long as it is before ",") are not
+        // digits, return false
+        // if the 6th and/or 7th element (as long as it is after ",") are not digits,
+        // return false
     }
 
     /**
