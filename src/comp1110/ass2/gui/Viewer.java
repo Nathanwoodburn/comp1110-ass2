@@ -231,7 +231,7 @@ public class Viewer extends Application {
         root.getChildren().add(controls);
 
         makeControls();
-
+        primaryStage.getIcons().add(new javafx.scene.image.Image(Viewer.class.getResourceAsStream("favicon.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
     }
