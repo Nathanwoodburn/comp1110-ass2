@@ -126,7 +126,7 @@ public class Viewer extends Application {
 
         // To group the root and adjust their Px sizes accordingly
         // to each other
-        StackPane rootGroup = new StackPane();
+        // StackPane rootGroup = new StackPane();
 
         // Part 1 done (Game Arrangement State)
         String[] parts = stateString.split(";");
@@ -152,9 +152,11 @@ public class Viewer extends Application {
         switch(currentArrangementPhaseParts) {
             case "E": {
                 currentArrangementActualPhase = "Exploration";
+                break;
             }
             case "S": {
                 currentArrangementActualPhase = "Settler";
+                break;
             }
         }
 
@@ -170,7 +172,7 @@ public class Viewer extends Application {
         root.getChildren().add(currentStateText);
         currentStateText.setFill(Color.GREEN);
 
-        rootGroup.getChildren().addAll(currentStateText,board);
+        // rootGroup.getChildren().addAll(currentStateText,board);
 
         //Before doing part 3, make the board and the current state adjustable to each
         // by that I mean, when the board size adjusted, the current state is also
