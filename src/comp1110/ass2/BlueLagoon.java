@@ -41,13 +41,10 @@ public class BlueLagoon {
         matchArray[1] = "c \\d{1,2} [E|S]; ";
         // For the islandStatement use the following regex string
         matchArray[2] = "(i \\d{1,2} (\\d{1,2},\\d{1,2} )*\\d{1,2},\\d{1,2}; )*";
-
         // For the stonesStatement use the following regex string
         matchArray[3] = "(s (\\d{1,2},\\d{1,2} )+\\d{1,2},\\d{1,2}; )";
-
         // For the resources and statuettes use the following regex string
         matchArray[4] = "r C (\\d{1,2},\\d{1,2} )*B (\\d{1,2},\\d{1,2} )*W (\\d{1,2},\\d{1,2} )*P (\\d{1,2},\\d{1,2} )*S( \\d{1,2},\\d{1,2})*;";
-
         // For the playersStatement use the following regex string
         matchArray[5] = "( p \\d \\d{1,3} \\d{1,2} \\d{1,2} \\d{1,2} \\d{1,2} \\d{1,2} S (\\d{1,2},\\d{1,2} )*T( (\\d{1,2},\\d{1,2} ?)*)?;)*";
 
@@ -56,6 +53,7 @@ public class BlueLagoon {
         for (String match:matchArray) {
             matchString += match;
         }
+
         // Check if the state string matches the regex string
         if (!stateString.matches(matchString)) return false;
 
@@ -104,50 +102,59 @@ public class BlueLagoon {
      */
     public static String distributeResources(String stateString){
         // For testing purposes
-//        System.out.println(stateString);
 
         // Check if the stateString is well-formed
         if (!isStateStringWellFormed(stateString)) return stateString;
 
         // Grab the stone circles from the stateString
         String stoneCircles = stateString.substring(stateString.indexOf("s") + 2, stateString.indexOf("r") - 2);
-        // Split the stone circles into an array of cords
 
+        // Split the stone circles into an array of cords
         String[] stoneCircleCords = stoneCircles.split(" ");
 
-        // Check if the stone circles are 32
+        // Create a random object to shuffle the stone circles
+        Random rand = new Random();
+
+        // For each stone circle
+        for (int i = 0; i < stoneCircleCords.length; i++) {
+            // Get a random index to swap with
+            int randomIndexToSwap = rand.nextInt(stoneCircleCords.length);
+            // Swap the stone circles
+            String temp = stoneCircleCords[randomIndexToSwap];
+            stoneCircleCords[randomIndexToSwap] = stoneCircleCords[i];
+            stoneCircleCords[i] = temp;
+        }
+
+        // Check if there isn't 32 stone circles
         if (stoneCircleCords.length != 32) return stateString;
 
         // Create a string to store the new resources state
         String newResourcesState = "r";
 
-        // Create a random number generator to randomly assign the resources
-        Random random = new Random();
-
-        // Randomly assign the resources
+        // Create an array for each resource type
         char[] resources = {'C', 'B', 'W', 'P'};
 
+        int numSorted = 0;
 
         // For each resource type
         for (char r:resources){
             newResourcesState += " " + r;
-            // Assign 6 to a random stone circle
+            // Assign 6 to a stone circle
             for (int i = 0; i < 6; i++){
-                int randomIndex = random.nextInt(32);
-                newResourcesState += " " + stoneCircleCords[randomIndex];
+                newResourcesState += " " + stoneCircleCords[numSorted];
+                numSorted++;
             }
         }
 
-        // Assign 8 statuettes to a random stone circle
+        // Assign 8 statuettes to a stone circle
         newResourcesState += " S";
         for (int i = 0; i < 8; i++){
-            int randomIndex = random.nextInt(32);
-            newResourcesState += " " + stoneCircleCords[randomIndex];
+            newResourcesState += " " + stoneCircleCords[numSorted];
+            numSorted++;
         }
 
         // Replace the old resources state with the new one
         stateString = stateString.replace("r C B W P S", newResourcesState);
-
 
         return stateString; //! Check this before due date
     }
