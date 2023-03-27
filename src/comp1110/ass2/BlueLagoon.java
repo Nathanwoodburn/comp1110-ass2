@@ -1,8 +1,10 @@
 package comp1110.ass2;
 
+import java.sql.Time;
 import java.text.NumberFormat;
 import java.util.*;
 import java.lang.*;
+import java.util.stream.Stream;
 
 public class BlueLagoon {
     // The Game Strings for five maps have been created for you.
@@ -112,26 +114,37 @@ public class BlueLagoon {
 
         // Create a random object and an arrays and list to shuffle the stone circles
         Random rand = new Random();
-        String[] stoneCircleRandom = new String[32];
-        List<String> usedCords = new ArrayList<String>();
-        // Generate random array
-        for (int i = 0; i < 32; i++) {
-            // For 0-31 generate a random cord from the stone circle array and check if it has been used
-            int randomIndex = rand.nextInt(31);
-            while (usedCords.contains(stoneCircleCords[randomIndex])) {
-                // If it has been used, try the next in line
-                if (randomIndex == 31){
-                    randomIndex = 0;
+
+        // Number of times to shuffle the stone circles (can be changed)
+        int shuffle_number = 3;
+
+        // Create a copy of the stone circle array to shuffle
+        String[] stoneCircleRandom = stoneCircleCords;
+
+        // Shuffle the stone circles the specified number of times
+        for (int i = 0; i < shuffle_number; i++) {
+            // Create a temporary array to store the shuffled stone circles
+            String[] tempStoneCircleRandom = new String[32];
+            // Create a list to store the used cords (to avoid duplicates)
+            List<String> usedCords = new ArrayList<String>();
+
+            // Shuffle the array
+            for (int j = 0; j < 32; j++) {
+                // For 0-31 generate a random cord from the stone circle array and check if it has been used
+                int randomIndex = rand.nextInt(31);
+                while (usedCords.contains(stoneCircleCords[randomIndex])) {
+                    // If it has been used, try the next in line
+                    if (randomIndex == 31) {
+                        randomIndex = 0;
+                    } else randomIndex++;
                 }
-                else randomIndex++;
+                // If it hasn't been used, add it to the new array
+                tempStoneCircleRandom[j] = stoneCircleRandom[randomIndex];
+                usedCords.add(stoneCircleCords[randomIndex]);
             }
-
-            // If it hasn't been used, add it to the new array
-            stoneCircleRandom[i] = stoneCircleCords[randomIndex];
-            usedCords.add(stoneCircleCords[randomIndex]);
+            // Replace the old array with the new one
+            stoneCircleRandom = tempStoneCircleRandom;
         }
-
-        // Check if there isn't 32 stone circles
 
 
         // Create a string to store the new resources state
@@ -140,6 +153,7 @@ public class BlueLagoon {
         // Create an array for each resource type
         char[] resources = {'C', 'B', 'W', 'P'};
 
+        // Create a variable to keep track of how many resources have been sorted
         int numSorted = 0;
 
         // For each resource type
@@ -162,7 +176,7 @@ public class BlueLagoon {
         // Replace the old resources state with the new one
         stateString = stateString.replace("r C B W P S", newResourcesState);
 
-        return stateString; //! Check this before due date
+        return stateString;
     }
 
     /**
