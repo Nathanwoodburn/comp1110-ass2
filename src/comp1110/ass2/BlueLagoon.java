@@ -136,7 +136,8 @@ public class BlueLagoon {
                     // If it has been used, try the next in line
                     if (randomIndex == 31) {
                         randomIndex = 0;
-                    } else randomIndex++;
+                    }
+                    else randomIndex++;
                 }
                 // If it hasn't been used, add it to the new array
                 tempStoneCircleRandom[j] = stoneCircleRandom[randomIndex];
