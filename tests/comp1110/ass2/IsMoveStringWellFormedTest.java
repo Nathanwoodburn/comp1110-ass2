@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Timeout;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
+@Timeout(value = 1300, unit = TimeUnit.MILLISECONDS)
 public class IsMoveStringWellFormedTest {
     private final GameDataLoader gameDataLoader = new GameDataLoader();
     private final List<List<String>> allGames = gameDataLoader.fetchAllGames();

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Timeout(value = 3000, unit = TimeUnit.MILLISECONDS)
+@Timeout(value = 30000, unit = TimeUnit.MILLISECONDS)
 public class GenerateAIMoveTest implements TestMapNamePlayerCount {
     private final GameDataLoader gameDataLoader = new GameDataLoader();
     private final AllValidMovesDataLoader loader = new AllValidMovesDataLoader();

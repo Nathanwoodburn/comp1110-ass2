@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Timeout;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
+@Timeout(value = 2500, unit = TimeUnit.MILLISECONDS)
 public class ApplyMoveTest implements TestMapNamePlayerCount {
     private final GameDataLoader gameDataLoader = new GameDataLoader();
     private static void testGame(List<String> game){

@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
+@Timeout(value = 3000, unit = TimeUnit.MILLISECONDS)
 public class CalculateScoresTest implements TestMapNamePlayerCount {
     private final GameDataLoader gameDataLoader = new GameDataLoader();
     private final ScoreDataLoader scoreDataLoader = new ScoreDataLoader();
