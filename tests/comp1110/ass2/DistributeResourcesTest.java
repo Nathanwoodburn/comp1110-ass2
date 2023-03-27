@@ -85,6 +85,7 @@ public class DistributeResourcesTest {
 
     private static void testSufficientlyRandom(HashMap<String, HashMap<Character, Integer>> distribution){
         for (String coordinate : distribution.keySet()){
+            System.out.println(distribution.get(coordinate));
             int total = 0;
             for(Character resource : resourceCharacters){
                 int amount = distribution.get(coordinate).get(resource);
