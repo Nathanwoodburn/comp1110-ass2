@@ -216,9 +216,125 @@ public class BlueLagoon {
      * @param stateString a string representing a game state
      * @return a set of strings representing all moves the current player can play
      */
-    public static Set<String> generateAllValidMoves(String stateString){
-         return new HashSet<>(); // FIXME Task 8
+    public static Set<String> generateAllValidMoves(String stateString) {
+
+        // Get number of players
+        int numPlayers = Character.getNumericValue(stateString.charAt(stateString.indexOf(";") - 1));
+
+        // Store the current game phase
+        int gamePhase = 0;
+
+        // If the game is not in the exploration phase use state 1
+        if (!stateString.contains("E")) gamePhase = 1;
+
+        // Get the current player
+        int currentPlayer = Character.getNumericValue(stateString.charAt(stateString.indexOf("c ") + 2));
+
+        // Get the board size
+        int boardHeight = Integer.parseInt(stateString.substring(stateString.indexOf("a ") + 2, stateString.indexOf(";") - 2));
+
+        // Get player data
+        String allPlayerData = stateString.substring(stateString.indexOf("p " + currentPlayer));
+        String playerData = allPlayerData.substring(0, allPlayerData.indexOf(";"));
+
+        // Get placed pieces
+        String settlersPlaced = playerData.substring(playerData.indexOf("S") + 2, playerData.indexOf("T"));
+        int numSettlersPlaced = settlersPlaced.split(" ").length;
+        if (!settlersPlaced.contains(" ")){
+            numSettlersPlaced = 0;
+        }
+        String villagesPlaced = playerData.substring(playerData.indexOf("T")+1);
+        int numVillagesPlaced = villagesPlaced.split(" ").length;
+        if (!villagesPlaced.contains(" ")){
+            numVillagesPlaced = 0;
+        }
+
+        // Calculate number of pieces each player starts with
+        int startNumSettlers = 0;
+
+        switch (numPlayers) {
+            case 2:
+                startNumSettlers = 30;
+                break;
+            case 3:
+                startNumSettlers = 25;
+                break;
+            case 4:
+                startNumSettlers = 20;
+                break;
+        }
+
+        // Check if the player has placed all their settlers or villages
+        boolean hasSettler = (numSettlersPlaced < startNumSettlers);
+        boolean hasVillage = (numVillagesPlaced < 5);
+
+
+        // Create a set to store all possible moves
+        Set<String> allMoves = new HashSet<>();
+
+        // If the player has placed all their settlers and villages
+        if (!hasSettler && !hasVillage){
+            return allMoves;
+        }
+
+        // Generate all possible coordinates in an array
+        String[] coordinates = new String[boardHeight * boardHeight];
+        int index = 0;
+        for (int i = 0; i < boardHeight; i++){
+            for (int j = 0; j < boardHeight; j++){
+                coordinates[index] = j + "," + i;
+                index++;
+            }
+        }
+
+        // For each coordinate
+        for (String cord:coordinates) {
+            // If the player has not placed all their settlers
+            if (hasSettler && gamePhase == 0) {
+                // Generate all possible settler moves
+
+                // If the coordinate is not occupied and is water
+                if (!stateString.contains(" " + cord + " ")) {
+                    if (cord.equals("0,12")){
+                        System.out.println("1");
+                    }
+                    allMoves.add("S " + cord);
+                }
+            }
+
+            // If the coordinate is not occupied
+            if (!allPlayerData.contains(" " + cord + " ")) {
+
+                // if the coordinate is adjacent to one of the player's pieces
+
+                int firstCord = Integer.parseInt(cord.substring(0, cord.indexOf(",")));
+                int secondCord = Integer.parseInt(cord.substring(cord.indexOf(",") + 1));
+
+                if (playerData.contains(" " + (firstCord - 1) + "," + (secondCord + 1) + " ") ||
+                        playerData.contains(" " + (firstCord + 1) + "," + (secondCord + 1) + " ") ||
+                        playerData.contains(" " + (firstCord - 1) + "," + (secondCord - 1) + " ") ||
+                        playerData.contains(" " + (firstCord + 1) + "," + (secondCord - 1) + " ")) {
+
+                    if (cord.equals("0,12")){
+                        System.out.println("2");
+                    }
+                    if (hasSettler){
+                        allMoves.add("S " + cord);
+                    }
+                    if (hasVillage) {
+                        allMoves.add("T " + cord);
+                    }
+
+                }
+            }
+        }
+
+
+
+        return allMoves; //! Test when Task 7 is done
     }
+
+
 
     /**
      * Given a state string, determine whether it represents an end of phase state.
