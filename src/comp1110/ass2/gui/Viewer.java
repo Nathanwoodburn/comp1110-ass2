@@ -302,8 +302,9 @@ public class Viewer extends Application {
                     String container = "";
                     container += "player " + parseSplit[1] + " with score: " +
                             parseSplit[2] + ", coconuts: " + parseSplit[3] +
-                            ", bambooo: " + parseSplit[4] + ", statuettes: " +
-                            parseSplit[5] + ", placed settlers at ";
+                            ", bambooo: " + parseSplit[4] + ", water: " +
+                            parseSplit[5] + ", precious stone: " + parseSplit[6] +
+                            ", statuettes: " + parseSplit[7] + ", placed settlers at ";
                     int i = 9;
                     int counter = 0;
                         while(!parseSplit[i].equals("T")){
@@ -353,7 +354,7 @@ public class Viewer extends Application {
                     playerStateText.setText(container);
                     playerStateText.setFont(Font.font("Sans Serif",
                             FontWeight.BOLD, 12));
-                    playerStateText.setX(275);
+                    playerStateText.setX(200);
                     playerStateText.setY(645);
                     playerStateText.setTextAlignment(TextAlignment.CENTER);
                     root.getChildren().add(playerStateText);
