@@ -331,7 +331,7 @@ public class Viewer extends Application {
                         container += ", placed villages at ";
                         int counterT = 0;
                         while(i < parseSplit.length){
-                            counter++;
+                            counterT++;
                             String[] coords = parseSplit[i].split(",");
                             Rectangle village = new Rectangle(boardHeightPx/boardHeight
                                     - 15, boardHeightPx/boardHeight - 15, Color.LIGHTGOLDENRODYELLOW);
