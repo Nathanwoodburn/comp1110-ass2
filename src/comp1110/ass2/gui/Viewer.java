@@ -145,15 +145,17 @@ public class Viewer extends Application {
         String[] parts = stateString.split("; ?");
         int boardHeight = 0;
         int boardHeightPx = 0;
+//        int tileSize = 500;
         for ( String part : parts) {
             String[] parseSplit = part.split(" ");
             String stateCases = parseSplit[0];
             switch (stateCases) {
                 case "a":
                     boardHeight = Integer.parseInt(parseSplit[1]);
-                    boardHeightPx = boardHeight * 45;
+                    boardHeightPx = 575;
                     viewerGrid.setPrefWidth(boardHeightPx);
                     viewerGrid.setPrefHeight(boardHeightPx);
+                    // viewerGrid.relocate((VIEWER_WIDTH/2-viewerGrid.getPrefWidth()/2), (VIEWER_HEIGHT/2-viewerGrid.getPrefHeight()/2));
 
                     // row major order
                     for(int i = 0; i < boardHeight; i++){
@@ -161,10 +163,10 @@ public class Viewer extends Application {
                             Rectangle boardMap = new Rectangle(boardHeightPx/boardHeight,
                                     boardHeightPx/boardHeight, Color.DARKBLUE);
                             viewerGrid.add(boardMap, i, j);
-                            Label boardLabel = new Label(i + "," + j);
-                            boardLabel.setFont(Font.font("Sans Serif", 12));
-                            boardLabel.setTextFill(Color.WHITE);
-                            viewerGrid.add(boardLabel, i, j);
+//                            Label boardLabel = new Label(i + "," + j);
+//                            boardLabel.setFont(Font.font("Sans Serif", 12));
+//                            boardLabel.setTextFill(Color.WHITE);
+//                            viewerGrid.add(boardLabel, i, j);
                         }
                     }
                     break;
@@ -198,28 +200,149 @@ public class Viewer extends Application {
                         String[] coords = parseSplit[i].split(",");
                         int xCoord = Integer.parseInt(coords[0]);
                         int yCoord = Integer.parseInt(coords[1]);
-                        Label islandLabel = new Label(xCoord + "," + yCoord +
-                                "\n b " + parseSplit[1]);
-                        islandLabel.setTextFill(Color.GREENYELLOW);
-                        islandLabel.setFont(Font.font("Sans Serif", 12));
+//                        Label islandLabel = new Label(xCoord + "," + yCoord +
+//                                "\n b " + parseSplit[1]);
+//                        islandLabel.setTextFill(Color.GREENYELLOW);
+//                        islandLabel.setFont(Font.font("Sans Serif", 12));
+//                        viewerGrid.add(islandLabel, xCoord, yCoord);
+//                        viewerGrid.setAlignment(Pos.CENTER);
                         viewerGrid.add(island, xCoord, yCoord);
-                        viewerGrid.add(islandLabel, xCoord, yCoord);
+
                         // root.getChildren().add(viewerGrid);
                     }
                     break;
                 case "s":
                     for(int i = 1; i < parseSplit.length; i++){
-                        Rectangle theRock = new Rectangle(boardHeightPx/boardHeight,
-                                boardHeightPx/boardHeight, Color.GRAY);
+                        Rectangle theRock = new Rectangle(boardHeightPx/boardHeight
+                                - 15, boardHeightPx/boardHeight - 15, Color.GRAY);
                         String[] coords = parseSplit[i].split(",");
+                        theRock.setTranslateX(5);
+//                        theRock.setTranslateY(0);
                         viewerGrid.add(theRock, Integer.parseInt(coords[0]),
                                 Integer.parseInt(coords[1]));
                     }
                     break;
                 case "r":
+                    for(int i = 1; i < parseSplit.length; i++){
+                        switch(parseSplit[i]) {
+                            case "C":
+//                                System.out.println("Start of C " + parseSplit[i]);
+                                i++;
+//                                System.out.println("First iteration of C" + parseSplit[i]);
+                                while(!parseSplit[i].equals("B")){
+//                                    System.out.println("C loop" + parseSplit[i]);
+                                    String[] coords = parseSplit[i].split(",");
+                                    Rectangle coconut = new Rectangle(boardHeightPx/boardHeight
+                                            - 15, boardHeightPx/boardHeight - 15, Color.BROWN);
+                                    coconut.setTranslateX(5);
+                                    Label coconutLabel = new Label("C");
+                                    coconutLabel.setTextFill(Color.WHITE);
+                                    coconutLabel.setFont(Font.font("Sans Serif", 12));
+                                    coconutLabel.setTranslateX(15);
+                                    viewerGrid.add(coconut, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    viewerGrid.add(coconutLabel, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    i++;
+//                                    System.out.println("End of C loop" + parseSplit[i]);
+                                }
+                                i--;
+                                break;
+                            case "B":
+                                i++;
+                                while(!parseSplit[i].equals("W")){
+                                    String[] coords = parseSplit[i].split(",");
+                                    Rectangle bamboo = new Rectangle(boardHeightPx/boardHeight
+                                            - 15, boardHeightPx/boardHeight - 15, Color.YELLOW);
+                                    bamboo.setTranslateX(5);
+                                    Label bambooLabel = new Label("B");
+                                    bambooLabel.setTextFill(Color.BLACK);
+                                    bambooLabel.setFont(Font.font("Sans Serif", 12));
+                                    bambooLabel.setTranslateX(15);
+                                    viewerGrid.add(bamboo, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    viewerGrid.add(bambooLabel, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    i++;
+                                }
+                                i--;
+                                break;
+                            case "W":
+                                i++;
+                                while(!parseSplit[i].equals("P")){
+                                    String[] coords = parseSplit[i].split(",");
+                                    Rectangle water = new Rectangle(boardHeightPx/boardHeight
+                                            - 15, boardHeightPx/boardHeight - 15, Color.CYAN);
+                                    water.setTranslateX(5);
+                                    Label waterLabel = new Label("W");
+                                    waterLabel.setTextFill(Color.BLACK);
+                                    waterLabel.setFont(Font.font("Sans Serif", 12));
+                                    waterLabel.setTranslateX(15);
+                                    viewerGrid.add(water, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    viewerGrid.add(waterLabel, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    i++;
+                                }
+                                i--;
+                                break;
+                            case "P":
+                                i++;
+                                while(!parseSplit[i].equals("S")){
+                                    String[] coords = parseSplit[i].split(",");
+                                    Rectangle precious = new Rectangle(boardHeightPx/boardHeight
+                                            - 15, boardHeightPx/boardHeight - 15, Color.GOLD);
+                                    precious.setTranslateX(5);
+                                    Label preciousLabel = new Label("P");
+                                    preciousLabel.setTextFill(Color.BLACK);
+                                    preciousLabel.setFont(Font.font("Sans Serif", 12));
+                                    preciousLabel.setTranslateX(15);
+                                    viewerGrid.add(precious, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    viewerGrid.add(preciousLabel, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    i++;
+                                }
+                                i--;
+                                break;
+                            case "S":
+                                i++;
+                                while(i < parseSplit.length){
+                                    String[] coords = parseSplit[i].split(",");
+                                    Rectangle precious = new Rectangle(boardHeightPx/boardHeight
+                                            - 15, boardHeightPx/boardHeight - 15, Color.SILVER);
+                                    precious.setTranslateX(5);
+                                    Label preciousLabel = new Label("S");
+                                    preciousLabel.setTextFill(Color.BLACK);
+                                    preciousLabel.setFont(Font.font("Sans Serif", 12));
+                                    preciousLabel.setTranslateX(15);
+                                    viewerGrid.add(precious, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    viewerGrid.add(preciousLabel, Integer.parseInt(coords[0]),
+                                            Integer.parseInt(coords[1]));
+                                    i++;
+                                }
+                                break;
+                        }
+                    }
+//                    String[] parseSplit = part.split(" ");
+//                    String stateCases = parseSplit[0];
+//                    String[] parseSplit = part.split(" ");
+//                        for (String parse : parseSplit) {
+//                            switch (parse) {
+//                                case "C":
+//                                Rectangle coconut = new Rectangle(boardHeightPx/boardHeight
+//                                        - 15, boardHeightPx/boardHeight - 15,
+//                                        Color.BROWN);
+//                                    String[] coords = parseSplit[i].split(",");
+//                                    viewerGrid.add(coconut, Integer.parseInt(coords[0]),
+//                                            Integer.parseInt(coords[1]));
+//                            }
+//                        }
+//                    }
                     // parts[i].matches(" c \\d [ES]")
                     //String[] parseSplit = part.split(" ");
-                    break;
+//                    break;
                     //r C 1,1 B 1,2 W P 1,4 S;
             }
         }
