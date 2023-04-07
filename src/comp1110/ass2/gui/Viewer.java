@@ -305,6 +305,7 @@ public class Viewer extends Application {
                                 }
                                 i--;
                                 break;
+                                //
                             case "S":
                                 i++;
                                 while(i < parseSplit.length){
