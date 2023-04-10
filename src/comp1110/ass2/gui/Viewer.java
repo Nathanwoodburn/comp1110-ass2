@@ -22,7 +22,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-
+import javafx.scene.shape.Polygon;
+import javafx.scene.paint.Paint;
 import javax.swing.*;
 import java.awt.*;
 
@@ -126,36 +127,55 @@ public class Viewer extends Application {
      *
      *   a 13 2; c 0 E; i 6 0,0 0,1 0,2 0,3 1,0 1,1 1,2 1,3 1,4 2,0 2,1; i 6 0,5 0,6 0,7 1,6 1,7
      */
+
+
+
     void displayState(String stateString) {
         // When refreshing, it clears the whole thing and update it
         root.getChildren().clear();
         root.getChildren().add(controls);
 
+        // Intizialiation of the grid
         GridPane viewerGrid = new GridPane();
         String[] parts = stateString.split("; ?");
         int boardHeight = 0;
         int boardHeightPx = 0;
+        int tileSize = 0;
+
         for ( String part : parts) {
             String[] parseSplit = part.split(" ");
             String stateCases = parseSplit[0];
+
+            // Splitting of the states of the game as per the encoded string
             switch (stateCases) {
+
+                // Game Arrangement Statement
                 case "a":
+
+                    // Settting up the board height value and the tile size
                     boardHeight = Integer.parseInt(parseSplit[1]);
-                    boardHeightPx = 575;
+                    boardHeightPx = 650;
+                    tileSize = boardHeightPx / boardHeight;
                     viewerGrid.setPrefWidth(boardHeightPx);
                     viewerGrid.setPrefHeight(boardHeightPx);
 
-                    // row major order
+                    // Generating the water tiles ( the background water map )
                     for(int i = 0; i < boardHeight; i++){
                         for(int j = 0; j < boardHeight; j++){
-                            Rectangle boardMap = new Rectangle(boardHeightPx/boardHeight,
-                                    boardHeightPx/boardHeight, Color.DARKBLUE);
-                            viewerGrid.add(boardMap, i, j);
+                            addBoardTile(viewerGrid, boardHeightPx/boardHeight,
+                                    String.format("%s,%s", i, j), Color.BLUE);
                         }
                     }
                     break;
+
+                    // Current state statement
                 case "c":
+
+                    // Getting the player ID from the string
                     int playerId = Integer.parseInt(parseSplit[1]);
+
+                    // Getting the two mode of current state either Exploration
+                    // or settler
                     String currentPhase = parseSplit[2];
                     switch (currentPhase) {
                         case "E":
@@ -165,6 +185,8 @@ public class Viewer extends Application {
                             currentPhase = "Settler";
                             break;
                     }
+
+                    // Making the Current State Statement text on the window
                     Text currentStateText = new Text();
                     currentStateText.setText("The current player to move is player " +
                             playerId + " in the " + currentPhase +
@@ -177,195 +199,235 @@ public class Viewer extends Application {
                     root.getChildren().add(currentStateText);
                     currentStateText.setFill(Color.GREEN);
                     break;
+
+                    // Generating the Island tiles from the Island State Statement
                 case "i":
                     for(int i = 2; i < parseSplit.length; i++){
-                        Rectangle island = new Rectangle(boardHeightPx/boardHeight,
-                                boardHeightPx/boardHeight, Color.GREEN);
-                        String[] coords = parseSplit[i].split(",");
-                        int xCoord = Integer.parseInt(coords[0]);
-                        int yCoord = Integer.parseInt(coords[1]);
-                        viewerGrid.add(island, xCoord, yCoord);
+                        addBoardTile(viewerGrid, tileSize, parseSplit[i], Color.GREEN);
                     }
                     break;
+
+                    // Generating the Stone Tiles from the Stone Statement
                 case "s":
                     for(int i = 1; i < parseSplit.length; i++){
-                        Rectangle theRock = new Rectangle(boardHeightPx/boardHeight
-                                - 15, boardHeightPx/boardHeight - 15, Color.GRAY);
-                        String[] coords = parseSplit[i].split(",");
-                        theRock.setTranslateX(5);
-                        viewerGrid.add(theRock, Integer.parseInt(coords[0]),
-                                Integer.parseInt(coords[1]));
+                        addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.GRAY);
                     }
                     break;
+
+                    // Generating the Resources Tiles from the Resource Statement
                 case "r":
                     for(int i = 1; i < parseSplit.length; i++){
                         switch(parseSplit[i]) {
+
+                            // Generating Resource: Coconut Tiles
                             case "C":
-                                i++;
+                                i++; // To Skip the "C" itself and go to the numbers in the string
                                 while(!parseSplit[i].equals("B")){
-                                    String[] coords = parseSplit[i].split(",");
-                                    Rectangle coconut = new Rectangle(boardHeightPx/boardHeight
-                                            - 15, boardHeightPx/boardHeight - 15, Color.BROWN);
-                                    coconut.setTranslateX(5);
-                                    Label coconutLabel = new Label("C");
-                                    coconutLabel.setTextFill(Color.WHITE);
-                                    coconutLabel.setFont(Font.font("Sans Serif", 12));
-                                    coconutLabel.setTranslateX(15);
-                                    viewerGrid.add(coconut, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    viewerGrid.add(coconutLabel, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    i++;
+
+                                    // Tile generation
+                                    addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.BROWN);
+
+                                    // Label for the tiles generation
+                                    addLabelToTile(viewerGrid,tileSize,parseSplit[i], Color.WHITE, "C");
+                                    i++; // To continue the iteration for the while loops
                                 }
-                                i--;
+                                i--; // So that i does not go straight to the coords after the letters instead
+                                    // i stop at the letter "B"
                                 break;
+
+                                // Generating Resource: Bamboo Tiles
                             case "B":
-                                i++;
+                                i++; // To Skip the "B" itself and go to the numbers in the string
                                 while(!parseSplit[i].equals("W")){
-                                    String[] coords = parseSplit[i].split(",");
-                                    Rectangle bamboo = new Rectangle(boardHeightPx/boardHeight
-                                            - 15, boardHeightPx/boardHeight - 15, Color.YELLOW);
-                                    bamboo.setTranslateX(5);
-                                    Label bambooLabel = new Label("B");
-                                    bambooLabel.setTextFill(Color.BLACK);
-                                    bambooLabel.setFont(Font.font("Sans Serif", 12));
-                                    bambooLabel.setTranslateX(15);
-                                    viewerGrid.add(bamboo, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    viewerGrid.add(bambooLabel, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    i++;
+
+                                    // Tile generation
+                                    addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.YELLOW);
+
+                                    // Label for the tiles generation
+                                    addLabelToTile(viewerGrid,tileSize,parseSplit[i], Color.BLACK, "B");
+                                    i++; // To continue the iteration for the while loops
                                 }
-                                i--;
+                                i--; // So that i does not go straight to the coords after the letters instead
+                                // i stop at the letter "W"
                                 break;
+
+                                // Generating Resource: Water tiles
                             case "W":
-                                i++;
+                                i++; // To Skip the "W" itself and go to the numbers in the string
                                 while(!parseSplit[i].equals("P")){
-                                    String[] coords = parseSplit[i].split(",");
-                                    Rectangle water = new Rectangle(boardHeightPx/boardHeight
-                                            - 15, boardHeightPx/boardHeight - 15, Color.CYAN);
-                                    water.setTranslateX(5);
-                                    Label waterLabel = new Label("W");
-                                    waterLabel.setTextFill(Color.BLACK);
-                                    waterLabel.setFont(Font.font("Sans Serif", 12));
-                                    waterLabel.setTranslateX(15);
-                                    viewerGrid.add(water, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    viewerGrid.add(waterLabel, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    i++;
+                                    // Tile Generation
+                                    addTileToBoard(viewerGrid,tileSize, parseSplit[i], Color.CYAN);
+
+                                    // Label for the tiles generation
+                                    addLabelToTile(viewerGrid,tileSize,parseSplit[i], Color.BLACK, "W");
+                                    i++; // To continue the iteration for the while loops
                                 }
-                                i--;
+                                i--; // So that i does not go straight to the coords after the letters instead
+                                // i stop at the letter "P"
                                 break;
+
+                                // Generating Resource: Precious Stone tiles
                             case "P":
-                                i++;
+                                i++; // To Skip the "P" itself and go to the numbers in the string
                                 while(!parseSplit[i].equals("S")){
-                                    String[] coords = parseSplit[i].split(",");
-                                    Rectangle precious = new Rectangle(boardHeightPx/boardHeight
-                                            - 15, boardHeightPx/boardHeight - 15, Color.GOLD);
-                                    precious.setTranslateX(5);
-                                    Label preciousLabel = new Label("P");
-                                    preciousLabel.setTextFill(Color.BLACK);
-                                    preciousLabel.setFont(Font.font("Sans Serif", 12));
-                                    preciousLabel.setTranslateX(15);
-                                    viewerGrid.add(precious, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    viewerGrid.add(preciousLabel, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    i++;
+
+                                    // Tile Generation
+                                    addTileToBoard(viewerGrid,tileSize,parseSplit[i], Color.GOLD);
+
+                                    // Label for the tiles generation
+                                    addLabelToTile(viewerGrid, tileSize, parseSplit[i], Color.BLACK, "P");
+                                    i++;  // To continue the iteration for the while loops
                                 }
-                                i--;
+                                i--; // So that i does not go straight to the coords after the letters instead
+                                // i stop at the letter "S"
                                 break;
-                                //
+
+                                // Generating Resource: Statuettes tiles
                             case "S":
-                                i++;
+                                i++; // To Skip the "P" itself and go to the numbers in the string
                                 while(i < parseSplit.length){
-                                    String[] coords = parseSplit[i].split(",");
-                                    Rectangle precious = new Rectangle(boardHeightPx/boardHeight
-                                            - 15, boardHeightPx/boardHeight - 15, Color.SILVER);
-                                    precious.setTranslateX(5);
-                                    Label preciousLabel = new Label("S");
-                                    preciousLabel.setTextFill(Color.BLACK);
-                                    preciousLabel.setFont(Font.font("Sans Serif", 12));
-                                    preciousLabel.setTranslateX(15);
-                                    viewerGrid.add(precious, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    viewerGrid.add(preciousLabel, Integer.parseInt(coords[0]),
-                                            Integer.parseInt(coords[1]));
-                                    i++;
+
+                                    // Tile Generation
+                                    addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.SILVER);
+
+                                    // Label for the tiles generation
+                                    addLabelToTile(viewerGrid, tileSize, parseSplit[i], Color.BLACK, "S");
+                                    i++; // To continue the iteration for the while loops
                                 }
                                 break;
                         }
                     }
                     break;
+
+                    // Player Statement
                 case "p":
+
+                    // A container for the String that is printed at the end
                     String container = "";
                     container += "player " + parseSplit[1] + " with score: " +
                             parseSplit[2] + ", coconuts: " + parseSplit[3] +
                             ", bambooo: " + parseSplit[4] + ", water: " +
                             parseSplit[5] + ", precious stone: " + parseSplit[6] +
                             ", statuettes: " + parseSplit[7] + ", placed settlers at ";
+
+                    // Setller tile generator
                     int i = 9;
                     int counter = 0;
                         while(!parseSplit[i].equals("T")){
                             counter++;
                             String[] coords = parseSplit[i].split(",");
-                            Rectangle settlers = new Rectangle(boardHeightPx/boardHeight
-                                    - 15, boardHeightPx/boardHeight - 15, Color.PINK);
-                            settlers.setTranslateX(5);
-                            Label settlerLabel = new Label("Settlers");
-                            settlerLabel.setTextFill(Color.BLACK);
-                            settlerLabel.setFont(Font.font("Sans Serif", 9));
-                            settlerLabel.setTranslateX(5);
-                            viewerGrid.add(settlers, Integer.parseInt(coords[0]),
-                                    Integer.parseInt(coords[1]));
-                            viewerGrid.add(settlerLabel, Integer.parseInt(coords[0]),
-                                    Integer.parseInt(coords[1]));
+
+                            // Tile generator
+                            addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.PINK);
+
+                            // Label generator
+                            addSmallLabelToTile(viewerGrid, tileSize, parseSplit[i], Color.BLACK, "Settlers");
+
+                            // if there's more than 1 settler placed
                             if(counter > 1) container += " and ";
                             container += Integer.parseInt(coords[0]) + "," +
                                     Integer.parseInt(coords[1]);
-                            i++;
+                            i++; // To iterate the while loop
                         }
-                        i++;
+                        i++; // To continue past the "T" keyword
 
+                        // Village tile generator
                         container += ", placed villages at ";
                         int counterT = 0;
                         while(i < parseSplit.length){
                             counterT++;
                             String[] coords = parseSplit[i].split(",");
-                            Rectangle village = new Rectangle(boardHeightPx/boardHeight
-                                    - 15, boardHeightPx/boardHeight - 15, Color.LIGHTGOLDENRODYELLOW);
-                            village.setTranslateX(5);
-                            Label villageLabel = new Label("Village");
-                            villageLabel.setTextFill(Color.BLACK);
-                            villageLabel.setFont(Font.font("Sans Serif", 9));
-                            villageLabel.setTranslateX(5);
-                            viewerGrid.add(village, Integer.parseInt(coords[0]),
-                                    Integer.parseInt(coords[1]));
-                            viewerGrid.add(villageLabel, Integer.parseInt(coords[0]),
-                                    Integer.parseInt(coords[1]));
+
+                            // Tile generator
+                            addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color. LIGHTGOLDENRODYELLOW);
+
+                            // Label generator
+                            addSmallLabelToTile(viewerGrid, tileSize, parseSplit[i], Color.BLACK, "Village");
+
+                            // If there's more than 1 village placed
                             if(counterT > 1) container += " and ";
                             container += Integer.parseInt(coords[0]) + "," +
                                     Integer.parseInt(coords[1]);
                             i++;
                         }
 
+                    // Adding the player Statement Text to the window
                     Text playerStateText = new Text();
                     playerStateText.setText(container);
                     playerStateText.setFont(Font.font("Sans Serif",
-                            FontWeight.BOLD, 12));
-                    playerStateText.setX(200);
-                    playerStateText.setY(645);
+                            FontWeight.BOLD, 15));
+                    playerStateText.setX(125);
+                    playerStateText.setY(600);
                     playerStateText.setTextAlignment(TextAlignment.CENTER);
                     root.getChildren().add(playerStateText);
                     playerStateText.setFill(Color.BLACK);
 //                    }
             }
         }
-        viewerGrid.relocate((VIEWER_WIDTH/2-viewerGrid.getPrefWidth()/2), (VIEWER_HEIGHT/2-viewerGrid.getPrefHeight()/2));
+
+        // Relocate the grid to be more center
+        viewerGrid.relocate((VIEWER_WIDTH/2-viewerGrid.getPrefWidth()/2), ((VIEWER_HEIGHT+100)/2-viewerGrid.getPrefHeight()/2));
         root.getChildren().add(viewerGrid);
             // FIXME Task 5
         }
+
+    void addBoardTile(GridPane board, int tileSize, String coordString, Color color) {
+        if (coordString.equals("")) return;
+        String[] coords = coordString.split(",");
+        Hexagon hex = new Hexagon(tileSize, color);
+        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+        hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+        board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+    }
+
+    void addTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
+        int tileSize2 = tileSize;
+        tileSize2 -= 15;
+        if (coordString.equals("")) return;
+        String[] coords = coordString.split(",");
+        Hexagon hex = new Hexagon(tileSize2, color);
+        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+        hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+        hex.setTranslateX(7 + hex.getTranslateX());
+        board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+    }
+
+    void addLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
+        if (coordString.equals("")) return;
+        String[] coords = coordString.split(",");
+        Label newLabel = new Label(labelName);
+        newLabel.setTextFill(color);
+        newLabel.setFont(Font.font("Sans Serif", 12));
+        if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
+        newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+        newLabel.setTranslateX(20 + newLabel.getTranslateX());
+        board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+    }
+
+    void addSmallLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
+        if (coordString.equals("")) return;
+        String[] coords = coordString.split(",");
+        Label newLabel = new Label(labelName);
+        newLabel.setTextFill(color);
+        newLabel.setFont(Font.font("Sans Serif", 9));
+        if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
+        newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+        newLabel.setTranslateX(9 + newLabel.getTranslateX());
+        board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+    }
+    class Hexagon extends Polygon {
+        public Hexagon(double side, Paint fill) {
+            super(
+                    0.0, side / 2.0,
+                    side / 2.0, side / 4.0,
+                    side / 2.0, -side / 4.0,
+                    0.0, -side / 2.0,
+                    -side / 2.0, -side / 4.0,
+                    -side / 2.0, side / 4.0
+            );
+            this.setFill(fill);
+        }
+    }
 
 
     /**
