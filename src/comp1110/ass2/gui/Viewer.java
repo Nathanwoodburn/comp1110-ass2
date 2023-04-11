@@ -163,7 +163,7 @@ public class Viewer extends Application {
                     for(int i = 0; i < boardHeight; i++){
                         for(int j = 0; j < boardHeight; j++){
                             addBoardTile(viewerGrid, boardHeightPx/boardHeight,
-                                    String.format("%s,%s", i, j), Color.BLUE);
+                                    String.format("%s,%s", i, j), Color.DARKBLUE);
                         }
                     }
                     break;
@@ -371,50 +371,79 @@ public class Viewer extends Application {
             // FIXME Task 5
         }
 
+        // Generating the big board tiles such as the water tiles and the island tiles
     void addBoardTile(GridPane board, int tileSize, String coordString, Color color) {
+        // If the string empty, stop the function
         if (coordString.equals("")) return;
+
         String[] coords = coordString.split(",");
         Hexagon hex = new Hexagon(tileSize, color);
+
+        // if the row is even, translate the tile to the right by tileSize/2
         if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+
+        // Translate the whole tile's Y axis downwards so they connect and there's no gap
         hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
         board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
 
+    // Generating the small tiles such as resources, stones, etc
     void addTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
         int tileSize2 = tileSize;
         tileSize2 -= 15;
+
+        // If the string empty, stop the function
         if (coordString.equals("")) return;
         String[] coords = coordString.split(",");
         Hexagon hex = new Hexagon(tileSize2, color);
+
+        // if the row is even, translate the tile to the right by tileSize/2
         if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+        // Translate the whole tile's Y axis downwards so they connect and there's no gap
         hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+
+        // Translate the tile so they look center
         hex.setTranslateX(7 + hex.getTranslateX());
         board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
 
+    // Adding labels to the resources tiles and stones tiles
     void addLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
+        // If the string empty, stop the function
         if (coordString.equals("")) return;
         String[] coords = coordString.split(",");
         Label newLabel = new Label(labelName);
         newLabel.setTextFill(color);
         newLabel.setFont(Font.font("Sans Serif", 12));
+
+        // Following the tile's pos format
         if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+
+        // Making the label center
         newLabel.setTranslateX(20 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
 
+    // Adding labels to the villagers and settlers
     void addSmallLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
+        // If the string empty, stop the function
         if (coordString.equals("")) return;
         String[] coords = coordString.split(",");
         Label newLabel = new Label(labelName);
         newLabel.setTextFill(color);
         newLabel.setFont(Font.font("Sans Serif", 9));
+
+        // Following the tile's pos format
         if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+
+        // Making the label center
         newLabel.setTranslateX(9 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
+
+    // A hexagon nested class shape
     class Hexagon extends Polygon {
         public Hexagon(double side, Paint fill) {
             super(
