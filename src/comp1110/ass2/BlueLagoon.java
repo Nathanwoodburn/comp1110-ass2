@@ -321,9 +321,11 @@ public class BlueLagoon {
 
                                     // If the moveCoords is on island pos, return false
                                     // if(coordsContainer.contains(moveCoords)) return false;
-                                    if(coordsContainer.contains(moveCoords)) {
-
-                                    }
+//                                    if(coordsContainer.contains(moveCoords)) {
+//
+//                                    }
+                                    if(!isAdjacent(moveCoords, settlerCoords) ||
+                                    !isAdjacent(moveCoords, villageCoords)) return false;
                                     break;
                                 case "S":
 
@@ -331,15 +333,24 @@ public class BlueLagoon {
                             return true;
     }
 
-    boolean isAdjacent (String centerCoords, ArrayList<String> coords) {
-        int[] leftTop = new int[2];
-        int[] rightTop = new int[2];
-        int[] rightCenter = new int[2];
-        int[] leftCenter = new int[2];
-        int[] rightBot = new int[2];
-        int[] leftBot = new int[2];
+    private static boolean isAdjacent(String centerCoords, ArrayList<String> coordsContainer) {
+        String[] coordsSplit = centerCoords.split(",");
+        int mainX = Integer.parseInt(coordsSplit[0]);
+        int mainY = Integer.parseInt(coordsSplit[1]);
 
-        return true;
+        int[][] adjacentModifiers = {
+                {0 + mainX % 2 * -1, -1},
+                {1 + mainX % 2 * -1, -1},
+                {-1, 0}, {1, 0},
+                {0 + mainX % 2 * -1, 1},
+                {1 + mainX % 2 * -1, 1},
+        };
+
+        for (int[] mod : adjacentModifiers)
+            if (coordsContainer.contains(String.format("%s,%s", mainX + mod[0], mainY + mod[1])))
+                return true;
+
+        return false;
     }
 //                        if(parseSplit[i].equals("T")){
 //                            villageCounter++;
