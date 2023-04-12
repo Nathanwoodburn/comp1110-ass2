@@ -210,7 +210,7 @@ public class Viewer extends Application {
                     // Generating the Stone Tiles from the Stone Statement
                 case "s":
                     for(int i = 1; i < parseSplit.length; i++){
-                        addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.GRAY);
+                        addStoneTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.GRAY);
                     }
                     break;
 
@@ -318,7 +318,7 @@ public class Viewer extends Application {
                             String[] coords = parseSplit[i].split(",");
 
                             // Tile generator
-                            addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.PINK);
+                            addStoneTileToBoard(viewerGrid, tileSize, parseSplit[i], Color.PINK);
 
                             // Label generator
                             addSmallLabelToTile(viewerGrid, tileSize, parseSplit[i], Color.BLACK, "Settlers");
@@ -339,7 +339,7 @@ public class Viewer extends Application {
                             String[] coords = parseSplit[i].split(",");
 
                             // Tile generator
-                            addTileToBoard(viewerGrid, tileSize, parseSplit[i], Color. LIGHTGOLDENRODYELLOW);
+                            addStoneTileToBoard(viewerGrid, tileSize, parseSplit[i], Color. LIGHTGOLDENRODYELLOW);
 
                             // Label generator
                             addSmallLabelToTile(viewerGrid, tileSize, parseSplit[i], Color.BLACK, "Village");
@@ -388,7 +388,7 @@ public class Viewer extends Application {
     }
 
     // Generating the small tiles such as resources, stones, etc
-    void addTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
+    void addStoneTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
         int tileSize2 = tileSize;
         tileSize2 -= 15;
 
@@ -407,6 +407,25 @@ public class Viewer extends Application {
         board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
 
+    void addTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
+        int tileSize2 = tileSize;
+        tileSize2 -= 25;
+
+        // If the string empty, stop the function
+        if (coordString.equals("")) return;
+        String[] coords = coordString.split(",");
+        Hexagon hex = new Hexagon(tileSize2, color);
+
+        // if the row is even, translate the tile to the right by tileSize/2
+        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+        // Translate the whole tile's Y axis downwards so they connect and there's no gap
+        hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
+
+        // Translate the tile so they look center
+        hex.setTranslateX(12 + hex.getTranslateX());
+        board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+    }
+
     // Adding labels to the resources tiles and stones tiles
     void addLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
         // If the string empty, stop the function
@@ -421,7 +440,7 @@ public class Viewer extends Application {
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
 
         // Making the label center
-        newLabel.setTranslateX(20 + newLabel.getTranslateX());
+        newLabel.setTranslateX(19.5 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
 
@@ -439,7 +458,7 @@ public class Viewer extends Application {
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
 
         // Making the label center
-        newLabel.setTranslateX(9 + newLabel.getTranslateX());
+        newLabel.setTranslateX(11 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
     }
 
