@@ -1,5 +1,6 @@
 package comp1110.ass2;
 
+import gittest.A;
 import javafx.scene.paint.Color;
 
 import java.sql.Time;
@@ -215,44 +216,155 @@ public class BlueLagoon {
      *      *
      *      *
      *      * c 0 E; S 2,3
+     *
+     *      p 1 42 1 2 3 4 5 S 5,6 8,7 T 1,2
      */
-    public static void main(String[] args) {
-        isMoveValid("a 13 2; c 0 E; i 6 0,0 0,1 0,2 0,3 1,0 1,1 1,2 1,3 1,4 2,0 2,1; i 6 0,5 0,6 0,7 1,6 1,7 1,8 2,6 2,7 2,8 3,7 3,8; i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2; i 8 10,3 10,4 11,0 11,1 11,2 11,3 11,4 11,5 12,0 12,1 12,2 12,3 12,4 12,5; i 10 3,3 3,4 3,5 4,2 4,3 4,4 4,5 5,3 5,4 5,5 5,6 6,3 6,4 6,5 6,6 7,4 7,5 7,6 8,4 8,5; i 10 5,8 5,9 6,8 6,9 7,8 7,9 7,10 8,7 8,8 8,9 9,7 9,8 9,9 10,6 10,7 10,8 11,7 11,8 12,7 12,8; s 0,0 0,5 0,9 1,4 1,8 1,12 2,1 3,5 3,7 3,10 3,12 4,0 4,2 5,9 5,11 6,3 6,6 7,0 7,8 7,12 8,2 8,5 9,0 9,9 10,3 10,6 10,10 11,0 11,5 12,2 12,8 12,11; r C B W P S; p 0 0 0 0 0 0 0 S T; p 1 0 0 0 0 0 0 S T;", "S 2,3" );
-    }
+//    public static void main(String[] args) {
+//        isMoveValid("a 13 2; c 0 E; i 6 0,0 0,1 0,2 0,3 1,0 1,1 1,2 1,3 1,4 2,0 2,1; i 6 0,5 0,6 0,7 1,6 1,7 1,8 2,6 2,7 2,8 3,7 3,8; i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2; i 8 10,3 10,4 11,0 11,1 11,2 11,3 11,4 11,5 12,0 12,1 12,2 12,3 12,4 12,5; i 10 3,3 3,4 3,5 4,2 4,3 4,4 4,5 5,3 5,4 5,5 5,6 6,3 6,4 6,5 6,6 7,4 7,5 7,6 8,4 8,5; i 10 5,8 5,9 6,8 6,9 7,8 7,9 7,10 8,7 8,8 8,9 9,7 9,8 9,9 10,6 10,7 10,8 11,7 11,8 12,7 12,8; s 0,0 0,5 0,9 1,4 1,8 1,12 2,1 3,5 3,7 3,10 3,12 4,0 4,2 5,9 5,11 6,3 6,6 7,0 7,8 7,12 8,2 8,5 9,0 9,9 10,3 10,6 10,10 11,0 11,5 12,2 12,8 12,11; r C B W P S; p 0 0 0 0 0 0 0 S T; p 1 0 0 0 0 0 0 S T;", "S 2,3" );
+//    }
     public static boolean isMoveValid(String stateString, String moveString) {
         if (!isStateStringWellFormed(stateString)) return false;
+        if (!isMoveStringWellFormed(moveString)) return false;
         if (moveString == "") return false; // checking if the players have any pieces left to move
 
         String[] parts = stateString.split("; ?");
+        String currentPhase = "";
+        ArrayList<String> coordsContainer = new ArrayList<>();
+        int numberOfPlayer = 0;
+        String playerId = "";
+        ArrayList<String> settlerCoords = new ArrayList<>();
+        ArrayList<String> villageCoords = new ArrayList<>();
+
         for (String part : parts) {
             String[] parseSplit = part.split(" ");
             String stateCases = parseSplit[0];
+
+//            int numberOfPlayer = 0;
+            int numberOfSettlersPerPlayer = 30;
+            int numberOfVillagesPerPlayer = 5;
+            int settlerCounter;
+            int villageCounter = 0;
+//            String currentPhase = "";
 
             // Collect the island coordinates into 1 single array first
             // Then use .contains for each resource pos and island pos
             // to check whether that pos is unoccupied or not
 
-            ArrayList<String> coordsContainer = new ArrayList<>();
+            // ArrayList<String> coordsContainer = new ArrayList<>();
             switch (stateCases) {
+                case "a":
+                    String playerAmount = parseSplit[2];
+                    numberOfPlayer = Integer.parseInt(playerAmount);
+                    break;
+                case "c":
+                    playerId = parseSplit[1];
+                    // * c 0 E; S 2,3
+                    currentPhase = parseSplit[2];
+                    break;
                 case "i":
                     for (int i = 2; i < parseSplit.length; i++) {
                         String coords = parseSplit[i];
                         coordsContainer.add(coords);
-                        System.out.println(coords);
-                        System.out.println(coordsContainer);
                     }
                     break;
-                case "c":
-                    String currentPhase = parseSplit[2];
-                    switch (currentPhase) {
-                        case "E":
+                case "p":
+                    // Check if there's enough pieces left
+                    if(playerId.equals(parseSplit[1])) {
+                        for (int i = 9; i < parseSplit.length; i++) {
+                            while (!parseSplit[i].equals("T")) {
+                                // settlerCounter = i - 8;
+                                settlerCoords.add(parseSplit[i]);
+                                i++;
+                            }
+                            settlerCounter = settlerCoords.size();
 
-                            break;
-                        case "S":
+                            i++;
+                            while(i < parseSplit.length) {
+                                villageCounter = i - 9 - settlerCounter;
+                                villageCoords.add(parseSplit[i]);
+                                i++;
+                            }
 
-                            break;
+                            switch (numberOfPlayer) {
+                                case 4:
+                                    numberOfSettlersPerPlayer -= 10;
+                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                    if (villageCounter > numberOfVillagesPerPlayer) return false;
+                                    break;
+                                case 3:
+                                    numberOfSettlersPerPlayer -= 5;
+                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                    if(villageCounter > numberOfVillagesPerPlayer) return false;
+                                    break;
+                                case 2:
+                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                    if (villageCounter > numberOfVillagesPerPlayer) return false;
+                            }
+                        }
                     }
                     break;
+            }
+        }
+//        * In the Exploration Phase, the move must either be:
+//           * - A settler placed on any unoccupied sea space
+//        * - A settler or a village placed on any unoccupied land space
+//     *   adjacent to one of the player's pieces.
+                            switch(currentPhase){
+                                case "E":
+                                    String[] split = moveString.split(" ");
+                                    String moveCoords = split[1];
+//                                    System.out.println(moveCoords);
+
+                                    // Water Pos ( if there's a settler on move Coords, return false )
+                                    if(settlerCoords.contains(moveCoords)) return false;
+                                    if(villageCoords.contains(moveCoords)) return false;
+
+                                    // If the moveCoords is on island pos, return false
+                                    // if(coordsContainer.contains(moveCoords)) return false;
+                                    if(coordsContainer.contains(moveCoords)) {
+
+                                    }
+                                    break;
+                                case "S":
+
+                            }
+                            return true;
+    }
+
+    boolean isAdjacent (String centerCoords, ArrayList<String> coords) {
+        int[] leftTop = new int[2];
+        int[] rightTop = new int[2];
+        int[] rightCenter = new int[2];
+        int[] leftCenter = new int[2];
+        int[] rightBot = new int[2];
+        int[] leftBot = new int[2];
+
+        return true;
+    }
+//                        if(parseSplit[i].equals("T")){
+//                            villageCounter++;
+//                            if(villageCounter > 5) return false;
+//                        }
+//
+//                        if (numberOfPlayer == 4) {
+//                            numberOfSettlersPerPlayer -= 10;
+//                            if(parseSplit[i].equals("S")) {
+//                                settlerCounter++;
+//                                if(settlerCounter > 30) return false;
+//                            }
+//                        } else if (numberOfPlayer == 3) {
+//                            numberOfSettlersPerPlayer -= 5;
+//                            if(parseSplit[i].equals("S")) {
+//                                settlerCounter++;
+//                                if(settlerCounter > 35) return false;
+//                            }
+//                        } else if (numberOfPlayer == 2) {
+//                            if(parseSplit[i].equals("S")){
+//                                settlerCounter++;
+//                                if(settlerCounter > 40) return false;
+//                            }
+//                        }
+                    /*
                 case "r":
                     for (int i = 1; i < parseSplit.length; i++) {
                         switch (parseSplit[i]) {
@@ -328,10 +440,8 @@ public class BlueLagoon {
                         }
                     }
                     break;
-            }
-        }
-        return true;
-    }
+
+                     */
 
     /**
      * Given a state string, generate a set containing all move strings playable

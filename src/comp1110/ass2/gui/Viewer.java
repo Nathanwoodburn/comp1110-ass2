@@ -3,20 +3,14 @@ package comp1110.ass2.gui;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -24,8 +18,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.scene.shape.Polygon;
 import javafx.scene.paint.Paint;
-import javax.swing.*;
-import java.awt.*;
 
 public class Viewer extends Application {
 
@@ -161,7 +153,7 @@ public class Viewer extends Application {
 
                     // Generating the water tiles ( the background water map )
                     for(int i = 0; i < boardHeight; i++){
-                        for(int j = 0; j < boardHeight; j++){
+                        for(int j = 0; j < boardHeight - (-1 * i % 2 + 1); j++){
                             addBoardTile(viewerGrid, boardHeightPx/boardHeight,
                                     String.format("%s,%s", i, j), Color.DARKBLUE);
                         }
