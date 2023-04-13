@@ -224,16 +224,23 @@ public class BlueLagoon {
 
         int numberOfPlayer = 0; // Number of player
         String playerId = ""; // Player ID
+        String pStatePlayerId = "";
         ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
         ArrayList<String> villageCoords = new ArrayList<>(); // Placed villags coordinates
+        ArrayList<String> playerSettlerCoords = new ArrayList<>();
+        ArrayList<String> playerVillageCoords = new ArrayList<>();
         String[] split = moveString.split(" ");
 
         String pieceType = split[0]; // Move coord piece type S or T
         String moveCoords = split[1];
+        String[] splitCoords = moveCoords.split(",");
+        int xMoveCoords = Integer.parseInt(splitCoords[1]);
+        int yMoveCoords = Integer.parseInt(splitCoords[0]);
+        int boardHeight = 0;
 
         int numberOfSettlersPerPlayer = 30;
         int numberOfVillagesPerPlayer = 5;
-        int settlerCounter;
+        int settlerCounter = 0;
         int villageCounter = 0;
 
         for (String part : parts) {
@@ -244,6 +251,7 @@ public class BlueLagoon {
 
                 // Get the number of player from here
                 case "a":
+                    boardHeight = Integer.parseInt(parseSplit[1]);
                     String playerAmount = parseSplit[2];
                     numberOfPlayer = Integer.parseInt(playerAmount);
                     break;
@@ -266,70 +274,84 @@ public class BlueLagoon {
 
                 case "p":
                     // Check if there's enough pieces left for that player that is moving
-                    if(playerId.equals(parseSplit[1])) {
-
-                        // Collecting the settler Coords that has been placed
-                        for (int i = 9; i < parseSplit.length; i++) {
-                            while (!parseSplit[i].equals("T")) {
-                                // settlerCounter = i - 8;
-                                settlerCoords.add(parseSplit[i]);
+                    pStatePlayerId = parseSplit[1];
+//                        if (pStatePlayerId.equals(playerId)) {
+                            // Collecting the settler Coords that has been placed
+                            for (int i = 9; i < parseSplit.length; i++) {
+                                while (!parseSplit[i].equals("T")) {
+                                    // settlerCounter = i - 8;
+                                    settlerCoords.add(parseSplit[i]);
+                                    if(pStatePlayerId.equals(playerId)) playerSettlerCoords.add(parseSplit[i]);
+                                    i++;
+                                }
+                                settlerCounter = settlerCoords.size();
                                 i++;
-                            }
-                            settlerCounter = settlerCoords.size();
-                            i++;
 
-                            // Collecting the village coords that has been placed
-                            while(i < parseSplit.length) {
-                                villageCounter = i - 9 - settlerCounter;
-                                villageCoords.add(parseSplit[i]);
-                                i++;
-                            }
+                                // Collecting the village coords that has been placed
+                                while (i < parseSplit.length) {
+                                    villageCounter = i - 9 - settlerCounter;
+                                    villageCoords.add(parseSplit[i]);
+                                    if(pStatePlayerId.equals(playerId)) playerVillageCoords.add(parseSplit[i]);
+                                    i++;
+                                }
 
-                            // Checking the requirement of how many pieces are left
-                            switch (numberOfPlayer) {
-                                case 4:
-                                    numberOfSettlersPerPlayer -= 10;
-                                    if(pieceType == "S") {
-                                        if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                    } else if (pieceType == "T") {
-                                      if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                    }
-                                    break;
-                                case 3:
-                                    numberOfSettlersPerPlayer -= 5;
-                                    if(pieceType == "S") {
-                                        if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                    } else if (pieceType == "T") {
-                                        if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                    }
-                                    break;
-                                case 2:
-                                    if(pieceType == "S") {
-                                        if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                    } else if (pieceType == "T") {
-                                        if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                    }
+                                // Checking the requirement of how many pieces are left
+                                switch (numberOfPlayer) {
+                                    case 4:
+                                        numberOfSettlersPerPlayer -= 10;
+                                        if (pieceType.equals("S")) {
+                                            if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                        } else if (pieceType.equals("T")) {
+                                            if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
+                                        }
+                                        break;
+                                    case 3:
+                                        numberOfSettlersPerPlayer -= 5;
+                                        if (pieceType.equals("S")) {
+                                            if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                        } else if (pieceType.equals("T")) {
+                                            if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
+                                        }
+                                        break;
+                                    case 2:
+                                        if (pieceType.equals("S")) {
+                                            if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                        } else if (pieceType.equals("T")) {
+                                            if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
+                                        }
+                                }
                             }
-                        }
-                    }
+//                        }
                     break;
             }
         }
+
+        // for out of bound stuff
+        if(yMoveCoords % 2 != 0 && yMoveCoords > boardHeight - 1) return false;
+        if(xMoveCoords > boardHeight - 2 + (xMoveCoords % 2)) return false;
 //        * In the Exploration Phase, the move must either be:
 //           * - A settler placed on any unoccupied sea space
 //        * - A settler or a village placed on any unoccupied land space
 //     *   adjacent to one of the player's pieces.
                             switch(currentPhase){
                                 case "E":
-
                                     // If the move pos is an occupied space, return false;
                                     if(settlerCoords.contains(moveCoords)) return false;
                                     if(villageCoords.contains(moveCoords)) return false;
 
-                                    // if it's on land tiles (i.e. island)
-                                    if(coordsContainer.contains(moveCoords)) {
-                                        if (!isAdjacent(moveCoords, settlerCoords) ||
-                                                !isAdjacent(moveCoords, villageCoords)) return false;
+                                    // If the Village is being placed on the sea return false
+                                    if(pieceType.equals("T") && !coordsContainer.contains(moveCoords)) return false;
+
+                                    // if the village is placed on Land and it's not adjacent to any
+                                    // of the pieces return false
+                                    if(pieceType.equals("T") && ((!isAdjacent(moveCoords, playerVillageCoords)) &&
+                                            !isAdjacent(moveCoords, playerSettlerCoords))) return false;
+
+                                    // If settler is on land and it's not adjacent to any of the pieces
+                                    // return false
+                                    if(pieceType.equals("S") && coordsContainer.contains(moveCoords)){
+                                        if(!isAdjacent(moveCoords, playerSettlerCoords) &&
+                                        !isAdjacent(moveCoords, playerVillageCoords)) return false;
                                     }
                                     break;
                                     // * <p>
@@ -344,12 +366,20 @@ public class BlueLagoon {
                                     if(villageCoords.contains(moveCoords)) return false;
 
                                     // As the only move is for the settler, the village is false
-                                if(pieceType == "T" && (isAdjacent(moveCoords, settlerCoords) ||
-                                        isAdjacent(moveCoords, villageCoords))) return false;
-                                if(!coordsContainer.contains(moveCoords) && (!isAdjacent(moveCoords,
-                                        settlerCoords) || !isAdjacent(moveCoords, villageCoords))) return false;
+                                    if(pieceType.equals("T")) return false;
+                                    if(!isAdjacent(moveCoords, playerSettlerCoords) &&
+                                    !isAdjacent(moveCoords, playerVillageCoords)) return false;
 
-
+//                                    if(isAdjacent(moveCoords, playerVillageCoords) ||
+//                                    isAdjacent(moveCoords, playerSettlerCoords)) {
+//
+//                                    }
+//                                    if(!isAdjacent(moveCoords, playerSettlerCoords) &&
+//                                            !isAdjacent(moveCoords, playerVillageCoords)) return false;
+//                                if(pieceType == "T" && (isAdjacent(moveCoords, settlerCoords) ||
+//                                        isAdjacent(moveCoords, villageCoords))) return false;
+//                                if(!coordsContainer.contains(moveCoords) && (!isAdjacent(moveCoords,
+//                                        settlerCoords) || !isAdjacent(moveCoords, villageCoords))) return false;
                             }
                             return true;
     }
@@ -373,107 +403,6 @@ public class BlueLagoon {
 
         return false;
     }
-//                        if(parseSplit[i].equals("T")){
-//                            villageCounter++;
-//                            if(villageCounter > 5) return false;
-//                        }
-//
-//                        if (numberOfPlayer == 4) {
-//                            numberOfSettlersPerPlayer -= 10;
-//                            if(parseSplit[i].equals("S")) {
-//                                settlerCounter++;
-//                                if(settlerCounter > 30) return false;
-//                            }
-//                        } else if (numberOfPlayer == 3) {
-//                            numberOfSettlersPerPlayer -= 5;
-//                            if(parseSplit[i].equals("S")) {
-//                                settlerCounter++;
-//                                if(settlerCounter > 35) return false;
-//                            }
-//                        } else if (numberOfPlayer == 2) {
-//                            if(parseSplit[i].equals("S")){
-//                                settlerCounter++;
-//                                if(settlerCounter > 40) return false;
-//                            }
-//                        }
-                    /*
-                case "r":
-                    for (int i = 1; i < parseSplit.length; i++) {
-                        switch (parseSplit[i]) {
-                            case "C":
-                                i++; // To Skip the "C" itself and go to the numbers in the string
-                                while (!parseSplit[i].equals("B")) {
-                                    String coords = parseSplit[i];
-                                    coordsContainer.add(coords);
-                                    System.out.println(coords);
-                                    System.out.println(coordsContainer);
-                                    i++; // To continue the iteration for the while loops
-                                }
-                                i--; // So that i does not go straight to the coords after the letters instead
-                                // i stop at the letter "B"
-                                break;
-
-                            // Generating Resource: Bamboo Tiles
-                            case "B":
-                                i++; // To Skip the "B" itself and go to the numbers in the string
-                                while (!parseSplit[i].equals("W")) {
-
-                                    String coords = parseSplit[i];
-                                    coordsContainer.add(coords);
-                                    System.out.println(coords);
-                                    System.out.println(coordsContainer);
-                                    i++; // To continue the iteration for the while loops
-                                }
-                                i--; // So that i does not go straight to the coords after the letters instead
-                                // i stop at the letter "W"
-                                break;
-
-                            // Generating Resource: Water tiles
-                            case "W":
-                                i++; // To Skip the "W" itself and go to the numbers in the string
-                                while (!parseSplit[i].equals("P")) {
-                                    String coords = parseSplit[i];
-                                    coordsContainer.add(coords);
-                                    System.out.println(coords);
-                                    System.out.println(coordsContainer);
-                                    i++; // To continue the iteration for the while loops
-                                }
-                                i--; // So that i does not go straight to the coords after the letters instead
-                                // i stop at the letter "P"
-                                break;
-
-                            // Generating Resource: Precious Stone tiles
-                            case "P":
-                                i++; // To Skip the "P" itself and go to the numbers in the string
-                                while (!parseSplit[i].equals("S")) {
-
-                                    String coords = parseSplit[i];
-                                    coordsContainer.add(coords);
-                                    System.out.println(coords);
-                                    System.out.println(coordsContainer);
-                                    i++;  // To continue the iteration for the while loops
-                                }
-                                i--; // So that i does not go straight to the coords after the letters instead
-                                // i stop at the letter "S"
-                                break;
-
-                            // Generating Resource: Statuettes tiles
-                            case "S":
-                                i++; // To Skip the "P" itself and go to the numbers in the string
-                                while (i < parseSplit.length) {
-
-                                    String coords = parseSplit[i];
-                                    coordsContainer.add(coords);
-                                    System.out.println(coords);
-                                    System.out.println(coordsContainer);
-                                    i++; // To continue the iteration for the while loops
-                                }
-                                break;
-                        }
-                    }
-                    break;
-
-                     */
 
     /**
      * Given a state string, generate a set containing all move strings playable
