@@ -229,8 +229,8 @@ public class BlueLagoon {
         ArrayList<String> villageCoords = new ArrayList<>(); // Placed villags coordinates
         ArrayList<String> playerSettlerCoords = new ArrayList<>();
         ArrayList<String> playerVillageCoords = new ArrayList<>();
-        String[] split = moveString.split(" ");
 
+        String[] split = moveString.split(" ");
         String pieceType = split[0]; // Move coord piece type S or T
         String moveCoords = split[1];
         String[] splitCoords = moveCoords.split(",");
@@ -329,29 +329,43 @@ public class BlueLagoon {
         // for out of bound stuff
         if(yMoveCoords % 2 != 0 && yMoveCoords > boardHeight - 1) return false;
         if(xMoveCoords > boardHeight - 2 + (xMoveCoords % 2)) return false;
-//        * In the Exploration Phase, the move must either be:
-//           * - A settler placed on any unoccupied sea space
-//        * - A settler or a village placed on any unoccupied land space
+//* <p>
+//     * In the Exploration Phase, the move must either be:
+//     * - A settler placed on any unoccupied sea space
+//     * - A settler or a village placed on any unoccupied land space
 //     *   adjacent to one of the player's pieces.
                             switch(currentPhase){
                                 case "E":
-                                    // If the move pos is an occupied space, return false;
-                                    if(settlerCoords.contains(moveCoords)) return false;
-                                    if(villageCoords.contains(moveCoords)) return false;
+//                                    System.out.println("Island Coords" + coordsContainer);
+//                                    System.out.println("Settler" + settlerCoords);
+//                                    System.out.println("Village" + villageCoords);
+//
+//                                    System.out.println(pieceType);
+//                                    System.out.println(moveString);
+//                                    System.out.println("If the spot is occupied return true " + (settlerCoords.contains(moveCoords) || villageCoords.contains(moveCoords)));
+//                                    System.out.println("Village placed on sea returns true " + (pieceType.equals("T") && !coordsContainer.contains(moveCoords)));
+//                                    System.out.println("if the village is placed on the land and is adjacent return true" + (pieceType.equals("T") && ((!isAdjacent(moveCoords, playerVillageCoords)) &&
+//                                            (!isAdjacent(moveCoords, playerSettlerCoords)))));
+//                                    System.out.println("If the settler is on land return true" + (pieceType.equals("S") && coordsContainer.contains(moveCoords)));
+//                                    System.out.println("if the settlers are adjacent return true" + (!isAdjacent(moveCoords, playerSettlerCoords) &&
+//                                            !isAdjacent(moveCoords, playerVillageCoords)));
+
+                                    // If the move Coords is an occupied space, return false;
+                                    if(settlerCoords.contains(moveCoords) || villageCoords.contains(moveCoords)) return false;
 
                                     // If the Village is being placed on the sea return false
                                     if(pieceType.equals("T") && !coordsContainer.contains(moveCoords)) return false;
 
                                     // if the village is placed on Land and it's not adjacent to any
                                     // of the pieces return false
-                                    if(pieceType.equals("T") && ((!isAdjacent(moveCoords, playerVillageCoords)) &&
+                                    if(pieceType.equals("T") && (!isAdjacent(moveCoords, playerVillageCoords) &&
                                             !isAdjacent(moveCoords, playerSettlerCoords))) return false;
 
                                     // If settler is on land and it's not adjacent to any of the pieces
                                     // return false
                                     if(pieceType.equals("S") && coordsContainer.contains(moveCoords)){
                                         if(!isAdjacent(moveCoords, playerSettlerCoords) &&
-                                        !isAdjacent(moveCoords, playerVillageCoords)) return false;
+                                                !isAdjacent(moveCoords, playerVillageCoords)) return false;
                                     }
                                     break;
                                     // * <p>
@@ -385,21 +399,25 @@ public class BlueLagoon {
     }
 
     private static boolean isAdjacent(String centerCoords, ArrayList<String> coordsContainer) {
+        // for (String coord : coordsContainer) System.out.println(coord);
+        // if(xMoveCoords > boardHeight - 2 + (xMoveCoords % 2)) return false;
+
         String[] coordsSplit = centerCoords.split(",");
-        int mainX = Integer.parseInt(coordsSplit[0]);
-        int mainY = Integer.parseInt(coordsSplit[1]);
+        int mainX = Integer.parseInt(coordsSplit[1]);
+        int mainY = Integer.parseInt(coordsSplit[0]);
 
         int[][] adjacentModifiers = {
-                {0 + mainX % 2 * -1, -1},
-                {1 + mainX % 2 * -1, -1},
+                {0 - mainY % 2, -1},
+                {1 - mainY % 2, -1},
                 {-1, 0}, {1, 0},
-                {0 + mainX % 2 * -1, 1},
-                {1 + mainX % 2 * -1, 1},
+                {0 - mainY % 2, 1},
+                {1 - mainY % 2, 1},
         };
 
-        for (int[] mod : adjacentModifiers)
-            if (coordsContainer.contains(String.format("%s,%s", mainX + mod[0], mainY + mod[1])))
+        for (int[] mod : adjacentModifiers) {
+            if (coordsContainer.contains(String.format("%s,%s", mainY + mod[1], mainX + mod[0])))
                 return true;
+        }
 
         return false;
     }

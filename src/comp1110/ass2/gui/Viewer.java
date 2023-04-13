@@ -153,7 +153,7 @@ public class Viewer extends Application {
 
                     // Generating the water tiles ( the background water map )
                     for(int i = 0; i < boardHeight; i++){
-                        for(int j = 0; j < boardHeight - (-1 * i % 2 + 1); j++){
+                            for(int j = 0; j < boardHeight - (-1 * i % 2 + 1); j++){
                             addBoardTile(viewerGrid, boardHeightPx/boardHeight,
                                     String.format("%s,%s", i, j), Color.DARKBLUE);
                         }
