@@ -334,7 +334,6 @@ public class BlueLagoon {
 
         // out of bound for height
         if(yMoveCoords > boardHeight - 1) return false;
-        System.out.println("-1");
 
         // if it's even rows, check the number of cols for out of bound (i.e. the width)
         if(yMoveCoords % 2 == 0) {
