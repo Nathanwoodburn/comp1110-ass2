@@ -295,7 +295,7 @@ public class BlueLagoon {
                                     i++;
                                 }
 
-                                // Checking the requirement of how many pieces are left
+                                // Checking the requirement of how many pieces are left //
                                 switch (numberOfPlayer) {
                                     case 4:
                                         numberOfSettlersPerPlayer -= 10;
