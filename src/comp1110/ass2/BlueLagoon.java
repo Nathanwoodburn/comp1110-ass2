@@ -327,8 +327,25 @@ public class BlueLagoon {
         }
 
         // for out of bound stuff
-        if(yMoveCoords % 2 != 0 && yMoveCoords > boardHeight - 1) return false;
-        if(xMoveCoords > boardHeight - 2 + (xMoveCoords % 2)) return false;
+        System.out.println("Y Coord: " + yMoveCoords);
+//        System.out.println(yMoveCoords % 2 != 0 && yMoveCoords > boardHeight - 1);
+        System.out.println("X Coord: " + xMoveCoords);
+//        System.out.println("X " + (xMoveCoords > boardHeight - (xMoveCoords % 2)));
+
+        // out of bound for height
+        if(yMoveCoords > boardHeight - 1) return false;
+        System.out.println("-1");
+
+        // if it's even rows
+        if(yMoveCoords % 2 == 0) {
+            if(xMoveCoords > boardHeight - 2) return false;
+        } else if (yMoveCoords % 2 != 0) {
+            if(xMoveCoords > boardHeight - 1) return false;
+        }
+
+//        if(xMoveCoords > boardHeight - 2 + (xMoveCoords % 2)) return false;
+        System.out.println("0");
+        // even = 11 max, odd = 12 max
 //* <p>
 //     * In the Exploration Phase, the move must either be:
 //     * - A settler placed on any unoccupied sea space
@@ -350,23 +367,34 @@ public class BlueLagoon {
 //                                    System.out.println("if the settlers are adjacent return true" + (!isAdjacent(moveCoords, playerSettlerCoords) &&
 //                                            !isAdjacent(moveCoords, playerVillageCoords)));
 
+                                    System.out.println("1");
+
                                     // If the move Coords is an occupied space, return false;
                                     if(settlerCoords.contains(moveCoords) || villageCoords.contains(moveCoords)) return false;
 
+                                    System.out.println("2");
+
                                     // If the Village is being placed on the sea return false
                                     if(pieceType.equals("T") && !coordsContainer.contains(moveCoords)) return false;
+
+                                    System.out.println("3");
 
                                     // if the village is placed on Land and it's not adjacent to any
                                     // of the pieces return false
                                     if(pieceType.equals("T") && (!isAdjacent(moveCoords, playerVillageCoords) &&
                                             !isAdjacent(moveCoords, playerSettlerCoords))) return false;
 
+                                    System.out.println("4");
+
                                     // If settler is on land and it's not adjacent to any of the pieces
                                     // return false
+
                                     if(pieceType.equals("S") && coordsContainer.contains(moveCoords)){
                                         if(!isAdjacent(moveCoords, playerSettlerCoords) &&
                                                 !isAdjacent(moveCoords, playerVillageCoords)) return false;
                                     }
+
+                                    System.out.println("5");
                                     break;
                                     // * <p>
                                 //     * In the Settlement Phase, the move must be:
@@ -383,17 +411,6 @@ public class BlueLagoon {
                                     if(pieceType.equals("T")) return false;
                                     if(!isAdjacent(moveCoords, playerSettlerCoords) &&
                                     !isAdjacent(moveCoords, playerVillageCoords)) return false;
-
-//                                    if(isAdjacent(moveCoords, playerVillageCoords) ||
-//                                    isAdjacent(moveCoords, playerSettlerCoords)) {
-//
-//                                    }
-//                                    if(!isAdjacent(moveCoords, playerSettlerCoords) &&
-//                                            !isAdjacent(moveCoords, playerVillageCoords)) return false;
-//                                if(pieceType == "T" && (isAdjacent(moveCoords, settlerCoords) ||
-//                                        isAdjacent(moveCoords, villageCoords))) return false;
-//                                if(!coordsContainer.contains(moveCoords) && (!isAdjacent(moveCoords,
-//                                        settlerCoords) || !isAdjacent(moveCoords, villageCoords))) return false;
                             }
                             return true;
     }
