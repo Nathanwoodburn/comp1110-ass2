@@ -393,6 +393,20 @@ public class BlueLagoon {
         return false;
     }
 
+    /**
+     * This method is to check if the move is valid for the current player
+     * This is a very trimmed down version of the isMoveValid method
+     *
+     * @param pieceType Type of piece being placed (S = Settler, T = Village)
+     * @param moveCoords The coords of the piece being placed (i.e. 1,2)
+     * @param currentPhase The current phase of the game (E = Exploration, S = Settlement)
+     * @param coordsContainer The coords of the land in a ArrayList of Strings
+     * @param settlerCoords The coords of the Settlers in a ArrayList of Strings
+     * @param villageCoords The coords of the Villages in a ArrayList of Strings
+     * @param playerSettlerCoords The coords of the Settlers of the current player in a ArrayList of Strings
+     * @param playerVillageCoords The coords of the Villages of the current player in a ArrayList of Strings
+     * @return boolean True if the move is valid, false if the move is invalid
+     */
 
     public static boolean isMoveValidTrim(String pieceType, String moveCoords,
                                           String currentPhase, ArrayList<String> coordsContainer,
@@ -462,10 +476,6 @@ public class BlueLagoon {
         ArrayList<String> playerSettlerCoords = new ArrayList<>(); // The current Player's settler coords
         ArrayList<String> playerVillageCoords = new ArrayList<>(); // The current Player's Village coords
 
-        int numberOfSettlersPerPlayer = 30;
-        int numberOfVillagesPerPlayer = 5;
-        int settlerCounter = 0;
-        int villageCounter = 0;
         for (String pState:pStates) {
 
             String[] parseSplit = pState.split(" ");
@@ -482,15 +492,10 @@ public class BlueLagoon {
                     if (pStatePlayerId.equals(currentPlayer)) playerSettlerCoords.add(parseSplit[i]);
                     i++;
                 }
-
-                // If the current player ID is the same as the placed settler's player ID
-                // iterate the settlerCounter
-                if (pStatePlayerId.equals(currentPlayer)) settlerCounter = playerSettlerCoords.size();
                 i++;
 
                 // Collecting the village coords that has been placed
                 while (i < parseSplit.length) {
-                    if (pStatePlayerId.equals(currentPlayer)) villageCounter = i - 9 - settlerCounter;
                     villageCoords.add(parseSplit[i]); // Store all the village Coords
 
                     // If the current player ID is the same as the placed Village's player ID
@@ -500,8 +505,6 @@ public class BlueLagoon {
                 }
             }
         }
-
-
 
         // Get placed pieces
         String settlersPlaced = playerData.substring(playerData.indexOf("S") + 2, playerData.indexOf("T"));
