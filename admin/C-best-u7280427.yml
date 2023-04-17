@@ -38,19 +38,13 @@ declaration: >-
 # you want to just submit methods):
 class:
   - Viewer.java
-  - Hexagon
+  - Hexagon inside Viewer.java [https://gitlab.cecs.anu.edu.au/u7156831/comp1110-ass2/-/blob/master/src/comp1110/ass2/gui/Viewer.java#L458-470]
 
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
 method:
-  - isMoveStringWellFormed
-  - displayState
-  - addBoardTile
-  - addStoneTileToBoard
-  - addTileToBoard
-  - addLabelToTile
-  - addSmallLabelToTile
-  - isMoveValid
+  - https://gitlab.cecs.anu.edu.au/u7156831/comp1110-ass2/-/blob/master/src/comp1110/ass2/BlueLagoon.java#L206-373 [isMoveValid]
+  - https://gitlab.cecs.anu.edu.au/u7156831/comp1110-ass2/-/blob/master/src/comp1110/ass2/gui/Viewer.java#L125-364 [displayState]
 
 # sign *your* name and uid here
 name: Immanuel Alvaro Bhirawa
