@@ -1,13 +1,6 @@
 package comp1110.ass2;
 
-import gittest.A;
-import javafx.scene.paint.Color;
-
-import java.sql.Time;
-import java.text.NumberFormat;
 import java.util.*;
-import java.lang.*;
-import java.util.stream.Stream;
 
 public class BlueLagoon {
     // The Game Strings for five maps have been created for you.
@@ -57,7 +50,16 @@ public class BlueLagoon {
         }
 
         // Check if the state string matches the regex string
-        return stateString.matches(matchString);
+        if (!stateString.matches(matchString)) return false;
+
+        // Check that there is one and only one of each player id
+        // This fixed test 2-3 of D2DTests.testIsStateStringWellFormed
+        int numPlayers = Integer.parseInt(stateString.substring(stateString.indexOf(";") - 1, stateString.indexOf(";")));
+        for (int i = 0; i < numPlayers; i++) {
+            if (stateString.length() - stateString.replaceAll("p "+i,"").length() != 3) return false;
+        }
+
+        return true;
     }
 
     /**
@@ -199,8 +201,8 @@ public class BlueLagoon {
      * Importantly, players can now only play on the sea if it is
      * adjacent to a piece they already own.
      *
-//     * @param stateString a string representing a game state
-//     * @param moveString a string representing the current player's move
+     * @param stateString a string representing a game state
+     * @param moveString a string representing the current player's move
      * @return true if the current player can make the move and false otherwise
      */
     public static boolean isMoveValid(String stateString, String moveString) {
@@ -524,7 +526,7 @@ public class BlueLagoon {
         ArrayList<String> coordsContainer = new ArrayList<>();
 
         for (String island : islands) {
-            if (!island.substring(0, 2).equals("i ")) continue;
+            if (!island.startsWith("i ")) continue;
             coordsContainer.addAll(Arrays.asList(island.substring(4).split(" ")));
         }
 
