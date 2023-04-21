@@ -83,6 +83,7 @@ public class BlueLagoon {
         // return false
     }
 
+
     /**
      * Given a state string which is yet to have resources distributed amongst the stone circles,
      * randomly distribute the resources and statuettes between all the stone circles.

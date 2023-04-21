@@ -3,6 +3,8 @@ package comp1110.ass2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLOutput;
+
 /**
  * This class is used to test BlueLagoon methods/functions.
  * This was completed for Task D2D.
@@ -67,6 +69,40 @@ public class D2DTests {
         Errors found by this test are:
         1. The method did not check if the player was included twice.
         */
+    }
+
+    @Test
+    public void testIsMoveStringWellFormed(){
+        String moveString = "S 10,11";
+        Assertions.assertTrue(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed because \"S 10,11\" is DEEMED an invalid move String even though it should be valid");
+        System.out.println("Test moveString is valid");
+
+        // updating the move string to a new one
+        moveString = "T 4,5";
+        Assertions.assertTrue(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed because \"T 4,5\" is DEEMED an invalid move String even though it should be valid");
+        System.out.println("Test 2 passed");
+
+        moveString = "A 1,2";
+        Assertions.assertFalse(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed \"A 1,2\" is DEEMED a valid move string even though it should be invalid because the first element is supposed to be only either `S` or `T`");
+        System.out.println("Test 3 passed");
+
+        moveString = "S 12";
+        Assertions.assertFalse(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed because \"S 12\" is DEEMED a valid move string even though it should be invalid because there should be a `,` between the numbers `1` and `2` to differentiate between rows and cols");
+        System.out.println("Test 4 passed");
+
+        moveString = "S 1, 2";
+        Assertions.assertFalse(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed because \"S 1, 2\" is DEEMED a valid move string even though it should be invalid because there should not be any whitespace after `,`");
+        System.out.println("Test 5 passed");
+
+        moveString = "T  1,2";
+        Assertions.assertFalse(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed because \"T  1,2\" is DEEMED a valid move string even though it should be invalid because there should not be 2 whitespaces after the first element (i.e. after `T`)");
+        System.out.println("Test 6 passed");
+
+        moveString = "S 3 ,4";
+        Assertions.assertFalse(BlueLagoon.isMoveStringWellFormed(moveString), "The test failed because \"S  3,4\" is DEEMED a valid move string even though it should be invalid because there should not be a whitespace after the first number");
+        System.out.println("Test 7 passed");
+        System.out.println("All Tests passed");
+
     }
 
 }
