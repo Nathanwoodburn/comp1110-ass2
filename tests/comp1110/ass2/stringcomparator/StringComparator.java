@@ -133,14 +133,14 @@ public class StringComparator {
 
     private void checkGeneralString(List<String> statementsA, List<String> statementsB, List<String> errors) {
         // Check for the number of statements
-        if (checks.get(ResultType.General).contains("num_statements") &&
+        if (checks.get(ResultType.General).contains("numStatements") &&
                 statementsA.size() != statementsB.size())
         {
             errors.add("Strings contain different numbers of statements");
         }
 
         // Check if there are any unrecognised statement IDs
-        if (checks.get(ResultType.General).contains("unrecognised_statements"))
+        if (checks.get(ResultType.General).contains("unrecognisedStatements"))
         {
             List<String> unrecognised = statementsB
                     .stream()
