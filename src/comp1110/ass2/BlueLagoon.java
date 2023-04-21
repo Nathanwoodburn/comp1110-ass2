@@ -50,7 +50,16 @@ public class BlueLagoon {
         }
 
         // Check if the state string matches the regex string
-        return stateString.matches(matchString);
+        if (!stateString.matches(matchString)) return false;
+
+        // Check that there is one and only one of each player id
+        // This fixed test 2-3 of D2DTests.testIsStateStringWellFormed
+        int numPlayers = Integer.parseInt(stateString.substring(stateString.indexOf(";") - 1, stateString.indexOf(";")));
+        for (int i = 0; i < numPlayers; i++) {
+            if (stateString.length() - stateString.replaceAll("p "+i,"").length() != 3) return false;
+        }
+
+        return true;
     }
 
     /**
