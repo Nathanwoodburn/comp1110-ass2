@@ -192,8 +192,8 @@ public class BlueLagoon {
      * Importantly, players can now only play on the sea if it is
      * adjacent to a piece they already own.
      *
-//     * @param stateString a string representing a game state
-//     * @param moveString a string representing the current player's move
+     * @param stateString a string representing a game state
+     * @param moveString a string representing the current player's move
      * @return true if the current player can make the move and false otherwise
      */
     public static boolean isMoveValid(String stateString, String moveString) {
