@@ -1,13 +1,6 @@
 package comp1110.ass2;
 
-import gittest.A;
-import javafx.scene.paint.Color;
-
-import java.sql.Time;
-import java.text.NumberFormat;
 import java.util.*;
-import java.lang.*;
-import java.util.stream.Stream;
 
 public class BlueLagoon {
     // The Game Strings for five maps have been created for you.
@@ -524,7 +517,7 @@ public class BlueLagoon {
         ArrayList<String> coordsContainer = new ArrayList<>();
 
         for (String island : islands) {
-            if (!island.substring(0, 2).equals("i ")) continue;
+            if (!island.startsWith("i ")) continue;
             coordsContainer.addAll(Arrays.asList(island.substring(4).split(" ")));
         }
 
