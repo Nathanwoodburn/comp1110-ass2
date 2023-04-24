@@ -487,7 +487,7 @@ public class State {
                 }
                 if (playerPieces[i] == playerPieces[playerID]) ties++;
             }
-            if (ishighest) {
+            if (ishighest && playerPieces[playerID] > 0) {
                 if (ties > 0){
                     score += island.getBonus()/(ties + 1);
                 }
