@@ -112,88 +112,6 @@ public class BlueLagoon {
         state.distributeResources();
         return state.toString();
     }
-        // Old distributeResources method
-        /*
-        // Check if the stateString is well-formed
-        if (!isStateStringWellFormed(stateString)) return stateString;
-
-        // Grab the stone circles from the stateString
-        String stoneCircles = stateString.substring(stateString.indexOf("s") + 2, stateString.indexOf("r") - 2);
-
-        // Split the stone circles into an array of cords
-        String[] stoneCircleCords = stoneCircles.split(" ");
-
-        // Check if there are 32 stone circles
-        if (stoneCircleCords.length != 32) return stateString;
-
-        // Create a random object and an arrays and list to shuffle the stone circles
-        Random rand = new Random();
-
-        // Number of times to shuffle the stone circles (can be changed)
-        int shuffle_number = 3;
-
-        // Create a copy of the stone circle array to shuffle
-        String[] stoneCircleRandom = stoneCircleCords;
-
-        // Shuffle the stone circles the specified number of times
-        for (int i = 0; i < shuffle_number; i++) {
-            // Create a temporary array to store the shuffled stone circles
-            String[] tempStoneCircleRandom = new String[32];
-            // Create a list to store the used cords (to avoid duplicates)
-            List<String> usedCords = new ArrayList<String>();
-
-            // Shuffle the array
-            for (int j = 0; j < 32; j++) {
-                // For 0-31 generate a random cord from the stone circle array and check if it has been used
-                int randomIndex = rand.nextInt(31);
-                while (usedCords.contains(stoneCircleCords[randomIndex])) {
-                    // If it has been used, try the next in line
-                    if (randomIndex == 31) {
-                        randomIndex = 0;
-                    }
-                    else randomIndex++;
-                }
-                // If it hasn't been used, add it to the new array
-                tempStoneCircleRandom[j] = stoneCircleRandom[randomIndex];
-                usedCords.add(stoneCircleCords[randomIndex]);
-            }
-            // Replace the old array with the new one
-            stoneCircleRandom = tempStoneCircleRandom;
-        }
-
-
-        // Create a string to store the new resources state
-        String newResourcesState = "r";
-
-        // Create an array for each resource type
-        char[] resources = {'C', 'B', 'W', 'P'};
-
-        // Create a variable to keep track of how many resources have been sorted
-        int numSorted = 0;
-
-        // For each resource type
-        for (char r:resources){
-            newResourcesState += " " + r;
-            // Assign 6 to a stone circle
-            for (int i = 0; i < 6; i++){
-                newResourcesState += " " + stoneCircleRandom[numSorted];
-                numSorted++;
-            }
-        }
-
-        // Assign 8 statuettes to a stone circle
-        newResourcesState += " S";
-        for (int i = 0; i < 8; i++){
-            newResourcesState += " " + stoneCircleRandom[numSorted];
-            numSorted++;
-        }
-
-        // Replace the old resources state with the new one
-        stateString = stateString.replace("r C B W P S", newResourcesState);
-
-        return stateString;
-        }
-        */
 
     // endregion
 
@@ -687,7 +605,15 @@ public class BlueLagoon {
     // "p 1 42 1 2 3 4 5 S 5,6 8,7 T 1,2;"
 
     public static int[] calculateTotalIslandsScore(String stateString) {
-        // ArrayList<Integer> islandCoords = islandCoords(stateString);
+        State state = new State(stateString);
+        int[] scores = new int[state.getNumPlayers()];
+        for (int i = 0; i < state.getNumPlayers(); i++) {
+            scores[i] = state.scoreTotalIslands(i);
+        }
+        return scores;
+
+
+        /*// ArrayList<Integer> islandCoords = islandCoords(stateString);
 
         String[] parts = stateString.split("; ?");
 
@@ -747,7 +673,7 @@ public class BlueLagoon {
             // check the size of the arrayList to set the size for the int[]
         }
 
-        return new int[]{0, 0}; // FIXME Task 11
+        return new int[]{0, 0}; // FIXME Task 11*/
     }
 
     //             for (int i = 9; i < parseSplit.length; i++) {
@@ -791,7 +717,12 @@ public class BlueLagoon {
      * the score for each player
      */
     public static int[] calculateIslandLinksScore(String stateString){
-         return new int[]{0, 0}; // FIXME Task 11
+        State state = new State(stateString);
+        int[] scores = new int[state.getNumPlayers()];
+        for (int i = 0; i < state.getNumPlayers(); i++) {
+            scores[i] = state.scoreLinks(i);
+        }
+        return scores;
     }
 
     /**
@@ -814,7 +745,12 @@ public class BlueLagoon {
      * of the score for each player
      */
     public static int[] calculateIslandMajoritiesScore(String stateString){
-         return new int[]{0, 0}; // FIXME Task 11
+        State state = new State(stateString);
+        int[] scores = new int[state.getNumPlayers()];
+        for (int i = 0; i < state.getNumPlayers(); i++) {
+            scores[i] = state.scoreMajorities(i);
+        }
+        return scores;
     }
 
     /**
@@ -841,7 +777,12 @@ public class BlueLagoon {
      * portions of the score for each player
      */
     public static int[] calculateResourcesAndStatuettesScore(String stateString){
-         return new int[]{0, 0}; // FIXME Task 11
+        State state = new State(stateString);
+        int[] scores = new int[state.getNumPlayers()];
+        for (int i = 0; i < state.getNumPlayers(); i++) {
+            scores[i] = state.scoreResources(i)+state.scoreStatuettes(i);
+        }
+        return scores;
     }
 
     /**
@@ -856,7 +797,12 @@ public class BlueLagoon {
      * @return an integer array containing the calculated scores for each player
      */
     public static int[] calculateScores(String stateString){
-         return new int[]{0, 0}; // FIXME Task 11
+        State state = new State(stateString);
+        int[] scores = new int[state.getNumPlayers()];
+        for (int i = 0; i < state.getNumPlayers(); i++) {
+            scores[i] = state.createScore(i);
+        }
+        return scores;
     }
 
     /**

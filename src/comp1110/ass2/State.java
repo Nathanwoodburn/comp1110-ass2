@@ -351,6 +351,13 @@ public class State {
     }
 
     /**
+     * Start next phase
+     */
+    public void nextPhase() {
+        currentPhase++;
+    }
+
+    /**
      * Place a piece on the board. Uses current turn's player
      * @param coord Coord coordinate to place piece
      * @param type char type of piece
@@ -400,28 +407,14 @@ public class State {
 
     /**
      * Score for that phase
+     * This does not automatically move to the next phase
      */
     public void scorePhase() {
         for (Player p: players) {
             p.addScore(createScore(p.getPlayerID()));
         }
-        if (getCurrentPhase() == 'E') {
-            currentPhase++;
-        }
-        else {
-            // Game over
-            finalScore();
-            currentPhase++;
-        }
     }
 
-    /**
-     * Final score
-     *
-     */
-    public void finalScore() {
-
-    }
     /**
      * Get score of player ID based on current phase and game state
      * @param playerID int player ID base 0
@@ -429,14 +422,11 @@ public class State {
      */
     public int createScore(int playerID) {
         int score = 0;
-        if (getCurrentPhase() == 'E') {
-            // Score exploration phase
-            score += scoreTotalIslands(playerID);
-            score += scoreMajorities(playerID);
-        }
-        else {
-
-        }
+        score += scoreTotalIslands(playerID);
+        score += scoreLinks(playerID);
+        score += scoreMajorities(playerID);
+        score += scoreResources(playerID);
+        score += scoreStatuettes(playerID);
         return score;
     }
 
@@ -484,7 +474,7 @@ public class State {
         for (Island island:islands){
             int[] playerPieces = new int[getNumPlayers()];
 
-            for (int i = 0; i < getNumPlayers()-1; i++){
+            for (int i = 0; i < getNumPlayers(); i++){
                 playerPieces[i] = players[i].getNumPiecesOnIsland(island);
             }
             boolean ishighest = true;

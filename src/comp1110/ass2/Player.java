@@ -272,17 +272,6 @@ public class Player {
             i++;
         }
     }
-
-    private int maxRow(Coord[] coords){
-        int maxRow = 0;
-        for (Coord coord : coords) {
-            if (coord.getY() > maxRow) {
-                maxRow = coord.getY();
-            }
-        }
-
-        return maxRow;
-    }
     private int maxCol(Coord[] coords){
         int maxCol = 0;
         for (Coord coord : coords) {
@@ -307,7 +296,6 @@ public class Player {
             int row = 0;
             int col = 0;
             int i = 0;
-            int maxrow = maxRow(settlers);
             int maxcol = maxCol(settlers);
 
             while (settlersCoords[settlers.length - 1] == null) {
@@ -330,7 +318,6 @@ public class Player {
             int row = 0;
             int col = 0;
             int i = 0;
-            int maxrow = maxRow(villages);
             int maxcol = maxCol(villages);
 
             while (villagesCoords[villages.length-1] == null){
