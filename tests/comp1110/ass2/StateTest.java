@@ -76,11 +76,15 @@ public class StateTest {
 
         // Test endPhase
         while (!state.isPhaseOver()) {
-            if (!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
+            if (!state.getCurrentPlayer().canPlay(state)) {
+                System.out.println("Player " + state.getCurrentPlayerID() + " can't play");
+                state.nextPlayer();
+            }
             state.getCurrentPlayer().doRandomMove(state);
         }
         state.scorePhase();
-        System.out.println(state);
+        System.out.println(state.getCurrentPhase());
+        System.out.println(state.scoreString());
 
 
     }

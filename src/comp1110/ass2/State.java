@@ -558,13 +558,12 @@ public class State {
      * @return int score
      */
     public int scoreStatuettes(int playerID) {
-        int score = 0;
-        return score; //! TODO
+        return players[playerID].getNumResource('S') * 4;
     }
 
     // endregion
 
-
+    // region String conversion
     @Override
     public String toString() {
         String str = "a " + boardHeight + " " + getNumPlayers() + "; c " + getCurrentPlayerID() + " " + getCurrentPhase() + "; ";
@@ -581,7 +580,7 @@ public class State {
         for (char type : types) {
             str += " " + type;
             for (Resource resource : resources) {
-                if (resource.getType() == type) str += " " + resource.getCoord().toString();
+                if (resource.getType() == type && !resource.isClaimed()) str += " " + resource.getCoord().toString();
             }
         }
         str += ";";
@@ -590,5 +589,15 @@ public class State {
         }
         return str;
     }
+
+    public String scoreString() {
+        String str = "";
+        for (Player player : players) {
+            str += "Player " + player.getPlayerID() + "'s score is " + player.getScore() + "\n";
+        }
+        return str.substring(0, str.length() - 1);
+    }
+
+    // endregion
 
 }

@@ -616,7 +616,8 @@ public class BlueLagoon {
      * @return true if the state is at the end of either phase and false otherwise
      */
     public static boolean isPhaseOver(String stateString){
-         return false; // FIXME Task 9
+         State state = new State(stateString);
+         return state.isPhaseOver();
     }
 
     /**
@@ -631,7 +632,14 @@ public class BlueLagoon {
      * @return a new state string achieved by placing the move on the board
      */
     public static String placePiece(String stateString, String moveString){
-         return ""; // FIXME Task 10
+        State state = new State(stateString);
+        char pieceType = moveString.charAt(0);
+        String coordStr = moveString.substring(2);
+        int x = Integer.parseInt(coordStr.split(",")[0]);
+        int y = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(x, y);
+        state.placePiece(coord, pieceType);
+        return state.toString();
     }
 
 

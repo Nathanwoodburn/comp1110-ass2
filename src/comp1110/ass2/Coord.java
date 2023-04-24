@@ -13,7 +13,7 @@ public class Coord {
      * @param x x coordinate
      * @param y y coordinate
      */
-    public Coord(int x, int y) {
+    public Coord(int y, int x) {
         this.x = x;
         this.y = y;
     }
@@ -65,6 +65,6 @@ public class Coord {
      */
     @Override
     public String toString() {
-        return x + "," + y;
+        return y + "," + x;
     }
 }

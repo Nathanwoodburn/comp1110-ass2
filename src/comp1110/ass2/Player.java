@@ -273,16 +273,90 @@ public class Player {
         }
     }
 
+    private int maxRow(Coord[] coords){
+        int maxRow = 0;
+        for (Coord coord : coords) {
+            if (coord.getY() > maxRow) {
+                maxRow = coord.getY();
+            }
+        }
+
+        return maxRow;
+    }
+    private int maxCol(Coord[] coords){
+        int maxCol = 0;
+        for (Coord coord : coords) {
+            if (coord.getX() > maxCol) {
+                maxCol = coord.getX();
+            }
+        }
+        return maxCol;
+    }
+
+
 
 
     @Override
     public String toString() {
         String str = "p " + playerID + " " + score + " " + numCoconuts + " " + numBamboo + " " + numWater + " " + numPreciousStones + " " + numStatuette + " S";
-        for (Coord coord : settlers) {
+
+
+        // Get the coords of the player's pieces in row major order
+        Coord[] settlersCoords = new Coord[settlers.length];
+        if (settlers.length != 0) {
+            int row = 0;
+            int col = 0;
+            int i = 0;
+            int maxrow = maxRow(settlers);
+            int maxcol = maxCol(settlers);
+
+            while (settlersCoords[settlers.length - 1] == null) {
+                for (Coord coord : settlers) {
+                    if (coord.getX() == col && coord.getY() == row) {
+                        settlersCoords[i] = coord;
+                        i++;
+                    }
+                }
+                col++;
+                if (col > maxcol) {
+                    col = 0;
+                    row++;
+                }
+            }
+        }
+
+        Coord[] villagesCoords = new Coord[villages.length];
+        if (villages.length != 0) {
+            int row = 0;
+            int col = 0;
+            int i = 0;
+            int maxrow = maxRow(villages);
+            int maxcol = maxCol(villages);
+
+            while (villagesCoords[villages.length-1] == null){
+                for (Coord coord : villages) {
+                    if (coord.getX() == col && coord.getY() == row) {
+                        villagesCoords[i] = coord;
+                        i++;
+                    }
+                }
+                col++;
+                if (col > maxcol) {
+                    col = 0;
+                    row++;
+                }
+            }
+        }
+
+
+
+
+        for (Coord coord : settlersCoords) {
             str += " " + coord.toString();
+
         }
         str += " T";
-        for (Coord coord : villages) {
+        for (Coord coord : villagesCoords) {
             str += " " + coord.toString();
         }
         return str;
