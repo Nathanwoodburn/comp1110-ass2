@@ -9,6 +9,8 @@ import java.util.Set;
  * This includes the player's ID, score, resources, settlers and villages
  */
 public class Player {
+
+    // region Setup
     final int playerID;
     private int score;
     private int numCoconuts;
@@ -35,6 +37,8 @@ public class Player {
         this.settlers = new Coord[0];
         this.villages = new Coord[0];
     }
+    // endregion
+    // region Getters and Setters
 
     /**
      * Get the player's ID
@@ -220,6 +224,8 @@ public class Player {
         return numPieces;
     }
 
+    // endregion
+
     /**
      * Check if player is able to do any moves
      * @return true if player can do any moves, false otherwise
@@ -229,12 +235,14 @@ public class Player {
         return validMoves.size() > 0;
     }
 
+    // region Auto Player
     /**
      * Do a Random Move
      * @param state State to do the move on
      */
     public void doRandomMove(State state) {
-        if (state.getCurrentPlayerID() != playerID) {
+        if (state.getCurrentPlayer() != this) {
+            System.out.println("Not this player's turn");
             return;
         }
         Set<String> validMoves = BlueLagoon.generateAllValidMoves(state.toString());
@@ -258,6 +266,144 @@ public class Player {
             i++;
         }
     }
+
+    /**
+     * Do a calculated move
+     * @param state State to do the move on
+     */
+    public String createAIMove(State state){
+        if (state.getCurrentPlayer() != this){
+            System.out.println("Not this player's turn");
+            return "";
+        }
+        Set<String> validMoves = BlueLagoon.generateAllValidMoves(state.toString());
+        if (validMoves.size() == 0){
+            System.out.println("No valid moves");
+            return "";
+        }
+        int islandCount = 0;
+        for (Island island : state.getIslands()) {
+            if (this.getNumPiecesOnIsland(island)>0) islandCount++;
+        }
+
+        String bestMove = "";
+        int bestScore = -1;
+        for (String move : validMoves){
+            int score = calculateMoveScore(state, move,islandCount);
+            if (score > bestScore){
+                bestScore = score;
+                bestMove = move;
+            }
+        }
+        return bestMove;
+    }
+
+    /**
+     * Do a calculated move
+     */
+    public void doAIMove(State state){
+
+        String bestMove = createAIMove(state);
+        char pieceType = bestMove.charAt(0);
+        String coordStr = bestMove.substring(2);
+        int x = Integer.parseInt(coordStr.split(",")[0]);
+        int y = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(x, y);
+        state.placePiece(coord, pieceType);
+        state.nextPlayer();
+    }
+
+    /**
+     * Calculate the score of a move
+     * The score is calculated only with public information
+     * The score is calculated by:
+     * 1. If the move gives the player some resources (10 points)
+     * 2. If the move gives the player a new island (1 point) or if below rules are met don't give a point
+     * 3. If this move makes the player have the pieces on 7-8 islands (10-20 points)
+     * 4. If this move makes the player have the most pieces on an island (island bonus points)
+     *
+     * @param state State to do the move on
+     * @param move String move to calculate the score of
+     * @return int score of the move
+     */
+    public int calculateMoveScore(State state, String move, int currentIslandCount){
+        int score = 0;
+        String coordStr = move.substring(2);
+        int y = Integer.parseInt(coordStr.split(",")[0]);
+        int x = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(y, x);
+
+        // Check if this will give player some resources
+        if (state.isStone(coord)){
+            score += 10;
+        }
+
+        // Check if this is a new island or will make player have the most pieces on the island
+        for (Island island:state.getIslands()) {
+            if (!island.containsCoord(coord)) continue;
+            if (this.getNumPiecesOnIsland(island) == 0) {
+                if (currentIslandCount == 7) score += 20;
+                else if (currentIslandCount == 6) score += 10;
+                else score += 1;
+            }
+            // Check if adding this piece will make player have the most pieces on the island
+            int ties = 0;
+            int wins = 0;
+            int loses = 0;
+            int myPieces = this.getNumPiecesOnIsland(island);
+            for (int i = 0; i < state.getNumPlayers(); i++) {
+                if (i == this.getPlayerID()) {
+                    continue;
+                }
+                int otherPlayerPieces = state.getPlayer(i).getNumPiecesOnIsland(island);
+                if (otherPlayerPieces > myPieces+1) {
+                    loses++;
+                } else
+                if (otherPlayerPieces == myPieces) {
+                    wins++;
+                } else if (otherPlayerPieces == myPieces + 1) {
+                    ties++;
+                }
+            }
+
+            if (loses == 0){
+                if (ties > 0){
+                    score += island.getBonus()/(ties+1);
+                }
+                else{
+                    score += island.getBonus();
+                }
+            }
+        }
+
+        // Check if player needs more islands
+        if (score == 0) {
+            if (currentIslandCount < 8 ){
+                // Check if there is an island adjacent to this move
+                for (Island island : state.getIslands()) {
+                    if (island.containsCoord(new Coord(coord.getX() + 1, coord.getY()))
+                            || island.containsCoord(new Coord(coord.getX() - 1, coord.getY()))
+                            || island.containsCoord(new Coord(coord.getX(), coord.getY() + 1))
+                            || island.containsCoord(new Coord(coord.getX(), coord.getY() - 1))) {
+                        score += 1;
+                        if (state.getCurrentPhase() == 'E'){
+                            score += 4;
+                        }
+                    }
+                }
+
+            }
+        }
+        return score;
+    }
+
+    // endregion
+
+    /**
+     * Get the largest column of the player's pieces
+     * @param coords Coord[] list of the player's pieces
+     * @return int largest column
+     */
     private int maxCol(Coord[] coords){
         int maxCol = 0;
         for (Coord coord : coords) {

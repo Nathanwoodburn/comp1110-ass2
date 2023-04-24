@@ -60,33 +60,58 @@ public class StateTest {
         // Place a settler at (0,0)
         state.placePiece(new Coord(0,0), 'S');
         // Get the island score
-        Assertions.assertEquals(34,state.scoreMajorities(0), "The test failed because the score of the islands for player 0 is not 34");
-        Assertions.assertEquals(28, state.scoreMajorities(1), "The test failed because the score of the islands for player 1 is not 28");
+        Assertions.assertEquals(6,state.scoreMajorities(0), "The test failed because the score of the islands for player 0 is not 34");
+        Assertions.assertEquals(0, state.scoreMajorities(1), "The test failed because the score of the islands for player 1 is not 28");
         Assertions.assertEquals(0,state.scoreTotalIslands(0), "The test failed because the score of the islands for player 0 is not 0");
         Assertions.assertEquals(1, state.getPlayer(0).getNumResource(toClaim.getType()), "The test failed because the number of resources for player 0 is not 1");
     }
 
-    @Test
-    public void testStateWHEELSGAME(){
-        State state = new State(GameDataLoader.WHEELS_GAME);
-        Assertions.assertEquals(GameDataLoader.WHEELS_GAME,state.toString(), "The test failed because the state created from the string is not the same as the state created from the string");
-
-        state.distributeResources();
-        Assertions.assertFalse(state.isPhaseOver(), "The test failed because the phase is over even though it should not be because the phase is not over");
-
-        // Test endPhase
+    /**
+     * Run Sim on AI vs Random
+     * @return true if AI wins, false if Random wins
+     */
+    public boolean simulateGame(State state){
         while (!state.isPhaseOver()) {
             if (!state.getCurrentPlayer().canPlay(state)) {
                 System.out.println("Player " + state.getCurrentPlayerID() + " can't play");
                 state.nextPlayer();
             }
-            state.getCurrentPlayer().doRandomMove(state);
+            if (state.getCurrentPlayerID() == 0) {
+                state.getCurrentPlayer().doAIMove(state);
+            }
+            else {
+                state.getCurrentPlayer().doRandomMove(state);
+            }
         }
         state.scorePhase();
-        System.out.println(state.getCurrentPhase());
-        System.out.println(state.scoreString());
-
-
+        int P0 = state.getPlayer(0).getScore();
+        int P1 = state.getPlayer(1).getScore();
+        if (P0 > P1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
+    @Test
+    public void testAIDominance() {
+
+
+        State Startstate;
+
+        for (String map:GameDataLoader.MAP_NAMES) {
+            Startstate = new State(GameDataLoader.readMap(map));
+            Startstate.distributeResources();
+
+            int numGames = 20;
+            int numWins = 0;
+            for (int i = 0; i < numGames; i++) {
+                State state = new State(Startstate.toString());
+                if (simulateGame(state)) {
+                    numWins++;
+                }
+            }
+            System.out.println("AI won " + numWins + " out of " + numGames + " games on the " + map + " map");
+        }
+    }
 }

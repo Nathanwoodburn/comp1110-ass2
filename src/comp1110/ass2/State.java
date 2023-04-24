@@ -352,6 +352,7 @@ public class State {
 
     /**
      * Place a piece on the board. Uses current turn's player
+     * This does not check if the move is valid (Use isValidMove() first)
      * @param coord Coord coordinate to place piece
      * @param type char type of piece
      */
