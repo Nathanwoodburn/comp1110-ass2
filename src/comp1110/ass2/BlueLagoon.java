@@ -845,7 +845,27 @@ public class BlueLagoon {
      * @return a string representing the new state after the move is applied to the board
      */
     public static String applyMove(String stateString, String moveString){
-         return ""; // FIXME Task 13
+         State state = new State(stateString);
+        char pieceType = moveString.charAt(0);
+        String coordStr = moveString.substring(2);
+        int x = Integer.parseInt(coordStr.split(",")[0]);
+        int y = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(x, y);
+        state.placePiece(coord, pieceType);
+
+        if (state.isPhaseOver()){
+            state.scorePhase();
+            if (state.getCurrentPhase() == 'E') {
+                state.cleanBoard();
+                state.distributeResources();
+            }
+        }
+        state.nextPlayer();
+        while (!state.getCurrentPlayer().canPlay(state)) {
+            state.nextPlayer();
+        }
+
+        return state.toString();
     }
 
     /**
