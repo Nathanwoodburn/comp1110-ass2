@@ -13,6 +13,12 @@ import java.util.Random;
  */
 public class State {
 
+    // region Constants
+    // Constants for the game. Changing these could create errors
+    final int maxPlayers = 4;
+
+    // endregion
+
     // region Variables
     final int boardHeight;
     private int numPlayers;
@@ -136,6 +142,19 @@ public class State {
                 }
             }
         }
+    }
+
+
+    public void addPlayer(){
+        if (numPlayers >= maxPlayers) return; // There are already the maximum number of players
+        Player[] oldPlayers = players;
+        players = new Player[numPlayers+1];
+        for (int i=0; i<numPlayers; i++)
+        {
+            players[i] = oldPlayers[i];
+        }
+        players[numPlayers] = new Player(numPlayers);
+        numPlayers++;
     }
 
     public void distributeResources() {
