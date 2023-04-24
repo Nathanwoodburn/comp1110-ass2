@@ -1,5 +1,8 @@
 package comp1110.ass2;
 
+import java.util.Random;
+import java.util.Set;
+
 /**
  * Player class
  * This class is used to store the information of a player
@@ -230,6 +233,47 @@ public class Player {
         }
         return numPieces;
     }
+
+    /**
+     * Check if player is able to do any moves
+     * @return true if player can do any moves, false otherwise
+     */
+    public boolean canPlay(State state) {
+        Set<String> validMoves = BlueLagoon.generateAllValidMoves(state.toString());
+        return validMoves.size() > 0;
+    }
+
+    /**
+     * Do a Random Move
+     * @param state State to do the move on
+     */
+    public void doRandomMove(State state) {
+        if (state.getCurrentPlayerID() != playerID) {
+            return;
+        }
+        Set<String> validMoves = BlueLagoon.generateAllValidMoves(state.toString());
+        if (validMoves.size() == 0) {
+            return;
+        }
+        Random rand = new Random();
+        int randomMove = rand.nextInt(0, validMoves.size());
+        int i = 0;
+        for (String move : validMoves) {
+            if (i == randomMove) {
+                char pieceType = move.charAt(0);
+                String coordStr = move.substring(2);
+                int x = Integer.parseInt(coordStr.split(",")[0]);
+                int y = Integer.parseInt(coordStr.split(",")[1]);
+                Coord coord = new Coord(x, y);
+                state.placePiece(coord, pieceType);
+                state.nextPlayer();
+                return;
+            }
+            i++;
+        }
+    }
+
+
 
     @Override
     public String toString() {

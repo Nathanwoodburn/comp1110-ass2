@@ -228,19 +228,29 @@ public class State {
     }
 
     /**
-     * Get the current player
+     * Get the current player ID
      * @return int current player
      */
-    public int getCurrentPlayer() {
+    public int getCurrentPlayerID() {
         return currentPlayer;
     }
     /**
+     * Get the current player
+     * @return Player current player
+     */
+    public Player getCurrentPlayer() {
+        return players[currentPlayer];
+    }
+
+    /**
      * Get the current phase
+     * Returns 'E' for exploration, 'S' for settlement, 'O' for game over
      * @return char current phase
      */
     public char getCurrentPhase() {
         if (currentPhase == 0) return 'E';
-        else return 'S';
+        else if (currentPhase == 1) return 'S';
+        else return 'O'; // Return 'O' for game over
     }
 
     /**
@@ -341,16 +351,6 @@ public class State {
     }
 
     /**
-     * Start next phase.
-     * This handles changing the current player and scoring
-     */
-    public void nextPhase() {
-        currentPhase++;
-        if (currentPhase > 1) currentPhase = 0;
-        nextPlayer();
-    }
-
-    /**
      * Place a piece on the board. Uses current turn's player
      * @param coord Coord coordinate to place piece
      * @param type char type of piece
@@ -374,9 +374,54 @@ public class State {
         }
     }
 
+    /**
+     * is the phase over?
+     */
+    public boolean isPhaseOver() {
+
+        boolean resourcesLeft = false;
+        for (Resource r : resources) {
+            if (!r.isClaimed() && r.getType() != 'S') resourcesLeft = true;
+        }
+
+        boolean moveLeft = false;
+        for (Player player : players) {
+            if (player.canPlay(this)) moveLeft = true;
+        }
+
+        return !resourcesLeft || !moveLeft;
+    }
+
+
+
     // endregion
 
     // region Scoring
+
+    /**
+     * Score for that phase
+     */
+    public void scorePhase() {
+        for (Player p: players) {
+            p.addScore(createScore(p.getPlayerID()));
+        }
+        if (getCurrentPhase() == 'E') {
+            currentPhase++;
+        }
+        else {
+            // Game over
+            finalScore();
+            currentPhase++;
+        }
+    }
+
+    /**
+     * Final score
+     *
+     */
+    public void finalScore() {
+
+    }
     /**
      * Get score of player ID based on current phase and game state
      * @param playerID int player ID base 0
@@ -465,12 +510,64 @@ public class State {
         return score;
     }
 
+    /**
+     * Score Links
+     * A (potentially) branching path of neighbouring settlers and villages
+     * belonging to a player forms a chain. Players earn points from the chain
+     * of their pieces which links the most islands. Players earn 5 points
+     * per linked island in this chain.
+     * @param playerID int player to score
+     * @return int score
+     */
+    public int scoreLinks(int playerID) {
+        int score = 0;
+        return score; //! TODO
+    }
+
+    /**
+     * Score resources
+     * @param playerID int player to score
+     * @return int score
+     */
+    public int scoreResources(int playerID) {
+        int score = 0;
+        char[] resourceTypes = {'C', 'B', 'W', 'P'};
+        for (char type : resourceTypes) {
+            int numResources = players[playerID].getNumResource(type);
+            if (numResources >= 4) {
+                score += 20;
+            } else if (numResources == 3) {
+                score += 10;
+            } else if (numResources == 2) {
+                score += 5;
+            }
+        }
+        int numCoconuts = players[playerID].getNumResource('C');
+        int numBananas = players[playerID].getNumResource('B');
+        int numWater = players[playerID].getNumResource('W');
+        int numPreciousStones = players[playerID].getNumResource('P');
+        if (numCoconuts >= 1 && numBananas >= 1 && numWater >= 1 && numPreciousStones >= 1) {
+            score += 10;
+        }
+        return score;
+    }
+
+    /**
+     * Score statuettes
+     * @param playerID int player to score
+     * @return int score
+     */
+    public int scoreStatuettes(int playerID) {
+        int score = 0;
+        return score; //! TODO
+    }
+
     // endregion
 
 
     @Override
     public String toString() {
-        String str = "a " + boardHeight + " " + getNumPlayers() + "; c " + getCurrentPlayer() + " " + getCurrentPhase() + "; ";
+        String str = "a " + boardHeight + " " + getNumPlayers() + "; c " + getCurrentPlayerID() + " " + getCurrentPhase() + "; ";
         for (Island island : islands) {
             str += island.toString() + " ";
         }

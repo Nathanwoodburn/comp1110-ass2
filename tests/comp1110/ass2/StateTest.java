@@ -15,7 +15,7 @@ public class StateTest {
         State state = new State(GameDataLoader.DEFAULT_GAME);
         Assertions.assertEquals(13, state.getBoardHeight(), "The test failed because the board length is not 13");
         Assertions.assertEquals(2, state.getNumPlayers(), "The test failed because the number of players is not 2");
-        Assertions.assertEquals(0, state.getCurrentPlayer(), "The test failed because the current player is not 0");
+        Assertions.assertEquals(0, state.getCurrentPlayerID(), "The test failed because the current player is not 0");
         Assertions.assertEquals('E', state.getCurrentPhase(), "The test failed because the current phase is not E");
 
         Assertions.assertEquals(GameDataLoader.DEFAULT_GAME,state.toString(), "The test failed because the state created from the string is not the same as the state created from the string");
@@ -56,7 +56,6 @@ public class StateTest {
         // Distribute resources
         state.distributeResources();
         Resource toClaim = state.getUnclaimedResource(new Coord(0,0));
-        System.out.println(toClaim);
 
         // Place a settler at (0,0)
         state.placePiece(new Coord(0,0), 'S');
@@ -71,6 +70,19 @@ public class StateTest {
     public void testStateWHEELSGAME(){
         State state = new State(GameDataLoader.WHEELS_GAME);
         Assertions.assertEquals(GameDataLoader.WHEELS_GAME,state.toString(), "The test failed because the state created from the string is not the same as the state created from the string");
+
+        state.distributeResources();
+        Assertions.assertFalse(state.isPhaseOver(), "The test failed because the phase is over even though it should not be because the phase is not over");
+
+        // Test endPhase
+        while (!state.isPhaseOver()) {
+            if (!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
+            state.getCurrentPlayer().doRandomMove(state);
+        }
+        state.scorePhase();
+        System.out.println(state);
+
+
     }
 
 }
