@@ -108,28 +108,16 @@ public class Player {
     }
 
     /**
-     * Remove a resource from the player's resources
-     * @param numResource int number of the resource to be removed
-     * @param resourceType char resource type
+     * Remove all resources from the player's resources
      */
-    public void removeResource(int numResource, char resourceType) {
-        switch (resourceType) {
-            case 'C':
-                numCoconuts -= numResource;
-                break;
-            case 'B':
-                numBamboo -= numResource;
-                break;
-            case 'W':
-                numWater -= numResource;
-                break;
-            case 'P':
-                numPreciousStones -= numResource;
-                break;
-            case 'S':
-                numStatuette -= numResource;
-                break;
-        }
+    public void removeResources() {
+        numCoconuts = 0;
+        numBamboo = 0;
+        numWater = 0;
+        numPreciousStones = 0;
+        numStatuette = 0;
+
+
     }
 
     /**
@@ -180,29 +168,27 @@ public class Player {
     }
 
     /**
-     * Check if player is equal to another player
-     * @param player Player player to be compared to
-     * @return true if the players are equal, false otherwise
+     * Delete all settlers
      */
-    public boolean equals(Player player) {
-        if (player.getPlayerID() != playerID) return false;
-        if (player.getScore() != score) return false;
-        if (player.getNumResource('C') != numCoconuts) return false;
-        if (player.getNumResource('B') != numBamboo) return false;
-        if (player.getNumResource('W') != numWater) return false;
-        if (player.getNumResource('P') != numPreciousStones) return false;
-        if (player.getNumResource('S') != numStatuette) return false;
-        if (player.getSettlers().length != settlers.length) return false;
-        if (player.getVillages().length != villages.length) return false;
-
-        for (int i = 0; i < settlers.length; i++) {
-            if (!player.getSettlers()[i].equals(settlers[i])) return false;
-        }
-        for (int i = 0; i < villages.length; i++) {
-            if (!player.getVillages()[i].equals(villages[i])) return false;
-        }
-        return true;
+    public void clearSettlers() {
+        settlers = new Coord[0];
     }
+
+    /**
+     * Delete village
+     */
+    public void removeVillage(Coord coord) {
+        Coord[] newVillages = new Coord[villages.length - 1];
+        int j = 0;
+        for (int i = 0; i < villages.length; i++) {
+            if (villages[i] != coord) {
+                newVillages[j] = villages[i];
+                j++;
+            }
+        }
+        villages = newVillages;
+    }
+
 
     /**
      * Get all the player's piece's coords
@@ -283,7 +269,30 @@ public class Player {
     }
 
 
+    /**
+     * Check if player is equal to another player
+     * @param player Player player to be compared to
+     * @return true if the players are equal, false otherwise
+     */
+    public boolean equals(Player player) {
+        if (player.getPlayerID() != playerID) return false;
+        if (player.getScore() != score) return false;
+        if (player.getNumResource('C') != numCoconuts) return false;
+        if (player.getNumResource('B') != numBamboo) return false;
+        if (player.getNumResource('W') != numWater) return false;
+        if (player.getNumResource('P') != numPreciousStones) return false;
+        if (player.getNumResource('S') != numStatuette) return false;
+        if (player.getSettlers().length != settlers.length) return false;
+        if (player.getVillages().length != villages.length) return false;
 
+        for (int i = 0; i < settlers.length; i++) {
+            if (!player.getSettlers()[i].equals(settlers[i])) return false;
+        }
+        for (int i = 0; i < villages.length; i++) {
+            if (!player.getVillages()[i].equals(villages[i])) return false;
+        }
+        return true;
+    }
 
     @Override
     public String toString() {

@@ -23,8 +23,6 @@ public class State {
     private Coord[] stonesCoords;
     private Resource[] resources;
     private Player[] players;
-
-    private boolean distributedResources;
     // endregion
 
     // region Setup methods/constructors
@@ -34,7 +32,6 @@ public class State {
      * @param stateString String containing the state of the game
      */
     public State(String stateString) {
-        distributedResources = false;
 
         // Split the state string into its components
         String[] components = stateString.split(";");
@@ -103,8 +100,6 @@ public class State {
                 type = resourcesComponents[i].charAt(0);
                 continue;
             }
-
-            distributedResources = true;
             String[] coordComponents = resourcesComponents[i].split(",");
             Coord tmpCoord = new Coord(Integer.parseInt(coordComponents[0]), Integer.parseInt(coordComponents[1]));
             resources[i-1-currentResource] = new Resource(type, tmpCoord);
@@ -144,8 +139,6 @@ public class State {
     }
 
     public void distributeResources() {
-        // Do some checks
-        if (distributedResources) return; // Resources have already been distributed
         if (stonesCoords.length != 32) return; // There are not enough stones to distribute resources
 
 
@@ -399,6 +392,20 @@ public class State {
         return !resourcesLeft || !moveLeft;
     }
 
+    /**
+     * Clean board for next phase
+     */
+    public void cleanBoard(){
+        for (Player player : players) {
+            player.clearSettlers();
+            player.removeResources();
+            for (Coord coord : player.getVillages()) {
+                if (isStone(coord)) {
+                    player.removeVillage(coord);
+                }
+            }
+        }
+    }
 
 
     // endregion

@@ -823,7 +823,13 @@ public class BlueLagoon {
      * @return a string representing the new state achieved by following the end of phase rules
      */
     public static String endPhase(String stateString){
-         return ""; // FIXME Task 12
+         State state = new State(stateString);
+         state.scorePhase();
+         if (state.getCurrentPhase() == 'E') {
+             state.cleanBoard();
+             state.distributeResources();
+         }
+         return state.toString();
     }
 
     /**
