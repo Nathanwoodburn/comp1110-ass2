@@ -517,8 +517,9 @@ public class State {
      * @return int score
      */
     public int scoreLinks(int playerID) {
-        int score = 0;
-        return score; //! TODO
+        int maxIslands = 0;
+
+        return maxIslands * 5; //! TODO
     }
 
     /**

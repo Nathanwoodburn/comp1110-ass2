@@ -18,6 +18,7 @@ public class Coord {
         this.y = y;
     }
 
+    // region Getters and Setters
     /**
      * Get the x coordinate
      * @return int x coordinate
@@ -50,6 +51,8 @@ public class Coord {
         this.y = y;
     }
 
+    // endregion
+
     /**
      * Check if two coordinates are equal
      * @param coord Coord object to compare to
@@ -57,6 +60,32 @@ public class Coord {
      */
     public boolean equals(Coord coord) {
         return (this.x == coord.x && this.y == coord.y);
+    }
+
+    /**
+     * Check if two coordinates are adjacent (does not include diagonals)
+     * @param coord Coord object to compare to
+     */
+    public boolean isAdjacent(Coord coord) {
+        if (this.y == coord.y) {
+            return (this.x == coord.x - 1 || this.x == coord.x + 1);
+        }
+        if (this.x == coord.x) {
+            return (this.y == coord.y - 1 || this.y == coord.y + 1);
+        }
+        return false;
+    }
+
+    /**
+     * Check if two coordinates are adjacent (includes diagonals)
+     * @param coord Coord object to compare to
+     */
+    public boolean isAdjacentDiagonal(Coord coord){
+        if (isAdjacent(coord)) return true;
+        if (this.x == coord.x - 1 && this.y == coord.y - 1) return true;
+        if (this.x == coord.x - 1 && this.y == coord.y + 1) return true;
+        if (this.x == coord.x + 1 && this.y == coord.y - 1) return true;
+        return  (this.x == coord.x + 1 && this.y == coord.y + 1);
     }
 
     /**
