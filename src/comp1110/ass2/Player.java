@@ -200,4 +200,47 @@ public class Player {
         }
         return true;
     }
+
+    /**
+     * Get all the player's piece's coords
+     * @return coord[] list of all the player's piece's coords
+     */
+    public Coord[] getPieces() {
+        Coord[] pieces = new Coord[settlers.length + villages.length];
+        for (int i = 0; i < settlers.length; i++) {
+            pieces[i] = settlers[i];
+        }
+        for (int i = 0; i < villages.length; i++) {
+            pieces[settlers.length + i] = villages[i];
+        }
+        return pieces;
+    }
+
+    /**
+     * Get number of pieces on island
+     * @param island Island island to check
+     * @return int number of pieces on island
+     */
+    public int getNumPiecesOnIsland(Island island) {
+        int numPieces = 0;
+        for (Coord piece : getPieces()) {
+            if (island.containsCoord(piece)) {
+                numPieces++;
+            }
+        }
+        return numPieces;
+    }
+
+    @Override
+    public String toString() {
+        String str = "p " + playerID + " " + score + " " + numCoconuts + " " + numBamboo + " " + numWater + " " + numPreciousStones + " " + numStatuette + " S";
+        for (Coord coord : settlers) {
+            str += " " + coord.toString();
+        }
+        str += " T";
+        for (Coord coord : villages) {
+            str += " " + coord.toString();
+        }
+        return str;
+    }
 }

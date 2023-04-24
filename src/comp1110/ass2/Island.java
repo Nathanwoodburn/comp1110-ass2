@@ -79,4 +79,13 @@ public class Island {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        String str = "i " + this.bonus;
+        for (Coord c : this.coords) {
+            str += " " + c.toString();
+        }
+        return str + ";";
+    }
 }

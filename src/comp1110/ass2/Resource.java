@@ -8,6 +8,7 @@ package comp1110.ass2;
 public class Resource {
     private char type;
     private Coord coord;
+    private boolean claimed;
 
     /**
      * Constructor for Resource class
@@ -18,6 +19,7 @@ public class Resource {
     public Resource(char type, Coord coord) {
         this.type = type;
         this.coord = coord;
+        this.claimed = false;
     }
 
     /**
@@ -61,4 +63,28 @@ public class Resource {
         return (this.type == resource.type && this.coord.equals(resource.coord));
     }
 
+    /**
+     * Set the resource to be claimed
+     * This is used to check if the resource has been claimed
+     */
+    public void setClaimed() {
+        this.claimed = true;
+    }
+
+    /**
+     * Check if the resource has been claimed
+     * @return boolean true if the resource has been claimed
+     */
+    public boolean isClaimed() {
+        return this.claimed;
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "type=" + type +
+                ", coord=" + coord +
+                ", claimed=" + claimed +
+                '}';
+    }
 }
