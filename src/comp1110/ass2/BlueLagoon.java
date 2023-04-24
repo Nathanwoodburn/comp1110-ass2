@@ -1,5 +1,6 @@
 package comp1110.ass2;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class BlueLagoon {
@@ -246,82 +247,80 @@ public class BlueLagoon {
             switch (stateCases) {
 
                 // Get the number of player from here
-                case "a":
+                case "a" -> {
                     boardHeight = Integer.parseInt(parseSplit[1]);
                     String playerAmount = parseSplit[2];
                     numberOfPlayer = Integer.parseInt(playerAmount);
-                    break;
+                }
 
-                    // Get the player ID and Current Phase from here
+                // Get the player ID and Current Phase from here
                 // Phase Exploration or Settlement
-                case "c":
+                case "c" -> {
                     playerId = parseSplit[1];
                     currentPhase = parseSplit[2];
-                    break;
+                }
 
-                    // Get the Land coords (Island Coords)
-                case "i":
-                    coordsContainer.addAll(Arrays.asList(parseSplit).subList(2, parseSplit.length));
-                    break;
-
-                case "p":
+                // Get the Land coords (Island Coords)
+                case "i" -> coordsContainer.addAll(Arrays.asList(parseSplit).subList(2, parseSplit.length));
+                case "p" -> {
                     // Check if there's enough pieces left for that player that is moving
                     pStatePlayerId = parseSplit[1];
 
-                            // Collecting the settler Coords that has been placed
-                            for (int i = 9; i < parseSplit.length; i++) {
-                                while (!parseSplit[i].equals("T")) {
-                                    settlerCoords.add(parseSplit[i]); // Store all the settler coords
+                    // Collecting the settler Coords that has been placed
+                    for (int i = 9; i < parseSplit.length; i++) {
+                        while (!parseSplit[i].equals("T")) {
+                            settlerCoords.add(parseSplit[i]); // Store all the settler coords
 
-                                    // If the current player ID is the same as the placed settler's player ID
-                                    // Store it into array
-                                    if(pStatePlayerId.equals(playerId)) playerSettlerCoords.add(parseSplit[i]);
-                                    i++;
-                                }
+                            // If the current player ID is the same as the placed settler's player ID
+                            // Store it into array
+                            if (pStatePlayerId.equals(playerId)) playerSettlerCoords.add(parseSplit[i]);
+                            i++;
+                        }
 
-                                // If the current player ID is the same as the placed settler's player ID
-                                // iterate the settlerCounter
-                                if(pStatePlayerId.equals(playerId)) settlerCounter = playerSettlerCoords.size();
-                                i++;
+                        // If the current player ID is the same as the placed settler's player ID
+                        // iterate the settlerCounter
+                        if (pStatePlayerId.equals(playerId)) settlerCounter = playerSettlerCoords.size();
+                        i++;
 
-                                // Collecting the village coords that has been placed
-                                while (i < parseSplit.length) {
-                                    if(pStatePlayerId.equals(playerId)) villageCounter = i - 9 - settlerCounter;
-                                    villageCoords.add(parseSplit[i]); // Store all the village Coords
+                        // Collecting the village coords that has been placed
+                        while (i < parseSplit.length) {
+                            if (pStatePlayerId.equals(playerId)) villageCounter = i - 9 - settlerCounter;
+                            villageCoords.add(parseSplit[i]); // Store all the village Coords
 
-                                    // If the current player ID is the same as the placed Village's player ID
-                                    // Store it into array
-                                    if(pStatePlayerId.equals(playerId)) playerVillageCoords.add(parseSplit[i]);
-                                    i++;
-                                }
+                            // If the current player ID is the same as the placed Village's player ID
+                            // Store it into array
+                            if (pStatePlayerId.equals(playerId)) playerVillageCoords.add(parseSplit[i]);
+                            i++;
+                        }
 
-                                // Checking the requirement of how many pieces are left //
-                                switch (numberOfPlayer) {
-                                    case 4:
-                                        numberOfSettlersPerPlayer -= 10;
-                                        if (pieceType.equals("S")) {
-                                            if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                        } else if (pieceType.equals("T")) {
-                                            if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                        }
-                                        break;
-                                    case 3:
-                                        numberOfSettlersPerPlayer -= 5;
-                                        if (pieceType.equals("S")) {
-                                            if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                        } else if (pieceType.equals("T")) {
-                                            if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                        }
-                                        break;
-                                    case 2:
-                                        if (pieceType.equals("S")) {
-                                            if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                        } else if (pieceType.equals("T")) {
-                                            if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                        }
+                        // Checking the requirement of how many pieces are left //
+                        switch (numberOfPlayer) {
+                            case 4 -> {
+                                numberOfSettlersPerPlayer -= 10;
+                                if (pieceType.equals("S")) {
+                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                } else if (pieceType.equals("T")) {
+                                    if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
                                 }
                             }
-                    break;
+                            case 3 -> {
+                                numberOfSettlersPerPlayer -= 5;
+                                if (pieceType.equals("S")) {
+                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                } else if (pieceType.equals("T")) {
+                                    if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
+                                }
+                            }
+                            case 2 -> {
+                                if (pieceType.equals("S")) {
+                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                                } else if (pieceType.equals("T")) {
+                                    if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -335,43 +334,45 @@ public class BlueLagoon {
         else if(xMoveCoords > boardHeight - 1) return false;
 
                             // For Exploration Phase and or Settlement Phase
-                            switch(currentPhase){
-                                // Exploration Phase
-                                case "E":
-                                    // If the move Coords is an occupied space, return false;
-                                    if(settlerCoords.contains(moveCoords) || villageCoords.contains(moveCoords)) return false;
+        switch (currentPhase) {
+            // Exploration Phase
+            case "E" -> {
+                // If the move Coords is an occupied space, return false;
+                if (settlerCoords.contains(moveCoords) || villageCoords.contains(moveCoords)) return false;
 
-                                    // If the Village is being placed on the sea return false
-                                    if(pieceType.equals("T") && !coordsContainer.contains(moveCoords)) return false;
-
-
-                                    // if the village is placed on Land and it's not adjacent to any
-                                    // of the pieces return false
-                                    if(pieceType.equals("T") && (!isAdjacent(moveCoords, playerVillageCoords) &&
-                                            !isAdjacent(moveCoords, playerSettlerCoords))) return false;
+                // If the Village is being placed on the sea return false
+                if (pieceType.equals("T") && !coordsContainer.contains(moveCoords)) return false;
 
 
-                                    // If settler is on land and it's not adjacent to any of the pieces
-                                    // return false
-                                    if(pieceType.equals("S") && coordsContainer.contains(moveCoords)){
-                                        if(!isAdjacent(moveCoords, playerSettlerCoords) &&
-                                                !isAdjacent(moveCoords, playerVillageCoords)) return false;
-                                    }
-                                    break;
+                // if the village is placed on Land and it's not adjacent to any
+                // of the pieces return false
+                if (pieceType.equals("T") && (!isAdjacent(moveCoords, playerVillageCoords) &&
+                        !isAdjacent(moveCoords, playerSettlerCoords))) return false;
 
-                                    // Settlement Phase
-                                case "S":
-                                    // If the move coord is an occupied space, return false;
-                                    if(settlerCoords.contains(moveCoords)) return false;
-                                    if(villageCoords.contains(moveCoords)) return false;
 
-                                    // As the only move is for the settler, the village is false
-                                    if(pieceType.equals("T")) return false;
+                // If settler is on land and it's not adjacent to any of the pieces
+                // return false
+                if (pieceType.equals("S") && coordsContainer.contains(moveCoords)) {
+                    if (!isAdjacent(moveCoords, playerSettlerCoords) &&
+                            !isAdjacent(moveCoords, playerVillageCoords)) return false;
+                }
+            }
 
-                                    // if the settler is not adjacent with any of the pieces return false
-                                    if(!isAdjacent(moveCoords, playerSettlerCoords) &&
-                                    !isAdjacent(moveCoords, playerVillageCoords)) return false;
-                            }
+            // Settlement Phase
+            case "S" -> {
+                // If the move coord is an occupied space, return false;
+                if (settlerCoords.contains(moveCoords)) return false;
+                if (villageCoords.contains(moveCoords)) return false;
+
+                // As the only move is for the settler, the village is false
+                if (pieceType.equals("T")) return false;
+
+                // if the settler is not adjacent with any of the pieces return false
+                if (!isAdjacent(moveCoords, playerSettlerCoords) &&
+                        !isAdjacent(moveCoords, playerVillageCoords)) return false;
+            }
+        }
+        System.out.println(coordsContainer);
                             return true;
     }
 
@@ -617,6 +618,30 @@ public class BlueLagoon {
          return ""; // FIXME Task 10
     }
 
+
+    //    public static ArrayList<Integer> islandCoords(String stateString) {
+//        String[] parts = stateString.split("; ?");
+//
+//        // Coords of the island tiles
+//        ArrayList<Integer> coordsContainer = new ArrayList<>();
+//
+//        for (String part : parts) {
+//            String[] parseSplit = part.split(" ");
+//            String stateCases = parseSplit[0];
+//
+//            switch (stateCases) {
+//                // Get the Land coords (Island Coords)
+//                case "i":
+//                    for (int i = 2; i < parseSplit.length; i++) {
+//                        String coords = parseSplit[i];
+//                        coordsContainer.add(Integer.parseInt(coords));
+//                    }
+//                    break;
+//            }
+//        }
+//        return coordsContainer;
+//    }
+
     /**
      * Given a state string, calculate the "Islands" portion of the score for
      * each player as if it were the end of a phase. The return value is an
@@ -632,9 +657,97 @@ public class BlueLagoon {
      * @return an integer array containing the calculated "Islands" portion of
      * the score for each player
      */
-    public static int[] calculateTotalIslandsScore(String stateString){
-         return new int[]{0, 0}; // FIXME Task 11
+
+    //"i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2;"
+
+    // "p 1 42 1 2 3 4 5 S 5,6 8,7 T 1,2;"
+
+    public static int[] calculateTotalIslandsScore(String stateString) {
+        // ArrayList<Integer> islandCoords = islandCoords(stateString);
+
+        String[] parts = stateString.split("; ?");
+
+        ArrayList<Integer> islandCoords = new ArrayList<>();
+        int numberOfIslandCounter = 0; // Count the number of players
+        int p1IslandCounter = 0;
+        int p2IslandCounter = 0;
+        int p3IslandCounter = 0;
+        int p4IslandCounter = 0;
+
+        int pStatePlayerId;
+
+        ArrayList<Integer> player1Coords = new ArrayList<>();
+        ArrayList<Integer> player2Coords = new ArrayList<>();
+        ArrayList<Integer> player3Coords = new ArrayList<>();
+        ArrayList<Integer> player4Coords = new ArrayList<>();
+
+        for (String part : parts) {
+            String[] parseSplit = part.split(" ");
+            String stateCases = parseSplit[0];
+
+            switch (stateCases) {
+                case "i":
+                    for (int i = 2; i < parseSplit.length; i++) {
+                        islandCoords.add(99); // A separator between islands
+
+                        String coords = parseSplit[i];
+                        islandCoords.add(Integer.parseInt(coords));
+                        numberOfIslandCounter++;
+                    }
+                    break;
+                case "p":
+                    pStatePlayerId = Integer.parseInt(parseSplit[1]);
+
+                    // Collecting the settler Coords that has been placed
+                    for (int i = 9; i < parseSplit.length; i++) {
+                        if(pStatePlayerId == 1){
+                            player1Coords.add(Integer.parseInt(parseSplit[i]));
+                        }
+                        else if(pStatePlayerId == 2){
+                            player2Coords.add(Integer.parseInt(parseSplit[i]));
+                        }
+                        else if(pStatePlayerId == 3){
+                            player3Coords.add(Integer.parseInt(parseSplit[i]));
+                        }
+                        else if(pStatePlayerId == 4){
+                            player4Coords.add(Integer.parseInt(parseSplit[i]));
+                        }
+                    }
+            }
+
+            for(int i = 0; i < islandCoords.size(); i++){
+
+            }
+
+
+            // check the size of the arrayList to set the size for the int[]
+        }
+
+        return new int[]{0, 0}; // FIXME Task 11
     }
+
+    //             for (int i = 9; i < parseSplit.length; i++) {
+    //                while (!parseSplit[i].equals("T")) {
+    //                    settlerCoords.add(parseSplit[i]); // Store all the settler coords
+    //
+    //                    // If the current player ID is the same as the placed settler's player ID
+    //                    // Store it into array
+    //                    if (pStatePlayerId.equals(currentPlayer)) playerSettlerCoords.add(parseSplit[i]);
+    //                    i++;
+    //                }
+    //                i++;
+    //
+    //                // Collecting the village coords that has been placed
+    //                while (i < parseSplit.length) {
+    //                    villageCoords.add(parseSplit[i]); // Store all the village Coords
+    //
+    //                    // If the current player ID is the same as the placed Village's player ID
+    //                    // Store it into array
+    //                    if (pStatePlayerId.equals(currentPlayer)) playerVillageCoords.add(parseSplit[i]);
+    //                    i++;
+    //                }
+    //            }
+    //        }
 
     /**
      * Given a state string, calculate the "Links" portion of the score for
