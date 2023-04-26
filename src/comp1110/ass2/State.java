@@ -396,20 +396,10 @@ public class State {
 
     /**
      * is the phase over?
+     * Defaults to simple mode
      */
     public boolean isPhaseOver() {
-
-        boolean resourcesLeft = false;
-        for (Resource r : resources) {
-            if (!r.isClaimed() && r.getType() != 'S') resourcesLeft = true;
-        }
-
-        boolean moveLeft = false;
-        for (Player player : players) {
-            if (player.canPlay(this)) moveLeft = true;
-        }
-
-        return !resourcesLeft || !moveLeft;
+        return isPhaseOver(true);
     }
 
     /**
@@ -423,7 +413,15 @@ public class State {
         }
 
         boolean moveLeft = false;
-        if (getCurrentPlayer().canPlay(this)) moveLeft = true;
+        if (simple) {
+            if (getCurrentPlayer().canPlay(this)) moveLeft = true;
+        }
+        else
+        {
+            for (Player player : players) {
+                if (player.canPlay(this)) moveLeft = true;
+            }
+        }
 
 
         return !resourcesLeft || !moveLeft;
