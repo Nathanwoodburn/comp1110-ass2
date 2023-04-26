@@ -413,6 +413,23 @@ public class State {
     }
 
     /**
+     * is the phase over?
+     * @param simple boolean don't check all player moves
+     */
+    public boolean isPhaseOver(boolean simple){
+        boolean resourcesLeft = false;
+        for (Resource r : resources) {
+            if (!r.isClaimed() && r.getType() != 'S') resourcesLeft = true;
+        }
+
+        boolean moveLeft = false;
+        if (getCurrentPlayer().canPlay(this)) moveLeft = true;
+
+
+        return !resourcesLeft || !moveLeft;
+    }
+
+    /**
      * Clean board for next phase
      */
     public void cleanBoard(){

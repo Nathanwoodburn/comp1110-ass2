@@ -538,7 +538,7 @@ public class BlueLagoon {
      */
     public static boolean isPhaseOver(String stateString){
          State state = new State(stateString);
-         return state.isPhaseOver();
+         return state.isPhaseOver(true);
     }
 
     /**
