@@ -724,6 +724,7 @@ public class BlueLagoon {
          if (state.getCurrentPhase() == 'E') {
              state.cleanBoard();
              state.distributeResources();
+             state.nextPhase();
          }
          return state.toString();
     }
