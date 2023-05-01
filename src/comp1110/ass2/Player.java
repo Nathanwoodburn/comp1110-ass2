@@ -232,8 +232,6 @@ public class Player {
         return lastMove;
     }
 
-    // endregion
-
     /**
      * Check if player is able to do any moves
      * @return true if player can do any moves, false otherwise
@@ -242,6 +240,8 @@ public class Player {
         Set<String> validMoves = BlueLagoon.generateAllValidMoves(state.toString());
         return validMoves.size() > 0;
     }
+
+    // endregion
 
     // region Auto Player
     /**
