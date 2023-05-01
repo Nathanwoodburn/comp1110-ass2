@@ -564,31 +564,6 @@ public class BlueLagoon {
     }
 
 
-    //    public static ArrayList<Integer> islandCoords(String stateString) {
-//        String[] parts = stateString.split("; ?");
-//
-//        // Coords of the island tiles
-//        ArrayList<Integer> coordsContainer = new ArrayList<>();
-//
-//        for (String part : parts) {
-//            String[] parseSplit = part.split(" ");
-//            String stateCases = parseSplit[0];
-//
-//            switch (stateCases) {
-//                // Get the Land coords (Island Coords)
-//                case "i":
-//                    for (int i = 2; i < parseSplit.length; i++) {
-//                        String coords = parseSplit[i];
-//                        coordsContainer.add(Integer.parseInt(coords));
-//                    }
-//                    break;
-//            }
-//        }
-//        return coordsContainer;
-//    }
-
-    // region Scoring
-
     /**
      * Given a state string, calculate the "Islands" portion of the score for
      * each player as if it were the end of a phase. The return value is an
@@ -618,93 +593,6 @@ public class BlueLagoon {
         return scores;
     }
 
-
-        /*// ArrayList<Integer> islandCoords = islandCoords(stateString);
-
-        String[] parts = stateString.split("; ?");
-
-        ArrayList<Integer> islandCoords = new ArrayList<>();
-        int numberOfIslandCounter = 0; // Count the number of players
-        int p1IslandCounter = 0;
-        int p2IslandCounter = 0;
-        int p3IslandCounter = 0;
-        int p4IslandCounter = 0;
-
-        int pStatePlayerId;
-
-        ArrayList<Integer> player1Coords = new ArrayList<>();
-        ArrayList<Integer> player2Coords = new ArrayList<>();
-        ArrayList<Integer> player3Coords = new ArrayList<>();
-        ArrayList<Integer> player4Coords = new ArrayList<>();
-
-        for (String part : parts) {
-            String[] parseSplit = part.split(" ");
-            String stateCases = parseSplit[0];
-
-            switch (stateCases) {
-                case "i":
-                    for (int i = 2; i < parseSplit.length; i++) {
-                        islandCoords.add(99); // A separator between islands
-
-                        String coords = parseSplit[i];
-                        islandCoords.add(Integer.parseInt(coords));
-                        numberOfIslandCounter++;
-                    }
-                    break;
-                case "p":
-                    pStatePlayerId = Integer.parseInt(parseSplit[1]);
-
-                    // Collecting the settler Coords that has been placed
-                    for (int i = 9; i < parseSplit.length; i++) {
-                        if(pStatePlayerId == 1){
-                            player1Coords.add(Integer.parseInt(parseSplit[i]));
-                        }
-                        else if(pStatePlayerId == 2){
-                            player2Coords.add(Integer.parseInt(parseSplit[i]));
-                        }
-                        else if(pStatePlayerId == 3){
-                            player3Coords.add(Integer.parseInt(parseSplit[i]));
-                        }
-                        else if(pStatePlayerId == 4){
-                            player4Coords.add(Integer.parseInt(parseSplit[i]));
-                        }
-                    }
-            }
-
-            for(int i = 0; i < islandCoords.size(); i++){
-
-            }
-
-
-            // check the size of the arrayList to set the size for the int[]
-        }
-
-        return new int[]{0, 0};
-    }
-
-    //             for (int i = 9; i < parseSplit.length; i++) {
-    //                while (!parseSplit[i].equals("T")) {
-    //                    settlerCoords.add(parseSplit[i]); // Store all the settler coords
-    //
-    //                    // If the current player ID is the same as the placed settler's player ID
-    //                    // Store it into array
-    //                    if (pStatePlayerId.equals(currentPlayer)) playerSettlerCoords.add(parseSplit[i]);
-    //                    i++;
-    //                }
-    //                i++;
-    //
-    //                // Collecting the village coords that has been placed
-    //                while (i < parseSplit.length) {
-    //                    villageCoords.add(parseSplit[i]); // Store all the village Coords
-    //
-    //                    // If the current player ID is the same as the placed Village's player ID
-    //                    // Store it into array
-    //                    if (pStatePlayerId.equals(currentPlayer)) playerVillageCoords.add(parseSplit[i]);
-    //                    i++;
-    //                }
-    //            }
-    //        }
-    */
 
 
     /**
