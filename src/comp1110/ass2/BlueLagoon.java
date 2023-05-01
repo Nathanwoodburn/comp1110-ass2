@@ -186,6 +186,11 @@ public class BlueLagoon {
                     boardHeight = Integer.parseInt(parseSplit[1]);
                     String playerAmount = parseSplit[2];
                     numberOfPlayer = Integer.parseInt(playerAmount);
+                    switch (numberOfPlayer) {
+                        case 4 -> numberOfSettlersPerPlayer = 20;
+                        case 3 -> numberOfSettlersPerPlayer = 25;
+                        case 2 -> numberOfSettlersPerPlayer = 30;
+                    }
                 }
 
                 // Get the player ID and Current Phase from here
@@ -227,33 +232,8 @@ public class BlueLagoon {
                             if (pStatePlayerId.equals(playerId)) playerVillageCoords.add(parseSplit[i]);
                             i++;
                         }
-
-                        // Checking the requirement of how many pieces are left //
-                        switch (numberOfPlayer) {
-                            case 4 -> {
-                                numberOfSettlersPerPlayer -= 10;
-                                if (pieceType.equals("S")) {
-                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                } else if (pieceType.equals("T")) {
-                                    if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                }
-                            }
-                            case 3 -> {
-                                numberOfSettlersPerPlayer -= 5;
-                                if (pieceType.equals("S")) {
-                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                } else if (pieceType.equals("T")) {
-                                    if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                }
-                            }
-                            case 2 -> {
-                                if (pieceType.equals("S")) {
-                                    if (settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
-                                } else if (pieceType.equals("T")) {
-                                    if (villageCounter + 1 > numberOfVillagesPerPlayer) return false;
-                                }
-                            }
-                        }
+                        if (pieceType.equals("S") && settlerCounter + 1 > numberOfSettlersPerPlayer) return false;
+                        else if (pieceType.equals("T") && villageCounter + 1 > numberOfVillagesPerPlayer) return false;
                     }
                 }
             }
@@ -263,9 +243,7 @@ public class BlueLagoon {
         if(yMoveCoords > boardHeight - 1) return false;
 
         // if it's even rows, check the number of cols for out of bound (i.e. the width)
-        if(yMoveCoords % 2 == 0) {
-            if(xMoveCoords > boardHeight - 2) return false;
-        }
+        if(yMoveCoords % 2 == 0 && xMoveCoords > boardHeight - 2) return false;
         else if(xMoveCoords > boardHeight - 1) return false;
 
                             // For Exploration Phase and or Settlement Phase
@@ -346,36 +324,30 @@ public class BlueLagoon {
      * @return boolean True if the move is valid, false if the move is invalid
      */
 
-    public static boolean isMoveValidTrim(String pieceType, String moveCoords,
-                                          String currentPhase, ArrayList<String> coordsContainer,
+    public static boolean isMoveValidTrim(State state,String pieceType, String moveCoords, ArrayList<String> IslandCoords,
                                           ArrayList<String> settlerCoords,
                                           ArrayList<String> villageCoords, ArrayList<String> playerSettlerCoords,
                                           ArrayList<String> playerVillageCoords) {
+
         // For Exploration Phase and or Settlement Phase
-        switch(currentPhase){
+        switch(state.getCurrentPhase()){
             // Exploration Phase
-            case "E":
-                // If the move Coords is an occupied space, return false;
-                if(settlerCoords.contains(moveCoords) || villageCoords.contains(moveCoords)) return false;
+            case 'E':
                 // If the Village is being placed on the sea return false
-                if(pieceType.equals("T") && !coordsContainer.contains(moveCoords)) return false;
+                if(pieceType.equals("T") && !IslandCoords.contains(moveCoords)) return false;
                 // if the village is placed on Land and it's not adjacent to any
                 // of the pieces return false
                 if(pieceType.equals("T") && (!isAdjacent(moveCoords, playerVillageCoords) &&
                         !isAdjacent(moveCoords, playerSettlerCoords))) return false;
                 // If settler is on land and it's not adjacent to any of the pieces
                 // return false
-                if(pieceType.equals("S") && coordsContainer.contains(moveCoords)){
+                if(pieceType.equals("S") && IslandCoords.contains(moveCoords)){
                     if(!isAdjacent(moveCoords, playerSettlerCoords) &&
                             !isAdjacent(moveCoords, playerVillageCoords)) return false;
                 }
                 break;
             // Settlement Phase
-            case "S":
-                // If the move coord is an occupied space, return false;
-                if(settlerCoords.contains(moveCoords)) return false;
-                if(villageCoords.contains(moveCoords)) return false;
-
+            case 'S':
                 // if the settler is not adjacent with any of the pieces return false
                 if(!isAdjacent(moveCoords, playerSettlerCoords) &&
                         !isAdjacent(moveCoords, playerVillageCoords)) return false;
@@ -394,77 +366,25 @@ public class BlueLagoon {
      */
     public static Set<String> generateAllValidMoves(String stateString) {
 
-        // Get number of players
-        int numPlayers = Character.getNumericValue(stateString.charAt(stateString.indexOf(";") - 1));
-        // Store the current game phase
-        String gamePhase = "E";
-        // If the game is not in the exploration phase use state 1
-        if (!stateString.contains("E")) gamePhase = "S";
-        // Get the current player
-        String currentPlayer = stateString.substring(stateString.indexOf("c ") + 2,stateString.indexOf("c ") + 3);
+        // Create a state object
+        State state = new State(stateString);
+
+        // Get information from the state string
+        int numPlayers = state.getNumPlayers();
+        char gamePhase = state.getCurrentPhase();
+        String currentPlayer = state.getCurrentPlayer().toString();
+
         // Get the board size
-        int boardHeight = Integer.parseInt(stateString.substring(stateString.indexOf("a ") + 2, stateString.indexOf(";") - 2));
+        int boardHeight = state.boardHeight;
         // Get player data
-        String allPlayerData = stateString.substring(stateString.indexOf("p " + currentPlayer));
-        String playerData = allPlayerData.substring(0, allPlayerData.indexOf(";"));
-        String[] pStates = stateString.substring(stateString.indexOf("p ")).split("; ?");
 
         ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
         ArrayList<String> villageCoords = new ArrayList<>(); // Placed villages coordinates
         ArrayList<String> playerSettlerCoords = new ArrayList<>(); // The current Player's settler coords
         ArrayList<String> playerVillageCoords = new ArrayList<>(); // The current Player's Village coords
 
-        for (String pState:pStates) {
-
-            String[] parseSplit = pState.split(" ");
-            // Check if there's enough pieces left for that player that is moving
-            String pStatePlayerId = parseSplit[1];
-
-            // Collecting the settler Coords that has been placed
-            for (int i = 9; i < parseSplit.length; i++) {
-                while (!parseSplit[i].equals("T")) {
-                    settlerCoords.add(parseSplit[i]); // Store all the settler coords
-
-                    // If the current player ID is the same as the placed settler's player ID
-                    // Store it into array
-                    if (pStatePlayerId.equals(currentPlayer)) playerSettlerCoords.add(parseSplit[i]);
-                    i++;
-                }
-                i++;
-
-                // Collecting the village coords that has been placed
-                while (i < parseSplit.length) {
-                    villageCoords.add(parseSplit[i]); // Store all the village Coords
-
-                    // If the current player ID is the same as the placed Village's player ID
-                    // Store it into array
-                    if (pStatePlayerId.equals(currentPlayer)) playerVillageCoords.add(parseSplit[i]);
-                    i++;
-                }
-            }
-        }
-
-        // Get placed pieces
-        String settlersPlaced = playerData.substring(playerData.indexOf("S") + 2, playerData.indexOf("T"));
-        int numSettlersPlaced = settlersPlaced.split(" ").length;
-        if (!settlersPlaced.contains(" ")){
-            numSettlersPlaced = 0;
-        }
-        String villagesPlaced = playerData.substring(playerData.indexOf("T")+1);
-        int numVillagesPlaced = villagesPlaced.split(" ").length;
-        if (!villagesPlaced.contains(" ")){
-            numVillagesPlaced = 0;
-        }
-
-        // Get island data
-        String[] islands = stateString.substring(stateString.indexOf("i ")).split("; ");
-        // Get the coordinates of the islands
-        ArrayList<String> coordsContainer = new ArrayList<>();
-
-        for (String island : islands) {
-            if (!island.startsWith("i ")) continue;
-            coordsContainer.addAll(Arrays.asList(island.substring(4).split(" ")));
-        }
+        // Create a set to store all possible moves
+        Set<String> allMoves = new HashSet<>();
 
         // Calculate number of pieces each player starts with
         int startNumSettlers = 0;
@@ -480,12 +400,39 @@ public class BlueLagoon {
                 break;
         }
 
-        // Check if the player has placed all their settlers or villages
-        boolean hasSettler = (numSettlersPlaced < startNumSettlers);
-        boolean hasVillage = (numVillagesPlaced <= 5);
 
-        // Create a set to store all possible moves
-        Set<String> allMoves = new HashSet<>();
+        // Check if the player has placed all their settlers or villages
+        boolean hasSettler = (state.getCurrentPlayer().getSettlers().length < startNumSettlers);
+        boolean hasVillage = (state.getCurrentPlayer().getVillages().length < 5);
+
+        if (!hasSettler && !(hasVillage && gamePhase == 'E')) return allMoves;
+
+        for (int i = 0; i < numPlayers; i++){
+            // Add cords to list
+
+            for (Coord c: state.getPlayer(i).getSettlers()){
+                settlerCoords.add(c.toString());
+            }
+            for (Coord c: state.getPlayer(i).getVillages()){
+                villageCoords.add(c.toString());
+            }
+        }
+
+        for (Coord c: state.getCurrentPlayer().getSettlers()){
+            playerSettlerCoords.add(c.toString());
+        }
+        for (Coord c: state.getCurrentPlayer().getVillages()){
+            playerVillageCoords.add(c.toString());
+        }
+
+        // Get the coordinates of the islands
+        ArrayList<String> coordsContainer = new ArrayList<>();
+
+        for (Island island : state.getIslands()) {
+            for (Coord c:island.getCoords()){
+                coordsContainer.add(c.toString());
+            }
+        }
 
         // Generate all possible coordinates in an array
         String[] coordinates = new String[boardHeight * boardHeight];
@@ -496,8 +443,11 @@ public class BlueLagoon {
                 index++;
             }
         }
+
         // For each coordinate
         for (String cord:coordinates) {
+            if(settlerCoords.contains(cord)) continue;
+            if(villageCoords.contains(cord)) continue;
 
             int y = Integer.parseInt(cord.split(",")[1]);
             if(Integer.parseInt(cord.substring(0,cord.indexOf(','))) % 2 == 0) {
@@ -505,20 +455,28 @@ public class BlueLagoon {
             }
             else if(y > boardHeight - 1) continue;
 
-            // If the player has not placed all their settlers
-            if (hasSettler){
-                if (isMoveValidTrim("S", cord,gamePhase,
-                        coordsContainer,settlerCoords,villageCoords,playerSettlerCoords,playerVillageCoords)) {
-                    allMoves.add("S " + cord);
-                }
+            switch (state.getCurrentPhase()) {
+                case 'E':
+                    if (!coordsContainer.contains(cord)) {
+                        if (hasSettler) allMoves.add("S " + cord);
+                        break;
+                    }
+                    // If the Village is being placed on the sea return false
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
+                        // Add the move to the set
+                        if (hasVillage) allMoves.add("T " + cord);
+                        if (hasSettler) allMoves.add("S " + cord);
+                    }
+                    break;
+                // Settlement Phase
+                case 'S':
+                    // if the settler is not adjacent with any of the pieces return false
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
+                        // Add the move to the set
+                        if (hasSettler) allMoves.add("S " + cord);
+                    }
+                    break;
             }
-            if (hasVillage && gamePhase == "E") {
-                if (isMoveValidTrim("T", cord,gamePhase,
-                        coordsContainer,settlerCoords,villageCoords,playerSettlerCoords,playerVillageCoords)) {
-                    allMoves.add("T " + cord);
-                }
-            }
-
         }
         return allMoves;
     }
@@ -537,7 +495,7 @@ public class BlueLagoon {
      */
     public static boolean isPhaseOver(String stateString){
          State state = new State(stateString);
-         return state.isPhaseOver(true);
+         return state.isPhaseOver();
     }
 
     /**
