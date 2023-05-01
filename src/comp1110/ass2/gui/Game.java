@@ -34,11 +34,14 @@ public class Game extends Application {
 
     Coord selectedTile;
 
+    Boolean AI;
+
     // endregion
 
 
     @Override
     public void start(Stage stage) throws Exception {
+        AI = false;
         selectedTile = new Coord(-1,-1);
         message = "Waiting for Move...";
         messageError = false;
@@ -56,69 +59,9 @@ public class Game extends Application {
         stage.setResizable(false);
         stage.show();
         newGame(2);
+
     }
 
-
-    /**
-     * Create a basic text field for input and a refresh button.
-     */
-    private void makeControls() {
-        Label newLabel = new Label("New Game:");
-        Button twoPlayer = new Button("2 Player");
-        Button threePlayer = new Button("3 Player");
-        Button fourPlayer = new Button("4 Player");
-        Button AIMove = new Button("AI Move");
-        Button placeVillage = new Button("Place Village");
-        Button placeSettler = new Button("Place Settler");
-
-
-        twoPlayer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                newGame(2);
-            }
-        });
-        threePlayer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                newGame(3);
-            }
-        });
-        fourPlayer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                newGame(4);
-            }
-        });
-
-        AIMove.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                doAIMove();
-            }
-        });
-
-        placeVillage.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                doMove(1);
-            }
-        });
-
-        placeSettler.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                doMove(0);
-            }
-        });
-
-        HBox hb = new HBox();
-        hb.getChildren().addAll(newLabel, twoPlayer,threePlayer,fourPlayer,AIMove,placeVillage,placeSettler);
-        hb.setSpacing(10);
-        hb.setLayoutX(50);
-        hb.setLayoutY(WINDOW_HEIGHT - 50);
-        controls.getChildren().add(hb);
-    }
 
     /**
      * Start a new game with the given number of players
@@ -167,18 +110,38 @@ public class Game extends Application {
                 currentGame.placePiece(selectedTile,typeC);
                 Player player = currentGame.getCurrentPlayer();
                 Coord lastMove = player.getLastMove();
+                String message = "";
                 if (currentGame.isStone(lastMove)){
                     for (Resource resource : currentGame.getResources()) {
                         if (resource.getCoord().equals(lastMove) ) {
-                            sendMessage("Player " + player.getPlayerID() +" picked up a " + resource.getTypeString().toLowerCase());
+                            message = "Player " + player.getPlayerID() +" picked up a " + resource.getTypeString().toLowerCase();
                         }
                     }
                 }
                 currentGame.nextPlayer();
                 selectedTile = new Coord(-1,-1);
+                if (AI) {
+                    String AI = doAIMove();
+                    sendMessage(message + "\n" + AI);
+                }
+                else {
+                    sendMessage(message);
+                }
             }
             else {
                 sendMessage("Invalid move",true);
+            }
+        }
+
+        if (currentGame.isPhaseOver()){
+            sendMessage("Starting next phase");
+            currentGame.scorePhase();
+            if (currentGame.getCurrentPhase() == 'E') {
+                currentGame.cleanBoard();
+                currentGame.distributeResources();
+            }
+            else {
+                sendMessage("Game over");
             }
         }
 
@@ -187,34 +150,47 @@ public class Game extends Application {
 
     /**
      * Do an AI move for the current player
+     * @return the message to be displayed
      */
-    void doAIMove(){
+    String doAIMove(){
+        String message = "";
         if (!currentGame.isPhaseOver()){
             Player player = currentGame.getCurrentPlayer();
             player.doAIMove(currentGame);
 
             if (currentGame.isPhaseOver()){
-                sendMessage("Phase is over");
+                message = "Starting next phase";
             }
             if (!player.getLastMove().equals(new Coord(-1,-1))){
                 Coord lastMove = player.getLastMove();
                 if (currentGame.isStone(lastMove)){
                     for (Resource resource : currentGame.getResources()) {
                         if (resource.getCoord().equals(lastMove) ) {
-                            sendMessage("Player " + player.getPlayerID() +" picked up a " + resource.getTypeString().toLowerCase());
+                            message = "AI picked up a " + resource.getTypeString().toLowerCase();
                         }
                     }
                 }
+                else {
+                    message = "AI placed at " + lastMove.toString();
+                }
             }
-            refresh();
         }
-        else {
-            sendMessage("Phase is over. Can't do AI move");
+        if (currentGame.isPhaseOver()){
+            currentGame.scorePhase();
+            if (currentGame.getCurrentPhase() == 'E') {
+                currentGame.cleanBoard();
+                currentGame.distributeResources();
+            }
+            else {
+                message = "Game over";
+            }
         }
+        refresh();
+        return message;
     }
     // endregion
 
-    // region HID
+    // region Display
 
     /**
      * Send a message to the user without error
@@ -244,10 +220,7 @@ public class Game extends Application {
         sendMessage("Tile " + selectedTile.toString() + " selected");
         refresh();
     }
-    
-    // endregion
-    
-    // region From Viewer
+
     void refresh() {
         // When refreshing, it clears the whole thing and update it
         root.getChildren().clear();
@@ -255,8 +228,8 @@ public class Game extends Application {
 
         // Add the message
         Label messageLabel = new Label(message);
-        messageLabel.setLayoutX(50);
-        messageLabel.setLayoutY(50);
+        messageLabel.setLayoutX(0);
+        messageLabel.setLayoutY(250);
         messageLabel.setFont(Font.font("Sans Serif",FontWeight.BOLD, 20));
         if (messageError){
             messageLabel.setTextFill(Color.RED);
@@ -267,7 +240,7 @@ public class Game extends Application {
 
         root.getChildren().add(messageLabel);
 
-        // Intizialiation of the grid
+        // Initialization of the grid
         GridPane viewerGrid = new GridPane();
         int boardHeight = 0;
         int boardHeightPx = 0;
@@ -334,7 +307,8 @@ public class Game extends Application {
         for (int i = 0; i < currentGame.getNumPlayers(); i++){
             Player currentPlayer = currentGame.getPlayer(i);
             // Add the player's score to the playerData string
-            playerData += "\nPlayer " + i + ": " + currentPlayer.getScore();
+            if (AI && i == 1) playerData += "\nAI: " + currentPlayer.getScore();
+            else playerData += "\nPlayer " + i + ": " + currentPlayer.getScore();
 
             // Settler tile generator
             for (Coord c: currentPlayer.getSettlers()){
@@ -373,6 +347,72 @@ public class Game extends Application {
 
         // Move buttons to front
         controls.toFront();
+    }
+
+    /**
+     * Create a basic text field for input and a refresh button.
+     */
+    private void makeControls() {
+        Label newLabel = new Label("New Game:");
+        Button twoPlayer = new Button("2 Player");
+        Button twoPlayerAI = new Button("2 Player with AI");
+        Button threePlayer = new Button("3 Player");
+        Button fourPlayer = new Button("4 Player");
+        Button placeVillage = new Button("Place Village");
+        Button placeSettler = new Button("Place Settler");
+
+
+        twoPlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = false;
+                newGame(2);
+            }
+        });
+
+        twoPlayerAI.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = true;
+                newGame(2);
+            }
+        });
+
+        threePlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = false;
+                newGame(3);
+            }
+        });
+        fourPlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = false;
+                newGame(4);
+            }
+        });
+
+        placeVillage.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                doMove(1);
+            }
+        });
+
+        placeSettler.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                doMove(0);
+            }
+        });
+
+        HBox hb = new HBox();
+        hb.getChildren().addAll(newLabel, twoPlayer,twoPlayerAI,threePlayer,fourPlayer,placeVillage,placeSettler);
+        hb.setSpacing(10);
+        hb.setLayoutX(50);
+        hb.setLayoutY(WINDOW_HEIGHT - 50);
+        controls.getChildren().add(hb);
     }
 
     // Generating the big board tiles such as the water tiles and the island tiles
@@ -422,30 +462,6 @@ public class Game extends Application {
         });
     }
 
-    void addTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
-        int tileSize2 = tileSize;
-        tileSize2 -= 25;
-
-        // If the string empty, stop the function
-        if (coordString.equals("")) return;
-        String[] coords = coordString.split(",");
-        Hexagon hex = new Hexagon(tileSize2, color);
-
-        // if the row is even, translate the tile to the right by tileSize/2
-        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
-        // Translate the whole tile's Y axis downwards so they connect and there's no gap
-        hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
-
-        // Translate the tile so they look center
-        hex.setTranslateX(12 + hex.getTranslateX());
-        board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
-
-        // Add a mouse click event to the tile
-        hex.setOnMouseClicked(event -> {
-            tileClick(coordString);
-        });
-    }
-
     // Adding labels to the resources tiles and stones tiles
     void addLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
         // If the string empty, stop the function
@@ -463,28 +479,6 @@ public class Game extends Application {
         newLabel.setTranslateX(19.5 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
 
-        // Add a mouse click event to the tile
-        newLabel.setOnMouseClicked(event -> {
-            tileClick(coordString);
-        });
-    }
-
-    // Adding labels to the villagers and settlers
-    void addSmallLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
-        // If the string empty, stop the function
-        if (coordString.equals("")) return;
-        String[] coords = coordString.split(",");
-        Label newLabel = new Label(labelName);
-        newLabel.setTextFill(color);
-        newLabel.setFont(Font.font("Sans Serif", 9));
-
-        // Following the tile's pos format
-        if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
-        newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
-
-        // Making the label center
-        newLabel.setTranslateX(11 + newLabel.getTranslateX());
-        board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
         // Add a mouse click event to the tile
         newLabel.setOnMouseClicked(event -> {
             tileClick(coordString);
@@ -527,6 +521,4 @@ public class Game extends Application {
         }
     }
     // endregion
-
-
 }
