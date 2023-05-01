@@ -31,6 +31,27 @@ public class Resource {
     }
 
     /**
+     * Get the type of the resource
+     * @return String type of the resource
+     */
+    public String getTypeString() {
+        switch (type){
+            case 'C':
+                return "Coconut";
+            case 'B':
+                return "Bamboo";
+            case 'W':
+                return "Water";
+            case 'P':
+                return "Precious Stone";
+            case 'S':
+                return "Statuette";
+            default:
+                return "Invalid";
+        }
+    }
+
+    /**
      * Get the coordinate of the resource
      * @return Coord coordinate of the resource
      */

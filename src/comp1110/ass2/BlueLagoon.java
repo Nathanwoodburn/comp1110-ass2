@@ -307,8 +307,7 @@ public class BlueLagoon {
                         !isAdjacent(moveCoords, playerVillageCoords)) return false;
             }
         }
-        System.out.println(coordsContainer);
-                            return true;
+        return true;
     }
 
     private static boolean isAdjacent(String centerCoords, ArrayList<String> coordsContainer) {

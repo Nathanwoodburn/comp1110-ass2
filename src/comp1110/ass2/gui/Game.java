@@ -1,9 +1,6 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.Coord;
-import comp1110.ass2.Island;
-import comp1110.ass2.Player;
-import comp1110.ass2.State;
+import comp1110.ass2.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,8 +19,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-// FIXME Task 14
-// FIXME Task 15
 public class Game extends Application {
 
     // region Variables
@@ -35,13 +30,21 @@ public class Game extends Application {
 
     State currentGame;
     String message;
+    Boolean messageError;
+
+    Coord selectedTile;
+
+    Boolean AI;
 
     // endregion
 
 
     @Override
     public void start(Stage stage) throws Exception {
+        AI = false;
+        selectedTile = new Coord(-1,-1);
         message = "Waiting for Move...";
+        messageError = false;
         Scene scene = new Scene(this.root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // From Viewer
@@ -56,53 +59,9 @@ public class Game extends Application {
         stage.setResizable(false);
         stage.show();
         newGame(2);
+
     }
 
-
-    /**
-     * Create a basic text field for input and a refresh button.
-     */
-    private void makeControls() {
-        Label newLabel = new Label("New Game:");
-        Button twoPlayer = new Button("2 Player");
-        Button threePlayer = new Button("3 Player");
-        Button fourPlayer = new Button("4 Player");
-        Button AIMove = new Button("AI Move");
-
-
-        twoPlayer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                newGame(2);
-            }
-        });
-        threePlayer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                newGame(3);
-            }
-        });
-        fourPlayer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                newGame(4);
-            }
-        });
-
-        AIMove.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                doAIMove();
-            }
-        });
-
-        HBox hb = new HBox();
-        hb.getChildren().addAll(newLabel, twoPlayer,threePlayer,fourPlayer,AIMove);
-        hb.setSpacing(10);
-        hb.setLayoutX(50);
-        hb.setLayoutY(WINDOW_HEIGHT - 50);
-        controls.getChildren().add(hb);
-    }
 
     /**
      * Start a new game with the given number of players
@@ -128,39 +87,147 @@ public class Game extends Application {
     
     
     // region Game Play
-    
-    void doMove(){
-        
-        
-    }
-    void doAIMove(){
-        if (!currentGame.isPhaseOver()){
-            currentGame.getCurrentPlayer().doAIMove(currentGame);
-            if (currentGame.isPhaseOver()){
-                sendMessage("Phase is over");
-            }
-            refresh();
+
+    /**
+     * Do a move of the given type
+     * @param type the type of move 0 = place settler, 1 = place village
+     */
+    void doMove(int type){
+        if (selectedTile.equals(new Coord(-1,-1))){
+            sendMessage("No tile selected");
+            return;
+        }
+        if (currentGame.isPhaseOver()){
+            sendMessage("Phase is over");
+            return;
         }
         else {
-            sendMessage("Phase is over. Can't do AI move");
+            char typeC = 'S';
+            if (type == 1){
+                typeC = 'T';
+                if (currentGame.getCurrentPlayer().getVillages().length >= 5){
+                    sendMessage("You have placed all your villages");
+                    return;
+                }
+            }
+
+
+
+            if (currentGame.isMoveValid(selectedTile,typeC)){
+                currentGame.placePiece(selectedTile,typeC);
+                Player player = currentGame.getCurrentPlayer();
+                Coord lastMove = player.getLastMove();
+                String message = "";
+                if (currentGame.isStone(lastMove)){
+                    for (Resource resource : currentGame.getResources()) {
+                        if (resource.getCoord().equals(lastMove) ) {
+                            message = "Player " + player.getPlayerID() +" picked up a " + resource.getTypeString().toLowerCase();
+                        }
+                    }
+                }
+                currentGame.nextPlayer();
+                selectedTile = new Coord(-1,-1);
+                if (AI) {
+                    String AI = doAIMove();
+                    sendMessage(message + "\n" + AI);
+                }
+                else {
+                    sendMessage(message);
+                }
+            }
+            else {
+                sendMessage("Invalid move",true);
+            }
         }
+
+        if (currentGame.isPhaseOver()){
+            sendMessage("Starting next phase");
+            currentGame.scorePhase();
+            if (currentGame.getCurrentPhase() == 'E') {
+                currentGame.cleanBoard();
+                currentGame.distributeResources();
+            }
+            else {
+                sendMessage("Game over");
+            }
+        }
+
+        refresh();
+    }
+
+    /**
+     * Do an AI move for the current player
+     * @return the message to be displayed
+     */
+    String doAIMove(){
+        String message = "";
+        if (!currentGame.isPhaseOver()){
+            Player player = currentGame.getCurrentPlayer();
+            player.doAIMove(currentGame);
+
+            if (currentGame.isPhaseOver()){
+                message = "Starting next phase";
+            }
+            if (!player.getLastMove().equals(new Coord(-1,-1))){
+                Coord lastMove = player.getLastMove();
+                if (currentGame.isStone(lastMove)){
+                    for (Resource resource : currentGame.getResources()) {
+                        if (resource.getCoord().equals(lastMove) ) {
+                            message = "AI picked up a " + resource.getTypeString().toLowerCase();
+                        }
+                    }
+                }
+                else {
+                    message = "AI placed at " + lastMove.toString();
+                }
+            }
+        }
+        if (currentGame.isPhaseOver()){
+            currentGame.scorePhase();
+            if (currentGame.getCurrentPhase() == 'E') {
+                currentGame.cleanBoard();
+                currentGame.distributeResources();
+            }
+            else {
+                message = "Game over";
+            }
+        }
+        refresh();
+        return message;
     }
     // endregion
-    
-    // region HID
 
+    // region Display
+
+    /**
+     * Send a message to the user without error
+     * @param message the message to send
+     */
     void sendMessage(String message){
         sendMessage(message, false);
     }
+
+    /**
+     * Send a message to the user
+     * @param message the message to send
+     * @param error if the message is an error
+     */
     void sendMessage(String message, boolean error){        
         this.message = message;
+        messageError = error;
         refresh();
     }
-    
-    
-    // endregion
-    
-    // region From Viewer
+
+    void tileClick(String coordString){
+
+        int y = Integer.parseInt(coordString.split(",")[0]);
+        int x = Integer.parseInt(coordString.split(",")[1]);
+
+        selectedTile = new Coord(y,x);
+        sendMessage("Tile " + selectedTile.toString() + " selected");
+        refresh();
+    }
+
     void refresh() {
         // When refreshing, it clears the whole thing and update it
         root.getChildren().clear();
@@ -168,14 +235,20 @@ public class Game extends Application {
 
         // Add the message
         Label messageLabel = new Label(message);
-        messageLabel.setLayoutX(50);
-        messageLabel.setLayoutY(50);
+        messageLabel.setLayoutX(0);
+        messageLabel.setLayoutY(250);
         messageLabel.setFont(Font.font("Sans Serif",FontWeight.BOLD, 20));
+        if (messageError){
+            messageLabel.setTextFill(Color.RED);
+        }
+        else {
+            messageLabel.setTextFill(Color.BLACK);
+        }
+
         root.getChildren().add(messageLabel);
 
-        // Intizialiation of the grid
+        // Initialization of the grid
         GridPane viewerGrid = new GridPane();
-        String[] parts = currentGame.toString().split("; ?");
         int boardHeight = 0;
         int boardHeightPx = 0;
         int tileSize = 0;
@@ -241,7 +314,8 @@ public class Game extends Application {
         for (int i = 0; i < currentGame.getNumPlayers(); i++){
             Player currentPlayer = currentGame.getPlayer(i);
             // Add the player's score to the playerData string
-            playerData += "\nPlayer " + i + ": " + currentPlayer.getScore();
+            if (AI && i == 1) playerData += "\nAI: " + currentPlayer.getScore();
+            else playerData += "\nPlayer " + i + ": " + currentPlayer.getScore();
 
             // Settler tile generator
             for (Coord c: currentPlayer.getSettlers()){
@@ -269,13 +343,84 @@ public class Game extends Application {
         playerStateText.setY(100);
         playerStateText.setFill(Color.BLACK);
         root.getChildren().add(playerStateText);
+
         // Relocate the grid to be more center
-        viewerGrid.relocate((WINDOW_WIDTH/2-viewerGrid.getPrefWidth()/2), ((WINDOW_HEIGHT+100)/2-viewerGrid.getPrefHeight()/2));
+        viewerGrid.relocate((WINDOW_WIDTH/2-viewerGrid.getPrefWidth()/2) + (WINDOW_WIDTH/10), ((WINDOW_HEIGHT+100)/2-viewerGrid.getPrefHeight()/2));
         root.getChildren().add(viewerGrid);
+
+        // Add selected tile
+        if (!selectedTile.equals(new Coord(-1,-1))){
+            addTileSelector(viewerGrid, tileSize, selectedTile.toString());
+        }
 
         // Move buttons to front
         controls.toFront();
+    }
 
+    /**
+     * Create a basic text field for input and a refresh button.
+     */
+    private void makeControls() {
+        Label newLabel = new Label("New Game:");
+        Button twoPlayer = new Button("2 Player");
+        Button twoPlayerAI = new Button("2 Player with AI");
+        Button threePlayer = new Button("3 Player");
+        Button fourPlayer = new Button("4 Player");
+        Button placeVillage = new Button("Place Village");
+        Button placeSettler = new Button("Place Settler");
+
+
+        twoPlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = false;
+                newGame(2);
+            }
+        });
+
+        twoPlayerAI.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = true;
+                newGame(2);
+            }
+        });
+
+        threePlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = false;
+                newGame(3);
+            }
+        });
+        fourPlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                AI = false;
+                newGame(4);
+            }
+        });
+
+        placeVillage.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                doMove(1);
+            }
+        });
+
+        placeSettler.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                doMove(0);
+            }
+        });
+
+        HBox hb = new HBox();
+        hb.getChildren().addAll(newLabel, twoPlayer,twoPlayerAI,threePlayer,fourPlayer,placeVillage,placeSettler);
+        hb.setSpacing(10);
+        hb.setLayoutX(50);
+        hb.setLayoutY(WINDOW_HEIGHT - 50);
+        controls.getChildren().add(hb);
     }
 
     // Generating the big board tiles such as the water tiles and the island tiles
@@ -292,6 +437,12 @@ public class Game extends Application {
         // Translate the whole tile's Y axis downwards so they connect and there's no gap
         hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
         board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+
+        // Add a mouse click event to the tile
+        hex.setOnMouseClicked(event -> {
+            tileClick(coordString);
+        });
+
     }
 
     // Generating the small tiles such as resources, stones, etc
@@ -312,25 +463,11 @@ public class Game extends Application {
         // Translate the tile so they look center
         hex.setTranslateX(7 + hex.getTranslateX());
         board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
-    }
 
-    void addTileToBoard(GridPane board, int tileSize, String coordString, Color color) {
-        int tileSize2 = tileSize;
-        tileSize2 -= 25;
-
-        // If the string empty, stop the function
-        if (coordString.equals("")) return;
-        String[] coords = coordString.split(",");
-        Hexagon hex = new Hexagon(tileSize2, color);
-
-        // if the row is even, translate the tile to the right by tileSize/2
-        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
-        // Translate the whole tile's Y axis downwards so they connect and there's no gap
-        hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
-
-        // Translate the tile so they look center
-        hex.setTranslateX(12 + hex.getTranslateX());
-        board.add(hex, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+        // Add a mouse click event to the tile
+        hex.setOnMouseClicked(event -> {
+            tileClick(coordString);
+        });
     }
 
     // Adding labels to the resources tiles and stones tiles
@@ -349,24 +486,32 @@ public class Game extends Application {
         // Making the label center
         newLabel.setTranslateX(19.5 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
-    }
 
-    // Adding labels to the villagers and settlers
-    void addSmallLabelToTile(GridPane board, int tileSize, String coordString, Color color, String labelName){
+        // Add a mouse click event to the tile
+        newLabel.setOnMouseClicked(event -> {
+            tileClick(coordString);
+        });
+    }
+    void addTileSelector(GridPane board, int tileSize, String coordString){
         // If the string empty, stop the function
         if (coordString.equals("")) return;
         String[] coords = coordString.split(",");
-        Label newLabel = new Label(labelName);
-        newLabel.setTextFill(color);
-        newLabel.setFont(Font.font("Sans Serif", 9));
+        Label newLabel = new Label("X");
+        newLabel.setFont(Font.font("Sans Serif", 20));
 
         // Following the tile's pos format
         if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
 
         // Making the label center
-        newLabel.setTranslateX(11 + newLabel.getTranslateX());
+        newLabel.setTranslateX(17 + newLabel.getTranslateX());
+        newLabel.setTextFill(Color.RED);
+
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
+        // Add a mouse click event to the tile
+        newLabel.setOnMouseClicked(event -> {
+            tileClick(coordString);
+        });
     }
 
     // A hexagon nested class shape
@@ -384,6 +529,4 @@ public class Game extends Application {
         }
     }
     // endregion
-
-
 }

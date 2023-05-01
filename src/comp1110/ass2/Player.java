@@ -20,6 +20,7 @@ public class Player {
     private int numStatuette;
     private Coord[] settlers;
     private Coord[] villages;
+    private Coord lastMove;
 
     /**
      * Constructor for Player class
@@ -36,6 +37,7 @@ public class Player {
         this.numStatuette = 0;
         this.settlers = new Coord[0];
         this.villages = new Coord[0];
+        lastMove = new Coord(-1, -1);
     }
     // endregion
     // region Getters and Setters
@@ -151,6 +153,7 @@ public class Player {
         }
         newSettlers[settlers.length] = coord;
         settlers = newSettlers;
+        lastMove = coord;
     }
 
     /**
@@ -169,6 +172,7 @@ public class Player {
         }
         newVillages[villages.length] = coord;
         villages = newVillages;
+        lastMove = coord;
     }
 
     /**
@@ -224,6 +228,10 @@ public class Player {
         return numPieces;
     }
 
+    public Coord getLastMove() {
+        return lastMove;
+    }
+
     // endregion
 
     /**
@@ -259,6 +267,7 @@ public class Player {
                 int x = Integer.parseInt(coordStr.split(",")[0]);
                 int y = Integer.parseInt(coordStr.split(",")[1]);
                 Coord coord = new Coord(x, y);
+                lastMove = coord;
                 state.placePiece(coord, pieceType);
                 state.nextPlayer();
                 return;
@@ -309,6 +318,7 @@ public class Player {
         int x = Integer.parseInt(coordStr.split(",")[0]);
         int y = Integer.parseInt(coordStr.split(",")[1]);
         Coord coord = new Coord(x, y);
+        lastMove = coord;
         state.placePiece(coord, pieceType);
         state.nextPlayer();
     }
