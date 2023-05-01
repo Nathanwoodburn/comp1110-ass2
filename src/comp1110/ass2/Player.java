@@ -1,7 +1,10 @@
 package comp1110.ass2;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
+
+import static comp1110.ass2.BlueLagoon.isAdjacent;
 
 /**
  * Player class
@@ -237,8 +240,94 @@ public class Player {
      * @return true if player can do any moves, false otherwise
      */
     public boolean canPlay(State state) {
-        Set<String> validMoves = BlueLagoon.generateAllValidMoves(state.toString());
-        return validMoves.size() > 0;
+
+        // Check if the player has placed all their settlers or villages
+        int startNumSettlers = switch (state.getNumPlayers()) {
+            case 2 -> 30;
+            case 3 -> 25;
+            case 4 -> 20;
+            default -> 0;
+        };
+        boolean hasSettler = (settlers.length < startNumSettlers);
+        boolean hasVillage = (settlers.length < 5);
+        if (!hasSettler && !(hasVillage && state.getCurrentPhase() == 'E')) return false;
+
+        // Add used coords
+        ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
+        ArrayList<String> villageCoords = new ArrayList<>(); // Placed villages coordinates
+        ArrayList<String> playerSettlerCoords = new ArrayList<>(); // The current Player's settler coords
+        ArrayList<String> playerVillageCoords = new ArrayList<>(); // The current Player's Village coords
+
+        for (int i = 0; i < state.getNumPlayers(); i++){
+            for (Coord c: state.getPlayer(i).getSettlers()){
+                settlerCoords.add(c.toString());
+            }
+            for (Coord c: state.getPlayer(i).getVillages()){
+                villageCoords.add(c.toString());
+            }
+        }
+
+        for (Coord c: settlers){
+            playerSettlerCoords.add(c.toString());
+        }
+        for (Coord c: villages){
+            playerVillageCoords.add(c.toString());
+        }
+
+        // Get the coordinates of the islands
+        ArrayList<String> islandCoords = new ArrayList<>();
+
+        for (Island island : state.getIslands()) {
+            for (Coord c:island.getCoords()){
+                islandCoords.add(c.toString());
+            }
+        }
+
+        // Generate all possible coordinates in an array
+        String[] coordinates = new String[state.boardHeight * state.boardHeight];
+        int index = 0;
+        for (int i = 0; i < state.boardHeight; i++){
+            for (int j = 0; j < state.boardHeight; j++){
+                coordinates[index] = j + "," + i;
+                index++;
+            }
+        }
+
+        // For each coordinate
+        for (String cord:coordinates) {
+            // Make sure the coordinate is not already used
+            if(settlerCoords.contains(cord)) continue;
+            if(villageCoords.contains(cord)) continue;
+            // Make sure the coordinate is in bounds
+            int y = Integer.parseInt(cord.split(",")[1]);
+            if(Integer.parseInt(cord.substring(0,cord.indexOf(','))) % 2 == 0) {
+                if(y > state.boardHeight - 2) continue;
+            }
+            else if(y > state.boardHeight - 1) continue;
+            switch (state.getCurrentPhase()) {
+                case 'E' -> {
+                    if (!islandCoords.contains(cord)) {
+                        if (hasSettler) return true;
+                        break;
+                    }
+                    // If the Village is being placed on the sea return false
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
+                        // Add the move to the set
+                        if (hasVillage) return true;
+                        if (hasSettler) return true;
+                    }
+                }
+                // Settlement Phase
+                case 'S' -> {
+                    // if the settler is not adjacent with any of the pieces return false
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
+                        // Add the move to the set
+                        if (hasSettler) return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     // endregion
