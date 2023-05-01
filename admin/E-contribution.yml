@@ -10,8 +10,8 @@ declaration: >-
 contributions:
   - uid: u7156831
     contribution: 33 
-  - uid:
-    contribution:
+  - uid: u7492895
+    contribution: 33
   - uid: u7280427
     contribution: 33
 
@@ -20,7 +20,7 @@ contributions:
 signatures:
   - name: Nathan Woodburn
     uid: u7156831
-  - name:
-    uid:
+  - name: Justin Ryu
+    uid: u7492895
   - name: Immanuel Alvaro Bhirawa
     uid: u7280427
