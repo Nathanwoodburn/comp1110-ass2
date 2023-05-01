@@ -309,53 +309,7 @@ public class BlueLagoon {
         return false;
     }
 
-    /**
-     * This method is to check if the move is valid for the current player
-     * This is a very trimmed down version of the isMoveValid method
-     *
-     * @param pieceType Type of piece being placed (S = Settler, T = Village)
-     * @param moveCoords The coords of the piece being placed (i.e. 1,2)
-     * @param currentPhase The current phase of the game (E = Exploration, S = Settlement)
-     * @param coordsContainer The coords of the land in a ArrayList of Strings
-     * @param settlerCoords The coords of the Settlers in a ArrayList of Strings
-     * @param villageCoords The coords of the Villages in a ArrayList of Strings
-     * @param playerSettlerCoords The coords of the Settlers of the current player in a ArrayList of Strings
-     * @param playerVillageCoords The coords of the Villages of the current player in a ArrayList of Strings
-     * @return boolean True if the move is valid, false if the move is invalid
-     */
-
-    public static boolean isMoveValidTrim(State state,String pieceType, String moveCoords, ArrayList<String> IslandCoords,
-                                          ArrayList<String> settlerCoords,
-                                          ArrayList<String> villageCoords, ArrayList<String> playerSettlerCoords,
-                                          ArrayList<String> playerVillageCoords) {
-
-        // For Exploration Phase and or Settlement Phase
-        switch(state.getCurrentPhase()){
-            // Exploration Phase
-            case 'E':
-                // If the Village is being placed on the sea return false
-                if(pieceType.equals("T") && !IslandCoords.contains(moveCoords)) return false;
-                // if the village is placed on Land and it's not adjacent to any
-                // of the pieces return false
-                if(pieceType.equals("T") && (!isAdjacent(moveCoords, playerVillageCoords) &&
-                        !isAdjacent(moveCoords, playerSettlerCoords))) return false;
-                // If settler is on land and it's not adjacent to any of the pieces
-                // return false
-                if(pieceType.equals("S") && IslandCoords.contains(moveCoords)){
-                    if(!isAdjacent(moveCoords, playerSettlerCoords) &&
-                            !isAdjacent(moveCoords, playerVillageCoords)) return false;
-                }
-                break;
-            // Settlement Phase
-            case 'S':
-                // if the settler is not adjacent with any of the pieces return false
-                if(!isAdjacent(moveCoords, playerSettlerCoords) &&
-                        !isAdjacent(moveCoords, playerVillageCoords)) return false;
-        }
-        return true;
-    }
-
-    /**
+     /**
      * Given a state string, generate a set containing all move strings playable
      * by the current player.
      * <p>
@@ -372,16 +326,9 @@ public class BlueLagoon {
         // Get information from the state string
         int numPlayers = state.getNumPlayers();
         char gamePhase = state.getCurrentPhase();
-        String currentPlayer = state.getCurrentPlayer().toString();
 
         // Get the board size
         int boardHeight = state.boardHeight;
-        // Get player data
-
-        ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
-        ArrayList<String> villageCoords = new ArrayList<>(); // Placed villages coordinates
-        ArrayList<String> playerSettlerCoords = new ArrayList<>(); // The current Player's settler coords
-        ArrayList<String> playerVillageCoords = new ArrayList<>(); // The current Player's Village coords
 
         // Create a set to store all possible moves
         Set<String> allMoves = new HashSet<>();
@@ -407,15 +354,19 @@ public class BlueLagoon {
 
         if (!hasSettler && !(hasVillage && gamePhase == 'E')) return allMoves;
 
-        for (int i = 0; i < numPlayers; i++){
-            // Add cords to list
+        // Add used coords
+        ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
+        ArrayList<String> villageCoords = new ArrayList<>(); // Placed villages coordinates
+        ArrayList<String> playerSettlerCoords = new ArrayList<>(); // The current Player's settler coords
+        ArrayList<String> playerVillageCoords = new ArrayList<>(); // The current Player's Village coords
 
-            for (Coord c: state.getPlayer(i).getSettlers()){
+        for (int i = 0; i < numPlayers; i++){
+           for (Coord c: state.getPlayer(i).getSettlers()){
                 settlerCoords.add(c.toString());
-            }
-            for (Coord c: state.getPlayer(i).getVillages()){
+           }
+           for (Coord c: state.getPlayer(i).getVillages()){
                 villageCoords.add(c.toString());
-            }
+           }
         }
 
         for (Coord c: state.getCurrentPlayer().getSettlers()){
@@ -446,17 +397,17 @@ public class BlueLagoon {
 
         // For each coordinate
         for (String cord:coordinates) {
+            // Make sure the coordinate is not already used
             if(settlerCoords.contains(cord)) continue;
             if(villageCoords.contains(cord)) continue;
-
+            // Make sure the coordinate is in bounds
             int y = Integer.parseInt(cord.split(",")[1]);
             if(Integer.parseInt(cord.substring(0,cord.indexOf(','))) % 2 == 0) {
                 if(y > boardHeight - 2) continue;
             }
             else if(y > boardHeight - 1) continue;
-
-            switch (state.getCurrentPhase()) {
-                case 'E':
+            switch (gamePhase) {
+                case 'E' -> {
                     if (!coordsContainer.contains(cord)) {
                         if (hasSettler) allMoves.add("S " + cord);
                         break;
@@ -467,15 +418,15 @@ public class BlueLagoon {
                         if (hasVillage) allMoves.add("T " + cord);
                         if (hasSettler) allMoves.add("S " + cord);
                     }
-                    break;
+                }
                 // Settlement Phase
-                case 'S':
+                case 'S' -> {
                     // if the settler is not adjacent with any of the pieces return false
                     if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
                         // Add the move to the set
                         if (hasSettler) allMoves.add("S " + cord);
                     }
-                    break;
+                }
             }
         }
         return allMoves;
