@@ -288,7 +288,7 @@ public class BlueLagoon {
         return true;
     }
 
-    private static boolean isAdjacent(String centerCoords, ArrayList<String> coordsContainer) {
+    public static boolean isAdjacent(String centerCoords, ArrayList<String> coordsContainer) {
         String[] coordsSplit = centerCoords.split(",");
         int mainX = Integer.parseInt(coordsSplit[1]); // xCoord for center Coords
         int mainY = Integer.parseInt(coordsSplit[0]); // yCoord for center Coords
