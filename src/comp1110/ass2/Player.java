@@ -450,6 +450,10 @@ public class Player {
         return true;
     }
 
+    /**
+     * Get the string representation of the player
+     * @return String representation of the player in playerString format
+     */
     @Override
     public String toString() {
         String str = "p " + playerID + " " + score + " " + numCoconuts + " " + numBamboo + " " + numWater + " " + numPreciousStones + " " + numStatuette + " S";

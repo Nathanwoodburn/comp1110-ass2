@@ -26,7 +26,7 @@ public class State {
     private int currentPhase; // 0 for exploration, 1 for settlement
 
     private Island[] islands;
-    private Coord[] stonesCoords;
+    final private Coord[] stonesCoords;
     private Resource[] resources;
     private Player[] players;
     // endregion
@@ -144,7 +144,10 @@ public class State {
         }
     }
 
-
+    /**
+     * Add a player to the game
+     * This will add a player to the game if there is less than the maximum number of players
+     */
     public void addPlayer(){
         if (numPlayers >= maxPlayers) return; // There are already the maximum number of players
         Player[] oldPlayers = players;
@@ -157,6 +160,9 @@ public class State {
         numPlayers++;
     }
 
+    /**
+     * Distribute the resources to the stone circles randomly
+     */
     public void distributeResources() {
         if (stonesCoords.length != 32) return; // There are not enough stones to distribute resources
 
@@ -843,6 +849,10 @@ public class State {
         return str;
     }
 
+    /**
+     * Get a string representation of the score of each player
+     * @return String scoreString
+     */
     public String scoreString() {
         String str = "";
         for (Player player : players) {
