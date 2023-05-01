@@ -336,8 +336,9 @@ public class Game extends Application {
         playerStateText.setY(100);
         playerStateText.setFill(Color.BLACK);
         root.getChildren().add(playerStateText);
+
         // Relocate the grid to be more center
-        viewerGrid.relocate((WINDOW_WIDTH/2-viewerGrid.getPrefWidth()/2), ((WINDOW_HEIGHT+100)/2-viewerGrid.getPrefHeight()/2));
+        viewerGrid.relocate((WINDOW_WIDTH/2-viewerGrid.getPrefWidth()/2) + (WINDOW_WIDTH/10), ((WINDOW_HEIGHT+100)/2-viewerGrid.getPrefHeight()/2));
         root.getChildren().add(viewerGrid);
 
         // Add selected tile
