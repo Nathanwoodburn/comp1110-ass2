@@ -105,7 +105,14 @@ public class Game extends Application {
             char typeC = 'S';
             if (type == 1){
                 typeC = 'T';
+                if (currentGame.getCurrentPlayer().getVillages().length >= 5){
+                    sendMessage("You have placed all your villages");
+                    return;
+                }
             }
+
+
+
             if (currentGame.isMoveValid(selectedTile,typeC)){
                 currentGame.placePiece(selectedTile,typeC);
                 Player player = currentGame.getCurrentPlayer();
