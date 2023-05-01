@@ -422,8 +422,6 @@ public class State {
                 if (player.canPlay(this)) moveLeft = true;
             }
         }
-
-
         return !resourcesLeft || !moveLeft;
     }
 
@@ -597,6 +595,11 @@ public class State {
     // endregion
 
     // region String conversion
+
+    /**
+     * Convert board to stateString format string
+     * @return String stateString
+     */
     @Override
     public String toString() {
         String str = "a " + boardHeight + " " + getNumPlayers() + "; c " + getCurrentPlayerID() + " " + getCurrentPhase() + "; ";
