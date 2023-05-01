@@ -4,7 +4,7 @@ Reviewed by: Nathan Woodburn, u7156831
 
 Reviewing code written by: Immanuel Alvaro Bhirawa, u7280427
 
-Component: `isMoveValid` from [BlueLagoon.java L145-L311](https://gitlab.cecs.anu.edu.au/u7156831/comp1110-ass2/-/blob/master/src/comp1110/ass2/BlueLagoon.java#L145-L311)
+Component: `isMoveValid` from [BlueLagoon.java L145-L311](https://gitlab.cecs.anu.edu.au/u7156831/comp1110-ass2/-/blob/b8487c3c0826bef4e676a13f8ea05c578c73d2de/src/comp1110/ass2/BlueLagoon.java#L145-L311)
 
 ### Comments
 
@@ -17,10 +17,10 @@ Component: `isMoveValid` from [BlueLagoon.java L145-L311](https://gitlab.cecs.an
 
 - Places to improve:  
   - Some comments are not needed, such as commenting about well named variables.
-  ```java
-  int numberOfPlayer = 0; // Number of player
-  String playerId = ""; // Player ID
-  ```
+    ```java
+    int numberOfPlayer = 0; // Number of player
+    String playerId = ""; // Player ID
+    ```
   - Duplicate code could be avoided. For example [this switch](https://gitlab.cecs.anu.edu.au/u7156831/comp1110-ass2/-/blob/b8487c3c0826bef4e676a13f8ea05c578c73d2de/src/comp1110/ass2/BlueLagoon.java#L231-L256) could be shortened to the below to avoid duplicate code.
     ```java
     switch (numberOfPlayer) {
