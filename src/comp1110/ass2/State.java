@@ -395,6 +395,18 @@ public class State {
     }
 
     /**
+     * Is move valid?
+     * @param coord Coord coordinate to place piece
+     * @param type char type of piece
+     * @return boolean true if move is valid
+     */
+    public boolean isMoveValid(Coord coord, char type){
+        // Create moveString
+        String moveString = type + " " + coord.toString();
+        return BlueLagoon.isMoveValid(this.toString(), moveString);
+    }
+
+    /**
      * is the phase over?
      * Defaults to simple mode
      */
