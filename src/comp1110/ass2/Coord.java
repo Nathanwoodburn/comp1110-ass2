@@ -91,7 +91,7 @@ public class Coord {
     }
 
     /**
-     * Get a string representation of the coordinate
+     * Get a string representation of the coordinate (y,x)
      * @return String representation of the coordinate
      */
     @Override
