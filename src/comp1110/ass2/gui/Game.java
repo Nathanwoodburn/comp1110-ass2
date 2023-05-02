@@ -21,6 +21,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Game extends Application {
 
     // region Variables
@@ -46,7 +48,7 @@ public class Game extends Application {
      *
      * @param stage the primary stage for this application, onto which
      * the application scene can be set.
-     * @throws Exception
+     * @throws Exception if there is an error
      */
     @Override
     public void start(Stage stage) throws Exception {
@@ -64,12 +66,12 @@ public class Game extends Application {
         // Set some app properties
         stage.setScene(scene);
         stage.setTitle("Blue Lagoon");
-        stage.getIcons().add(new javafx.scene.image.Image(Game.class.getResourceAsStream("favicon.png")));
+        stage.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(
+                Game.class.getResourceAsStream("favicon.png"))));
         stage.setResizable(false);
         stage.show();
         // Create a new game
         newGame(2);
-
     }
 
 
@@ -91,16 +93,14 @@ public class Game extends Application {
         }
 
         // Add additional players as needed
-        switch (numPlayers){
-            case 3:
-                currentGame.addPlayer();
-                break;
-            case 4:
+        switch (numPlayers) {
+            case 3 -> currentGame.addPlayer();
+            case 4 -> {
                 currentGame.addPlayer();
                 currentGame.addPlayer();
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
         if (AI >= numPlayers){
@@ -164,11 +164,11 @@ public class Game extends Application {
 
                 // If the move was a stone, send a message about it
                 Coord lastMove = selectedTile;
-                String message = "";
+                StringBuilder message = new StringBuilder();
                 if (currentGame.isStone(lastMove)){
                     for (Resource resource : currentGame.getResources()) {
                         if (resource.getCoord().equals(lastMove) ) {
-                            message = "Player " + currentGame.getCurrentPlayerID() +" picked up a " + resource.getTypeString().toLowerCase();
+                            message = new StringBuilder("Player " + currentGame.getCurrentPlayerID() + " picked up a " + resource.getTypeString().toLowerCase());
                         }
                     }
                 }
@@ -177,11 +177,11 @@ public class Game extends Application {
                 currentGame.nextPlayer();
                 selectedTile = new Coord(-1,-1);
                 while (currentGame.getCurrentPlayer().isAI()) {
-                    message += "\n"+ doAIMove();
+                    message.append("\n").append(doAIMove());
                 }
 
                 // Send the message to the user
-                sendMessage(message);
+                sendMessage(message.toString());
             }
             else {
                 sendMessage("Invalid move",true);
@@ -194,9 +194,9 @@ public class Game extends Application {
             if (currentGame.getCurrentPhase() == 'E') {
                 currentGame.cleanBoard();
                 currentGame.distributeResources();
-                String AI = "";
+                StringBuilder AI = new StringBuilder();
                 while (currentGame.getCurrentPlayer().isAI()) {
-                    AI += "\n"+ doAIMove();
+                    AI.append("\n").append(doAIMove());
                 }
                 sendMessage("Next phase!\n" + AI);
             }
@@ -242,11 +242,11 @@ public class Game extends Application {
                 currentGame.cleanBoard();
                 currentGame.distributeResources();
                 currentGame.nextPhase();
-                String AI = "Next phase!\n";
+                StringBuilder AI = new StringBuilder("Next phase!\n");
                 while (currentGame.getCurrentPlayer().isAI()) {
-                    AI += "\n"+ doAIMove();
+                    AI.append("\n").append(doAIMove());
                 }
-                message = AI;
+                message = AI.toString();
             }
             else {
                 message = "Game over!";
@@ -368,22 +368,18 @@ public class Game extends Application {
         // Getting the two mode of current state either Exploration
         // or settler
         char currentPhaseChar = currentGame.getCurrentPhase();
-        String currentPhase = "";
-        switch (currentPhaseChar) {
-            case 'E':
-                currentPhase = "Exploration";
-                break;
-            case 'S':
-                currentPhase = "Settlement";
-                break;
-        }
+        String currentPhase = switch (currentPhaseChar) {
+            case 'E' -> "Exploration";
+            case 'S' -> "Settlement";
+            default -> "";
+        };
 
         // Making the Current State Statement text on the window
         Text currentStateText = new Text();
         currentStateText.setText("The current player to move is player " +
                 playerId + "\nCurrent Phase: " + currentPhase);
         currentStateText.setFont(Font.font("Sans Serif", FontWeight.BOLD, 20));
-        currentStateText.setX(WINDOW_WIDTH / 2 + (WINDOW_WIDTH/5) - 175);
+        currentStateText.setX((double) WINDOW_WIDTH / 2 + ((double) WINDOW_WIDTH /5) - 175);
         currentStateText.setY(25);
         currentStateText.setTextAlignment(TextAlignment.CENTER);
         root.getChildren().add(currentStateText);
@@ -401,13 +397,13 @@ public class Game extends Application {
             addStoneTileToBoard(viewerGrid, tileSize, stoneCircle.toString(), Color.GRAY);
         }
 
-        String playerData = "Scores:";
+        StringBuilder playerData = new StringBuilder("Scores:");
         // For each player add their settlements and roads
         for (int i = 0; i < currentGame.getNumPlayers(); i++){
             Player currentPlayer = currentGame.getPlayer(i);
             // Add the player's score to the playerData string
-            if (currentPlayer.isAI()) playerData += "\nAI " + i +  ": " +  currentPlayer.getScore();
-            else playerData += "\nPlayer " + i + ": " + currentPlayer.getScore();
+            if (currentPlayer.isAI()) playerData.append("\nAI ").append(i).append(": ").append(currentPlayer.getScore());
+            else playerData.append("\nPlayer ").append(i).append(": ").append(currentPlayer.getScore());
 
             // Settler tile generator
             for (Coord c: currentPlayer.getSettlers()){
@@ -416,7 +412,7 @@ public class Game extends Application {
 
                 // Label generator
                 if (currentPlayer.isAI())
-                    addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "AI "+i);
+                    addLabelToTile(viewerGrid, tileSize, c.toString(), Color.GREEN, "AI "+i);
                 else
                     addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "P "+i);
             }
@@ -434,7 +430,7 @@ public class Game extends Application {
         }
         // Adding the player Statement Text to the window
         Text playerStateText = new Text();
-        playerStateText.setText(playerData);
+        playerStateText.setText(playerData.toString());
         playerStateText.setFont(Font.font("Sans Serif", FontWeight.BOLD, 25));
         playerStateText.setX(0);
         playerStateText.setY(100);
@@ -442,8 +438,8 @@ public class Game extends Application {
         root.getChildren().add(playerStateText);
 
         // Add the grid to the root
-        viewerGrid.relocate((WINDOW_WIDTH/2-viewerGrid.getPrefWidth()/2) + (WINDOW_WIDTH/5),
-                ((WINDOW_HEIGHT+100)/2-viewerGrid.getPrefHeight()/2));
+        viewerGrid.relocate(((double) WINDOW_WIDTH /2-viewerGrid.getPrefWidth()/2) + ((double) WINDOW_WIDTH /5),
+                ((double) (WINDOW_HEIGHT + 100) /2-viewerGrid.getPrefHeight()/2));
         root.getChildren().add(viewerGrid);
 
         // Add selected tile
@@ -492,25 +488,13 @@ public class Game extends Application {
         mapSelector.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                switch (mapSelector.getValue().toString()){
-                    case "Default":
-                        game_selected = 0;
-                        break;
-                    case "Wheels":
-                        game_selected = 1;
-                        break;
-                    case "Face":
-                        game_selected = 2;
-                        break;
-                    case "Sides":
-                        game_selected = 3;
-                        break;
-                    case "Space Invaders":
-                        game_selected = 4;
-                        break;
-                    default:
-                        game_selected = 0;
-                        break;
+                switch (mapSelector.getValue().toString()) {
+                    case "Default" -> game_selected = 0;
+                    case "Wheels" -> game_selected = 1;
+                    case "Face" -> game_selected = 2;
+                    case "Sides" -> game_selected = 3;
+                    case "Space Invaders" -> game_selected = 4;
+                    default -> game_selected = 0;
                 }
             }
         });
@@ -576,7 +560,7 @@ public class Game extends Application {
         Hexagon hex = new Hexagon(tileSize, color);
 
         // if the row is even, translate the tile to the right by tileSize/2
-        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX((double) tileSize /2);
 
         // Translate the whole tile's Y axis downwards so they connect and there's no gap
         hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
@@ -606,7 +590,7 @@ public class Game extends Application {
         Hexagon hex = new Hexagon(tileSize2, color);
 
         // if the row is even, translate the tile to the right by tileSize/2
-        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX(tileSize/2);
+        if (Integer.parseInt(coords[0]) % 2 == 0) hex.setTranslateX((double) tileSize /2);
         // Translate the whole tile's Y axis downwards so they connect and there's no gap
         hex.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
 
@@ -637,7 +621,7 @@ public class Game extends Application {
         newLabel.setFont(Font.font("Sans Serif", 12));
 
         // Following the tile's pos format
-        if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX(tileSize/2);
+        if (Integer.parseInt(coords[0]) % 2 == 0) newLabel.setTranslateX((double) tileSize /2);
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
 
         // Making the label center
@@ -677,7 +661,7 @@ public class Game extends Application {
 
         // Adjust the label's position
         if (Integer.parseInt(coords[0]) % 2 == 0){
-            newLabel.setTranslateX(tileSize/2 + width);
+            newLabel.setTranslateX((double) tileSize /2 + width);
         } else
         {
             newLabel.setTranslateX(width);
@@ -696,7 +680,7 @@ public class Game extends Application {
      * A hexagon shape with a given side length and fill.
      * Used to create the tiles on the board.
      */
-    class Hexagon extends Polygon {
+    static class Hexagon extends Polygon {
         /**
          * Create a hexagon with a given side length and fill.
          * @param side double The length of a side of the hexagon.
