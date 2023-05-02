@@ -77,8 +77,9 @@ public class State {
             islandcount++;
             // Add the island to the array
             Island[] tmpislands = new Island[islandcount];
-            assert islands != null;
-            System.arraycopy(islands, 0, tmpislands, 0, tmpislands.length - 1);
+            if (islands != null) {
+                System.arraycopy(islands, 0, tmpislands, 0, tmpislands.length - 1);
+            }
             tmpislands[islandcount-1] = tmpIsland;
             islands = tmpislands;
         }
