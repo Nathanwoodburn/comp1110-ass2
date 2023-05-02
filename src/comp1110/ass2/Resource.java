@@ -7,7 +7,7 @@ package comp1110.ass2;
  */
 public class Resource {
     private char type;
-    private Coord coord;
+    private final Coord coord;
     private boolean claimed;
 
     /**
@@ -35,20 +35,14 @@ public class Resource {
      * @return String type of the resource
      */
     public String getTypeString() {
-        switch (type){
-            case 'C':
-                return "Coconut";
-            case 'B':
-                return "Bamboo";
-            case 'W':
-                return "Water";
-            case 'P':
-                return "Precious Stone";
-            case 'S':
-                return "Statuette";
-            default:
-                return "Invalid";
-        }
+        return switch (type) {
+            case 'C' -> "Coconut";
+            case 'B' -> "Bamboo";
+            case 'W' -> "Water";
+            case 'P' -> "Precious Stone";
+            case 'S' -> "Statuette";
+            default -> "Invalid";
+        };
     }
 
     /**
@@ -68,16 +62,8 @@ public class Resource {
     }
 
     /**
-     * Set the coordinate of the resource
-     * @param coord Coord coordinate of the resource
-     */
-    public void setCoord(Coord coord) {
-        this.coord = coord;
-    }
-
-    /**
      * Check if the resource is equal to another resource
-     * @param resource Resource resource to be compared
+     * @param resource resource to be compared
      * @return boolean true if the resources are equal
      */
     public boolean equals(Resource resource) {
@@ -96,8 +82,8 @@ public class Resource {
      * Check if the resource has been claimed
      * @return boolean true if the resource has been claimed
      */
-    public boolean isClaimed() {
-        return this.claimed;
+    public boolean isAvailable() {
+        return !this.claimed;
     }
 
     @Override
