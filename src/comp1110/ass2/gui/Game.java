@@ -118,7 +118,15 @@ public class Game extends Application {
 
         // Send intro message
         message = "Welcome to Blue Lagoon\nYou have started a new game for " + numPlayers + " players.";
-        if (AI != 0) message += "\nAI is playing";
+        switch (AI){
+            case 0 -> message += "\nAll players are human";
+            case 1 -> message += "\nThere is 1 AI";
+            default -> message += "\nThere are " + AI + " AIs";
+        }
+        message += """
+
+                To place a settler, left click on a tile
+                To place a village, right click on a tile""";
         sendMessage(message);
         // Refresh the GUI (render the game)
         refresh();
