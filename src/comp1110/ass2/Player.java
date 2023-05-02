@@ -77,20 +77,14 @@ public class Player {
      * @return int number of the resource the player has
      */
     public int getNumResource(char resourceType) {
-        switch (resourceType) {
-            case 'C':
-                return numCoconuts;
-            case 'B':
-                return numBamboo;
-            case 'W':
-                return numWater;
-            case 'P':
-                return numPreciousStones;
-            case 'S':
-                return numStatuette;
-            default:
-                return 0;
-        }
+        return switch (resourceType) {
+            case 'C' -> numCoconuts;
+            case 'B' -> numBamboo;
+            case 'W' -> numWater;
+            case 'P' -> numPreciousStones;
+            case 'S' -> numStatuette;
+            default -> 0;
+        };
     }
 
     /**
@@ -100,21 +94,11 @@ public class Player {
      */
     public void addResource(int numResource, char resourceType) {
         switch (resourceType) {
-            case 'C':
-                numCoconuts += numResource;
-                break;
-            case 'B':
-                numBamboo += numResource;
-                break;
-            case 'W':
-                numWater += numResource;
-                break;
-            case 'P':
-                numPreciousStones += numResource;
-                break;
-            case 'S':
-                numStatuette += numResource;
-                break;
+            case 'C' -> numCoconuts += numResource;
+            case 'B' -> numBamboo += numResource;
+            case 'W' -> numWater += numResource;
+            case 'P' -> numPreciousStones += numResource;
+            case 'S' -> numStatuette += numResource;
         }
     }
 
@@ -153,9 +137,7 @@ public class Player {
      */
     public void addSettler(Coord coord) {
         Coord[] newSettlers = new Coord[settlers.length + 1];
-        for (int i = 0; i < settlers.length; i++) {
-            newSettlers[i] = settlers[i];
-        }
+        System.arraycopy(settlers, 0, newSettlers, 0, settlers.length);
         newSettlers[settlers.length] = coord;
         settlers = newSettlers;
         lastMove = coord;
@@ -172,9 +154,7 @@ public class Player {
         }
 
         Coord[] newVillages = new Coord[villages.length + 1];
-        for (int i = 0; i < villages.length; i++) {
-            newVillages[i] = villages[i];
-        }
+        System.arraycopy(villages, 0, newVillages, 0, villages.length);
         newVillages[villages.length] = coord;
         villages = newVillages;
         lastMove = coord;
@@ -193,9 +173,9 @@ public class Player {
     public void removeVillage(Coord coord) {
         Coord[] newVillages = new Coord[villages.length - 1];
         int j = 0;
-        for (int i = 0; i < villages.length; i++) {
-            if (villages[i] != coord) {
-                newVillages[j] = villages[i];
+        for (Coord village : villages) {
+            if (village != coord) {
+                newVillages[j] = village;
                 j++;
             }
         }
@@ -209,18 +189,14 @@ public class Player {
      */
     public Coord[] getPieces() {
         Coord[] pieces = new Coord[settlers.length + villages.length];
-        for (int i = 0; i < settlers.length; i++) {
-            pieces[i] = settlers[i];
-        }
-        for (int i = 0; i < villages.length; i++) {
-            pieces[settlers.length + i] = villages[i];
-        }
+        System.arraycopy(settlers, 0, pieces, 0, settlers.length);
+        System.arraycopy(villages, 0, pieces, settlers.length, villages.length);
         return pieces;
     }
 
     /**
      * Get number of pieces on island
-     * @param island Island island to check
+     * @param island Island to check
      * @return int number of pieces on island
      */
     public int getNumPiecesOnIsland(Island island) {
@@ -376,9 +352,9 @@ public class Player {
             if (i == randomMove) {
                 char pieceType = move.charAt(0);
                 String coordStr = move.substring(2);
-                int x = Integer.parseInt(coordStr.split(",")[0]);
-                int y = Integer.parseInt(coordStr.split(",")[1]);
-                Coord coord = new Coord(x, y);
+                int y = Integer.parseInt(coordStr.split(",")[0]);
+                int x = Integer.parseInt(coordStr.split(",")[1]);
+                Coord coord = new Coord(y, x);
                 lastMove = coord;
                 state.placePiece(coord, pieceType);
                 state.nextPlayer();
@@ -427,9 +403,9 @@ public class Player {
         String bestMove = createAIMove(state);
         char pieceType = bestMove.charAt(0);
         String coordStr = bestMove.substring(2);
-        int x = Integer.parseInt(coordStr.split(",")[0]);
-        int y = Integer.parseInt(coordStr.split(",")[1]);
-        Coord coord = new Coord(x, y);
+        int y = Integer.parseInt(coordStr.split(",")[0]);
+        int x = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(y, x);
         lastMove = coord;
         state.placePiece(coord, pieceType);
         state.nextPlayer();
@@ -470,7 +446,6 @@ public class Player {
             }
             // Check if adding this piece will make player have the most pieces on the island
             int ties = 0;
-            int wins = 0;
             int loses = 0;
             int myPieces = this.getNumPiecesOnIsland(island);
             for (int i = 0; i < state.getNumPlayers(); i++) {
@@ -480,9 +455,6 @@ public class Player {
                 int otherPlayerPieces = state.getPlayer(i).getNumPiecesOnIsland(island);
                 if (otherPlayerPieces > myPieces+1) {
                     loses++;
-                } else
-                if (otherPlayerPieces == myPieces) {
-                    wins++;
                 } else if (otherPlayerPieces == myPieces + 1) {
                     ties++;
                 }
@@ -568,7 +540,7 @@ public class Player {
      */
     @Override
     public String toString() {
-        String str = "p " + playerID + " " + score + " " + numCoconuts + " " + numBamboo + " " + numWater + " " + numPreciousStones + " " + numStatuette + " S";
+        StringBuilder str = new StringBuilder("p " + playerID + " " + score + " " + numCoconuts + " " + numBamboo + " " + numWater + " " + numPreciousStones + " " + numStatuette + " S");
 
 
         // Get the coords of the player's pieces in row major order
@@ -620,13 +592,13 @@ public class Player {
 
 
         for (Coord coord : settlersCoords) {
-            str += " " + coord.toString();
+            str.append(" ").append(coord.toString());
 
         }
-        str += " T";
+        str.append(" T");
         for (Coord coord : villagesCoords) {
-            str += " " + coord.toString();
+            str.append(" ").append(coord.toString());
         }
-        return str;
+        return str.toString();
     }
 }
