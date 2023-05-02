@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -32,7 +33,7 @@ public class Game extends Application {
     String message;
     Boolean messageError;
     Coord selectedTile;
-    Boolean AI;
+    int AI;
     private final String DEFAULT_GAME = "a 13 2; c 0 E; i 6 0,0 0,1 0,2 0,3 1,0 1,1 1,2 1,3 1,4 2,0 2,1; i 6 0,5 0,6 0,7 1,6 1,7 1,8 2,6 2,7 2,8 3,7 3,8; i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2; i 8 10,3 10,4 11,0 11,1 11,2 11,3 11,4 11,5 12,0 12,1 12,2 12,3 12,4 12,5; i 10 3,3 3,4 3,5 4,2 4,3 4,4 4,5 5,3 5,4 5,5 5,6 6,3 6,4 6,5 6,6 7,4 7,5 7,6 8,4 8,5; i 10 5,8 5,9 6,8 6,9 7,8 7,9 7,10 8,7 8,8 8,9 9,7 9,8 9,9 10,6 10,7 10,8 11,7 11,8 12,7 12,8; s 0,0 0,5 0,9 1,4 1,8 1,12 2,1 3,5 3,7 3,10 3,12 4,0 4,2 5,9 5,11 6,3 6,6 7,0 7,8 7,12 8,2 8,5 9,0 9,9 10,3 10,6 10,10 11,0 11,5 12,2 12,8 12,11; r C B W P S; p 0 0 0 0 0 0 0 S T; p 1 0 0 0 0 0 0 S T;";
     private final String WHEELS_GAME = "a 13 2; c 0 E; i 5 0,1 0,2 0,3 0,4 1,1 1,5 2,0 2,5 3,0 3,6 4,0 4,5 5,1 5,5 6,1 6,2 6,3 6,4; i 5 0,8 0,9 0,10 1,8 1,11 2,7 2,11 3,8 3,11 4,8 4,9 4,10; i 7 8,8 8,9 8,10 9,8 9,11 10,7 10,11 11,8 11,11 12,8 12,9 12,10; i 7 10,0 10,1 10,4 10,5 11,0 11,2 11,3 11,4 11,6 12,0 12,1 12,4 12,5; i 9 2,2 2,3 3,2 3,4 4,2 4,3; i 9 2,9; i 9 6,6 6,7 6,8 6,9 6,10 6,11 7,6 8,0 8,1 8,2 8,3 8,4 8,5; i 9 10,9; s 0,1 0,4 0,10 2,2 2,3 2,9 2,11 3,0 3,2 3,4 3,6 4,2 4,3 4,10 6,1 6,4 6,6 6,11 8,0 8,5 8,8 8,10 10,0 10,5 10,7 10,9 10,11 11,3 12,1 12,4 12,8 12,10; r C B W P S; p 0 0 0 0 0 0 0 S T; p 1 0 0 0 0 0 0 S T;";
     private final String FACE_GAME = "a 13 2; c 0 E; i 6 0,0 0,1 0,2 0,3 0,4 0,5 0,6 0,7 0,8 0,9 0,10 0,11 1,0 1,12 2,0 2,11 3,0 3,12 4,0 4,11 5,0 5,12 6,0 6,11 7,0 7,12 8,0 8,11 9,0 9,12 10,0 10,11 11,0 11,12 12,0 12,1 12,2 12,3 12,4 12,5 12,6 12,7 12,8 12,9 12,10 12,11; i 6 2,4 2,5 2,6 2,7; i 9 4,4 4,5 4,6 4,7; i 9 6,5 6,6 7,5 7,7 8,5 8,6; i 12 2,2 3,2 3,3 4,2 5,2 5,3 6,2 7,2 7,3; i 12 2,9 3,9 3,10 4,9 5,9 5,10 6,9 7,9 7,10; i 12 9,2 9,10 10,2 10,3 10,4 10,5 10,6 10,7 10,8 10,9; s 0,3 0,8 1,0 1,12 2,2 2,4 2,7 2,9 4,2 4,5 4,6 4,9 5,0 5,12 6,2 6,5 6,6 6,9 8,0 8,5 8,6 8,11 9,2 9,10 10,3 10,5 10,6 10,8 11,0 11,12 12,4 12,7; r C B W P S; p 0 0 0 0 0 0 0 S T; p 1 0 0 0 0 0 0 S T;";
@@ -55,7 +56,7 @@ public class Game extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // Set some variables and create the scene
-        AI = false;
+        AI = 0;
         selectedTile = new Coord(-1,-1);
         message = "";
         messageError = false;
@@ -116,16 +117,30 @@ public class Game extends Application {
                 break;
         }
 
+        if (AI >= numPlayers){
+            for (int i = 0; i < numPlayers; i++){
+                currentGame.getPlayer(i).setAI(true);
+            }
+        } else if (AI > 0) {
+            for (int i = 0; i < AI; i++){
+                currentGame.getPlayer(i+1).setAI(true);
+            }
+        }
+
         // Distribute resources
         currentGame.distributeResources();
 
         // Send intro message
         message = "Welcome to Blue Lagoon\nYou have started a new game for " + numPlayers + " players.";
-        if (AI) message += "\nAI is playing";
+        if (AI != 0) message += "\nAI is playing";
         sendMessage(message);
-
         // Refresh the GUI (render the game)
         refresh();
+
+        // Play the game if all players are AI
+        if (AI >= numPlayers){
+            AIGame();
+        }
     }
     // endregion
     // region Game Play
@@ -175,7 +190,7 @@ public class Game extends Application {
                 // Go to the next player and if it is an AI, do a move for it
                 currentGame.nextPlayer();
                 selectedTile = new Coord(-1,-1);
-                if (AI && currentGame.getCurrentPlayerID() == 1) {
+                while (currentGame.getCurrentPlayer().isAI()) {
                     message += "\n"+ doAIMove();
                 }
 
@@ -193,10 +208,11 @@ public class Game extends Application {
             if (currentGame.getCurrentPhase() == 'E') {
                 currentGame.cleanBoard();
                 currentGame.distributeResources();
-                if (AI && currentGame.getCurrentPlayerID() == 1){
-                    String AI = doAIMove();
-                    sendMessage("Next phase!\n" + AI);
+                String AI = "";
+                while (currentGame.getCurrentPlayer().isAI()) {
+                    AI += "\n"+ doAIMove();
                 }
+                sendMessage("Next phase!\n" + AI);
             }
             else {
                 sendMessage("Game over!",true);
@@ -225,12 +241,12 @@ public class Game extends Application {
                 if (currentGame.isStone(lastMove)){
                     for (Resource resource : currentGame.getResources()) {
                         if (resource.getCoord().equals(lastMove) ) {
-                            message = "AI picked up a " + resource.getTypeString().toLowerCase();
+                            message = "AI "+ player.getPlayerID() + " picked up " + resource.getTypeString().toLowerCase();
                         }
                     }
                 }
                 else {
-                    message = "AI placed at " + lastMove.toString();
+                    message = "AI " + player.getPlayerID() + " placed at " + lastMove.toString();
                 }
             }
         }
@@ -240,10 +256,11 @@ public class Game extends Application {
                 currentGame.cleanBoard();
                 currentGame.distributeResources();
                 currentGame.nextPhase();
-                if (AI && currentGame.getCurrentPlayerID() == 1){
-                    String AI = doAIMove();
-                    sendMessage("Next phase!\n" + AI);
+                String AI = "Next phase!\n";
+                while (currentGame.getCurrentPlayer().isAI()) {
+                    AI += "\n"+ doAIMove();
                 }
+                message = AI;
             }
             else {
                 message = "Game over!";
@@ -301,10 +318,12 @@ public class Game extends Application {
     /**
      * When a tile is clicked, it will be selected
      * @param coordString the coordinate of the tile
+     * @param button the button that was clicked
      */
 
-    private void tileClick(String coordString){
+    private void tileClick(String coordString, MouseButton button){
 
+        // TODO implement left and right click for each piece type
         int y = Integer.parseInt(coordString.split(",")[0]);
         int x = Integer.parseInt(coordString.split(",")[1]);
 
@@ -401,7 +420,7 @@ public class Game extends Application {
         for (int i = 0; i < currentGame.getNumPlayers(); i++){
             Player currentPlayer = currentGame.getPlayer(i);
             // Add the player's score to the playerData string
-            if (AI && i == 1) playerData += "\nAI: " + currentPlayer.getScore();
+            if (currentPlayer.isAI()) playerData += "\nAI " + i +  ": " +  currentPlayer.getScore();
             else playerData += "\nPlayer " + i + ": " + currentPlayer.getScore();
 
             // Settler tile generator
@@ -410,7 +429,10 @@ public class Game extends Application {
                 addStoneTileToBoard(viewerGrid, tileSize, c.toString(), Color.PINK);
 
                 // Label generator
-                addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "P"+i);
+                if (currentPlayer.isAI())
+                    addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "AI "+i);
+                else
+                    addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "P "+i);
             }
             // Village tile generator
             for (Coord c: currentPlayer.getVillages()){
@@ -418,7 +440,10 @@ public class Game extends Application {
                 addStoneTileToBoard(viewerGrid, tileSize, c.toString(), Color. LIGHTGOLDENRODYELLOW);
 
                 // Label generator
-                addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "P"+i);
+                if (currentPlayer.isAI())
+                    addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "AI "+i);
+                else
+                    addLabelToTile(viewerGrid, tileSize, c.toString(), Color.BLACK, "P "+i);
             }
         }
         // Adding the player Statement Text to the window
@@ -454,10 +479,19 @@ public class Game extends Application {
         Button threePlayer = new Button("3 Player");
         Button fourPlayer = new Button("4 Player");
         Label mapLabel = new Label("Select Map:");
+        Label aiLabel = new Label("How many AI players:");
         Label playLabel = new Label("Place piece:");
         Button placeVillage = new Button("Village");
         Button placeSettler = new Button("Settler");
-        CheckBox isAI = new CheckBox("AI");
+
+        // Numeric select for AI
+        ComboBox aiSelector = new ComboBox();
+        aiSelector.getItems().add("0");
+        aiSelector.getItems().add("1");
+        aiSelector.getItems().add("2");
+        aiSelector.getItems().add("3");
+        aiSelector.getItems().add("4");
+        aiSelector.setValue("0");
 
         // Store the selected map 0 = default, 1 = wheels, 2 = face, 3 = sides, 4 = space invaders
         ComboBox mapSelector = new ComboBox();
@@ -498,7 +532,7 @@ public class Game extends Application {
         twoPlayer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                AI = isAI.isSelected();
+                AI = Integer.parseInt(aiSelector.getValue().toString());
                 newGame(2);
             }
         });
@@ -506,14 +540,14 @@ public class Game extends Application {
         threePlayer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                AI = isAI.isSelected();
+                AI = Integer.parseInt(aiSelector.getValue().toString());
                 newGame(3);
             }
         });
         fourPlayer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                AI = isAI.isSelected();
+                AI = Integer.parseInt(aiSelector.getValue().toString());
                 newGame(4);
             }
         });
@@ -532,17 +566,9 @@ public class Game extends Application {
             }
         });
 
-        // Run AI Game if keypress is a
-        isAI.setOnKeyPressed(event ->  {
-            if (event.getCode().toString() == "A"){
-                    newGame(currentGame.getNumPlayers());
-                    AIGame();
-            }
-        });
-
 
         HBox hb = new HBox();
-        hb.getChildren().addAll(newLabel, twoPlayer,threePlayer,fourPlayer, isAI,mapLabel,mapSelector,playLabel,placeVillage,placeSettler);
+        hb.getChildren().addAll(newLabel, twoPlayer,threePlayer,fourPlayer,aiLabel,aiSelector,mapLabel,mapSelector,playLabel,placeVillage,placeSettler);
         hb.setSpacing(10);
         hb.setLayoutX(50);
         hb.setLayoutY(WINDOW_HEIGHT - 50);
@@ -572,7 +598,7 @@ public class Game extends Application {
 
         // Add a mouse click event to the tile
         hex.setOnMouseClicked(event -> {
-            tileClick(coordString);
+            tileClick(coordString,event.getButton());
         });
 
     }
@@ -604,7 +630,7 @@ public class Game extends Application {
 
         // Add a mouse click event to the tile
         hex.setOnMouseClicked(event -> {
-            tileClick(coordString);
+            tileClick(coordString,event.getButton());
         });
     }
 
@@ -629,12 +655,12 @@ public class Game extends Application {
         newLabel.setTranslateY(Integer.parseInt(coords[0]) * -0.25 * tileSize);
 
         // Making the label center
-        newLabel.setTranslateX(19.5 + newLabel.getTranslateX());
+        newLabel.setTranslateX(18.5 + newLabel.getTranslateX());
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
 
         // Add a mouse click event to the tile
         newLabel.setOnMouseClicked(event -> {
-            tileClick(coordString);
+            tileClick(coordString,event.getButton());
         });
     }
 
@@ -676,7 +702,7 @@ public class Game extends Application {
         board.add(newLabel, Integer.parseInt(coords[1]), Integer.parseInt(coords[0]));
         // Add a mouse click event to the tile
         newLabel.setOnMouseClicked(event -> {
-            tileClick(coordString);
+            tileClick(coordString,event.getButton());
         });
     }
 
