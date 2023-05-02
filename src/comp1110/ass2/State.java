@@ -77,10 +77,8 @@ public class State {
             islandcount++;
             // Add the island to the array
             Island[] tmpislands = new Island[islandcount];
-            for (int j=0; j<tmpislands.length-1; j++)
-            {
-                tmpislands[j] = islands[j];
-            }
+            assert islands != null;
+            System.arraycopy(islands, 0, tmpislands, 0, tmpislands.length - 1);
             tmpislands[islandcount-1] = tmpIsland;
             islands = tmpislands;
         }
@@ -152,10 +150,7 @@ public class State {
         if (numPlayers >= maxPlayers) return; // There are already the maximum number of players
         Player[] oldPlayers = players;
         players = new Player[numPlayers+1];
-        for (int i=0; i<numPlayers; i++)
-        {
-            players[i] = oldPlayers[i];
-        }
+        if (numPlayers >= 0) System.arraycopy(oldPlayers, 0, players, 0, numPlayers);
         players[numPlayers] = new Player(numPlayers);
         numPlayers++;
     }
@@ -339,9 +334,7 @@ public class State {
             }
         }
         Resource[] resources = new Resource[i];
-        for (int j=0; j<i; j++) {
-            resources[j] = tmpResources[j];
-        }
+        System.arraycopy(tmpResources, 0, resources, 0, i);
         return resources;
     }
 
@@ -392,7 +385,7 @@ public class State {
         // Claim resource if it is a stone circle
         if (isStone(coord)) {
             for (Resource resource : resources) {
-                if (resource.getCoord().equals(coord) && !resource.isClaimed()) {
+                if (resource.getCoord().equals(coord) && resource.isAvailable()) {
                     players[currentPlayer].addResource(1, resource.getType());
                     resource.setClaimed();
                 }
@@ -427,7 +420,7 @@ public class State {
     public boolean isPhaseOver(boolean simple){
         boolean resourcesLeft = false;
         for (Resource r : resources) {
-            if (!r.isClaimed() && r.getType() != 'S') resourcesLeft = true;
+            if (r.isAvailable() && r.getType() != 'S') resourcesLeft = true;
         }
 
         boolean moveLeft = false;
@@ -825,42 +818,29 @@ public class State {
      */
     @Override
     public String toString() {
-        String str = "a " + boardHeight + " " + getNumPlayers() + "; c " + getCurrentPlayerID() + " " + getCurrentPhase() + "; ";
+        StringBuilder str = new StringBuilder("a " + boardHeight + " " + getNumPlayers() + "; c " + getCurrentPlayerID() + " " + getCurrentPhase() + "; ");
         for (Island island : islands) {
-            str += island.toString() + " ";
+            str.append(island.toString()).append(" ");
         }
-        str += "s";
+        str.append("s");
         for (Coord s: stonesCoords) {
-            str += " " + s.toString();
+            str.append(" ").append(s.toString());
         }
-        str += "; r";
+        str.append("; r");
 
         char[] types = {'C', 'B', 'W', 'P', 'S'};
         for (char type : types) {
-            str += " " + type;
+            str.append(" ").append(type);
             for (Resource resource : resources) {
-                if (resource.getType() == type && !resource.isClaimed()) str += " " + resource.getCoord().toString();
+                if (resource.getType() == type && resource.isAvailable()) str.append(" ").append(resource.getCoord().toString());
             }
         }
-        str += ";";
+        str.append(";");
         for (Player player : players) {
-            str += " " + player.toString() + ";";
+            str.append(" ").append(player.toString()).append(";");
         }
-        return str;
+        return str.toString();
     }
-
-    /**
-     * Get a string representation of the score of each player
-     * @return String scoreString
-     */
-    public String scoreString() {
-        String str = "";
-        for (Player player : players) {
-            str += "Player " + player.getPlayerID() + "'s score is " + player.getScore() + "\n";
-        }
-        return str.substring(0, str.length() - 1);
-    }
-
     // endregion
 
 }
