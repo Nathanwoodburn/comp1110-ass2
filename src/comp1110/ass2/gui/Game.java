@@ -308,13 +308,15 @@ public class Game extends Application {
      */
 
     private void tileClick(String coordString, MouseButton button){
-
-        // TODO implement left and right click for each piece type
         int y = Integer.parseInt(coordString.split(",")[0]);
         int x = Integer.parseInt(coordString.split(",")[1]);
 
         selectedTile = new Coord(y,x);
-        sendMessage("Tile " + selectedTile.toString() + " selected");
+
+        if (button == MouseButton.PRIMARY) doMove(0);
+        else if (button == MouseButton.SECONDARY) doMove(1);
+
+        selectedTile = new Coord(-1,-1);
         refresh();
     }
 
@@ -396,7 +398,6 @@ public class Game extends Application {
         for (Coord stoneCircle: currentGame.getStones()){
             addStoneTileToBoard(viewerGrid, tileSize, stoneCircle.toString(), Color.GRAY);
         }
-
         StringBuilder playerData = new StringBuilder("Scores:");
         // For each player add their settlements and roads
         for (int i = 0; i < currentGame.getNumPlayers(); i++){
@@ -456,15 +457,12 @@ public class Game extends Application {
      * It will create the controls variable
      */
     private void makeControls() {
-        Label newLabel = new Label("New Game:");
+        Label newLabel = new Label("Start New Game:");
         Button twoPlayer = new Button("2 Player");
         Button threePlayer = new Button("3 Player");
         Button fourPlayer = new Button("4 Player");
         Label mapLabel = new Label("Select Map:");
         Label aiLabel = new Label("How many AI players:");
-        Label playLabel = new Label("Place piece:");
-        Button placeVillage = new Button("Village");
-        Button placeSettler = new Button("Settler");
 
         // Numeric select for AI
         ComboBox aiSelector = new ComboBox();
@@ -522,23 +520,8 @@ public class Game extends Application {
             }
         });
 
-        placeVillage.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                doMove(1);
-            }
-        });
-
-        placeSettler.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                doMove(0);
-            }
-        });
-
-
         HBox hb = new HBox();
-        hb.getChildren().addAll(newLabel, twoPlayer,threePlayer,fourPlayer,aiLabel,aiSelector,mapLabel,mapSelector,playLabel,placeVillage,placeSettler);
+        hb.getChildren().addAll(mapLabel,mapSelector,aiLabel,aiSelector,newLabel, twoPlayer,threePlayer,fourPlayer);
         hb.setSpacing(10);
         hb.setLayoutX(50);
         hb.setLayoutY(WINDOW_HEIGHT - 50);
