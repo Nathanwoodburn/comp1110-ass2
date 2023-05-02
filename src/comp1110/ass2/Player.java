@@ -24,6 +24,7 @@ public class Player {
     private Coord[] settlers;
     private Coord[] villages;
     private Coord lastMove;
+    private Boolean isAI;
 
     /**
      * Constructor for Player class
@@ -40,6 +41,7 @@ public class Player {
         this.numStatuette = 0;
         this.settlers = new Coord[0];
         this.villages = new Coord[0];
+        this.isAI = false;
         lastMove = new Coord(-1, -1);
     }
     // endregion
@@ -231,9 +233,30 @@ public class Player {
         return numPieces;
     }
 
+    /**
+     * Get the player's last move coord
+     * @return Coord last move coord
+     */
     public Coord getLastMove() {
         return lastMove;
     }
+
+    /**
+     * Set if the player is an AI
+     * @param ai boolean true if player is an AI, false otherwise
+     */
+    public void setAI(boolean ai) {
+        this.isAI = ai;
+    }
+
+    /**
+     * Check if the player is an AI
+     * @return boolean true if player is an AI, false otherwise
+     */
+    public boolean isAI() {
+        return isAI;
+    }
+
 
     /**
      * Check if player is able to do any moves
