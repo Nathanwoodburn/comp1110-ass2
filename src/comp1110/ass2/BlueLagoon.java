@@ -45,13 +45,13 @@ public class BlueLagoon {
                 "(\\d{1,2},\\d{1,2} ?)*)?;)*";
 
         // Combine the regex strings into one string to match the state string
-        String matchString = "";
+        StringBuilder matchString = new StringBuilder();
         for (String match:matchArray) {
-            matchString += match;
+            matchString.append(match);
         }
 
         // Check if the state string matches the regex string
-        if (!stateString.matches(matchString)) return false;
+        if (!stateString.matches(matchString.toString())) return false;
 
         // Check that there is one and only one of each player id
         // This fixed test 2-3 of D2DTests.testIsStateStringWellFormed
@@ -329,18 +329,12 @@ public class BlueLagoon {
         Set<String> allMoves = new HashSet<>();
 
         // Calculate number of pieces each player starts with
-        int startNumSettlers = 0;
-        switch (numPlayers) {
-            case 2:
-                startNumSettlers = 30;
-                break;
-            case 3:
-                startNumSettlers = 25;
-                break;
-            case 4:
-                startNumSettlers = 20;
-                break;
-        }
+        int startNumSettlers = switch (numPlayers) {
+            case 2 -> 30;
+            case 3 -> 25;
+            case 4 -> 20;
+            default -> 0;
+        };
 
 
         // Check if the player has placed all their settlers or villages
@@ -459,9 +453,9 @@ public class BlueLagoon {
         State state = new State(stateString);
         char pieceType = moveString.charAt(0);
         String coordStr = moveString.substring(2);
-        int x = Integer.parseInt(coordStr.split(",")[0]);
-        int y = Integer.parseInt(coordStr.split(",")[1]);
-        Coord coord = new Coord(x, y);
+        int y = Integer.parseInt(coordStr.split(",")[0]);
+        int x = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(y, x);
         state.placePiece(coord, pieceType);
         return state.toString();
     }
@@ -482,10 +476,6 @@ public class BlueLagoon {
      * @return an integer array containing the calculated "Islands" portion of
      * the score for each player
      */
-
-    //"i 6 7,12 8,11 9,11 9,12 10,10 10,11 11,10 11,11 11,12 12,10 12,11; i 8 0,9 0,10 0,11 1,10 1,11 1,12 2,10 2,11 3,10 3,11 3,12 4,10 4,11 5,11 5,12; i 8 4,0 5,0 5,1 6,0 6,1 7,0 7,1 7,2 8,0 8,1 8,2 9,0 9,1 9,2;"
-
-    // "p 1 42 1 2 3 4 5 S 5,6 8,7 T 1,2;"
 
     public static int[] calculateTotalIslandsScore(String stateString) {
         State state = new State(stateString);
@@ -646,7 +636,7 @@ public class BlueLagoon {
      * @return a string representing the new state after the move is applied to the board
      */
     public static String applyMove(String stateString, String moveString){
-         State state = new State(stateString);
+        State state = new State(stateString);
         char pieceType = moveString.charAt(0);
         String coordStr = moveString.substring(2);
         int x = Integer.parseInt(coordStr.split(",")[0]);
