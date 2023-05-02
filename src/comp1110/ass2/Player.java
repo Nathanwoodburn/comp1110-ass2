@@ -475,10 +475,10 @@ public class Player {
             if (currentIslandCount < 8 ){
                 // Check if there is an island adjacent to this move
                 for (Island island : state.getIslands()) {
-                    if (island.containsCoord(new Coord(coord.getX() + 1, coord.getY()))
-                            || island.containsCoord(new Coord(coord.getX() - 1, coord.getY()))
-                            || island.containsCoord(new Coord(coord.getX(), coord.getY() + 1))
-                            || island.containsCoord(new Coord(coord.getX(), coord.getY() - 1))) {
+                    if (island.containsCoord(new Coord(coord.x() + 1, coord.y()))
+                            || island.containsCoord(new Coord(coord.x() - 1, coord.y()))
+                            || island.containsCoord(new Coord(coord.x(), coord.y() + 1))
+                            || island.containsCoord(new Coord(coord.x(), coord.y() - 1))) {
                         score += 1;
                         if (state.getCurrentPhase() == 'E'){
                             score += 4;
@@ -501,8 +501,8 @@ public class Player {
     private int maxCol(Coord[] coords){
         int maxCol = 0;
         for (Coord coord : coords) {
-            if (coord.getX() > maxCol) {
-                maxCol = coord.getX();
+            if (coord.x() > maxCol) {
+                maxCol = coord.x();
             }
         }
         return maxCol;
@@ -553,7 +553,7 @@ public class Player {
 
             while (settlersCoords[settlers.length - 1] == null) {
                 for (Coord coord : settlers) {
-                    if (coord.getX() == col && coord.getY() == row) {
+                    if (coord.x() == col && coord.y() == row) {
                         settlersCoords[i] = coord;
                         i++;
                     }
@@ -575,7 +575,7 @@ public class Player {
 
             while (villagesCoords[villages.length-1] == null){
                 for (Coord coord : villages) {
-                    if (coord.getX() == col && coord.getY() == row) {
+                    if (coord.x() == col && coord.y() == row) {
                         villagesCoords[i] = coord;
                         i++;
                     }
