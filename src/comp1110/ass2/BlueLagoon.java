@@ -508,9 +508,11 @@ public class BlueLagoon {
     public static int[] calculateIslandLinksScore(String stateString){
         State state = new State(stateString);
         int[] scores = new int[state.getNumPlayers()];
+
         for (int i = 0; i < state.getNumPlayers(); i++) {
             scores[i] = state.scoreLinks(i);
         }
+
         return scores;
     }
 

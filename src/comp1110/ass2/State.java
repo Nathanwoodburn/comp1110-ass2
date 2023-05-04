@@ -1,8 +1,6 @@
 package comp1110.ass2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Object to store the game state
@@ -562,215 +560,76 @@ public class State {
      * @return int score
      */
 
-    // public boolean isAdjacent(Coord coord) {
-    //        if (this.y == coord.y) {
-    //            return (this.x == coord.x - 1 || this.x == coord.x + 1);
-    //        }
-    //        if (this.x == coord.x) {
-    //            return (this.y == coord.y - 1 || this.y == coord.y + 1);
-    //        }
-    //        return false;
-    //    }
-    //
-    //    /**
-    //     * Check if two coordinates are adjacent (includes diagonals)
-    //     * @param coord Coord object to compare to
-    //     */
-    //    public boolean isAdjacentDiagonal(Coord coord){
-    //        if (isAdjacent(coord)) return true;
-    //        if (this.x == coord.x - 1 && this.y == coord.y - 1) return true;
-    //        if (this.x == coord.x - 1 && this.y == coord.y + 1) return true;
-    //        if (this.x == coord.x + 1 && this.y == coord.y - 1) return true;
-    //        return  (this.x == coord.x + 1 && this.y == coord.y + 1);
-    //    }
-
-    // public Player(int playerID) {
-    //        this.playerID = playerID;
-    //        this.score = 0;
-    //        this.numCoconuts = 0;
-    //        this.numBamboo = 0;
-    //        this.numWater = 0;
-    //        this.numPreciousStones = 0;
-    //        this.numStatuette = 0;
-    //        this.settlers = new Coord[0];
-    //        this.villages = new Coord[0];
-    //    }
-    //    // endregion
-    //    // region Getters and Setters
-    //
-    //    /**
-    //     * Get the player's ID
-    //     * @return int player ID
-    //     */
-    //    public int getPlayerID() {
-    //        return playerID;
-    //    }
-
-    //  /**
-    //     * Get the player's settlers
-    //     * @return Coord[] list of the player's settlers coords
-    //     */
-    //    public Coord[] getSettlers() {
-    //        return settlers;
-    //    }
-    //
-    //    /**
-    //     * Get the player's villages
-    //     * @return Coord[] list of the player's villages coords
-    //     */
-    //    public Coord[] getVillages() {
-    //        return villages;
-    //    }
-
-    // public Coord[] getPieces() {
-    //        Coord[] pieces = new Coord[settlers.length + villages.length];
-    //        for (int i = 0; i < settlers.length; i++) {
-    //            pieces[i] = settlers[i];
-    //        }
-    //        for (int i = 0; i < villages.length; i++) {
-    //            pieces[settlers.length + i] = villages[i];
-    //        }
-    //        return pieces;
-    //    }
-    //
-    //    /**
-    //     * Get number of pieces on island
-    //     * @param island Island island to check
-    //     * @return int number of pieces on island
-    //     */
-    //    public int getNumPiecesOnIsland(Island island) {
-    //        int numPieces = 0;
-    //        for (Coord piece : getPieces()) {
-    //            if (island.containsCoord(piece)) {
-    //                numPieces++;
-    //            }
-    //        }
-    //        return numPieces;
-    //    }
-
-    //   /**
-    //     * Get the coordinates of the island
-    //     * @return Coord[] coordinates of the island
-    //     */
-    //    public Coord[] getCoords() {
-    //        return coords;
-    //    }
-
-    //  /**
-    //     * Check if the island contains a coordinate
-    //     * @param coord the coordinate to be checked
-    //     * @return boolean true if the island contains the coordinate
-    //     */
-    //    public boolean containsCoord(Coord coord) {
-    //        for (Coord c : this.coords) {
-    //            if (c.equals(coord)) {
-    //                return true;
-    //            }
-    //        }
-    //        return false;
-    //    }
-
-
     public int scoreLinks(int playerID) {
-        int maxIslands = 0;
-        int distinctIslandsCounter = 0;
-        int score = 0;
-
+        int numOfIslands = 0;
         Coord[] playerCoords = players[playerID].getPieces(); // playerCoords
+        Set<Coord> playerCoordsSet = new HashSet<>(Arrays.asList(playerCoords));
 
+        Set<Coord> playerLongestLink = findLongestLink(playerCoordsSet, islands);
+
+        outerLoop:
         for(Island island : islands) {
-            Coord[] islandCoords = island.getCoords();
-
-            for ( Coord playerCoord : playerCoords ) {
+            for ( Coord playerCoord : playerLongestLink ) {
                 if (island.containsCoord(playerCoord)) {
-
+                    numOfIslands++;
+                    continue outerLoop;
                 }
             }
         }
-//        for(Island island : islands) {
-//            Coord[] islandCoords = island.getCoords(); // Island Coords
-//
-//            for ( Coord playerCoord : playerCoords) {
-//                for( Coord islandCoord : islandCoords) {
-//                    if (playerCoord.areTwoCoordsLink(islandCoord) && )
-//                }
-//            }
-//
-//        }
 
-        return maxIslands * 5; //! TODO
+        return numOfIslands * 5;
     }
 
-//    public boolean areTwoCoordsLink ( Coord coord) {
-//        if(isAdjacent(coord) || isAdjacentDiagonal(coord)) return true;
-//        else return false;
-//    }
-//
-//    public Coord[] longestLink ( Coord coord) {
-//        ArrayList<Coord> linkContainer = new ArrayList<>();
-//        if (areTwoCoordsLink(coord)) {
-//            linkContainer.add(coord);
-//        }
-//
-//        Coord[] endLinkContainer = new Coord[linkContainer.size()];
-//        return endLinkContainer;
-//    }
+    public static Set<Coord> findLongestLink ( Set<Coord> allCoords, Island[] islands) {
+        Set<Coord> longest = new HashSet<>();
+        Set<Coord> current = new HashSet<>();
 
-    // Score Links
-    //     * A (potentially) branching path of neighbouring settlers and villages
-    //     * belonging to a player forms a chain. Players earn points from the chain
-    //     * of their pieces which links the most islands. Players earn 5 points
-    //     * per linked island in this chain.
+        Coord now;
 
-    //  public int scoreTotalIslands(int playerID) {
-    //        int score = 0;
-    //        int islandCount = 0;
-    //        for (Island island : islands) {
-    //            // Get island coords
-    //            Coord[] islandCoords = island.getCoords();
-    //            // Get player's coords
-    //            Coord[] playerCoords = players[playerID].getPieces();
-    //            // Check if player has a piece on the island
-    //            boolean hasPiece = false;
-    //            for (Coord playerCoord : playerCoords) {
-    //                for (Coord islandCoord : islandCoords) {
-    //                    if (playerCoord.equals(islandCoord)) {
-    //                        hasPiece = true;
-    //                        break;
-    //                    }
-    //                }
-    //                if (hasPiece) break;
-    //            }
-    //            if (hasPiece) islandCount++;
-    //        }
-    //
-    //        if (islandCount >= 8) score = 20;
-    //        else if (islandCount == 7) score = 10;
-    //
-    //        return score;
-    //    }
+        for(Island islandIter : islands) {
+            for ( Coord coords : allCoords) {
+                if(islandIter.containsCoord(coords)) {
+                    now = coords;
+                    current.add(coords);
+                    recurssionLink(allCoords, current, longest, now);
 
-    // public boolean isAdjacent(Coord coord) {
-    //        if (this.y == coord.y) {
-    //            return (this.x == coord.x - 1 || this.x == coord.x + 1);
-    //        }
-    //        if (this.x == coord.x) {
-    //            return (this.y == coord.y - 1 || this.y == coord.y + 1);
-    //        }
-    //        return false;
-    //    }
-    //
-    //    /**
-    //     * Check if two coordinates are adjacent (includes diagonals)
-    //     * @param coord Coord object to compare to
-    //     */
-    //    public boolean isAdjacentDiagonal(Coord coord){
-    //        if (isAdjacent(coord)) return true;
-    //        if (this.x == coord.x - 1 && this.y == coord.y - 1) return true;
-    //        if (this.x == coord.x - 1 && this.y == coord.y + 1) return true;
-    //        if (this.x == coord.x + 1 && this.y == coord.y - 1) return true;
-    //        return  (this.x == coord.x + 1 && this.y == coord.y + 1);
-    //    }
+                    // if the score is bigger, update the Set
+                    if(scoreForLink(current, islands) > scoreForLink(longest,islands)) {
+                        longest.clear();
+                        longest.addAll(current);
+                    }
+                    current = new HashSet<>();
+                }
+            }
+        }
+        return longest;
+    }
+
+    public static void recurssionLink (Set<Coord> allCoords, Set<Coord> current, Set<Coord> longest, Coord now) {
+
+        current.add(now);
+        for(Coord c : allCoords) {
+            if( (now.isAdjacent(c) || now.isAdjacentDiagonal(c)) && !current.contains(c) ) {
+                recurssionLink(allCoords, current, longest, c);
+            }
+        }
+    }
+
+    public static int scoreForLink(Set<Coord> longestLink, Island[] islands) {
+        int numOfIslands = 0;
+
+        outerLoop:
+        for (Island i : islands) {
+            for ( Coord c : longestLink ) {
+                if (i.containsCoord(c)) {
+                    numOfIslands++;
+                    continue outerLoop;
+                }
+            }
+        }
+
+        return numOfIslands * 5;
+    }
 
     /**
      * Score resources
