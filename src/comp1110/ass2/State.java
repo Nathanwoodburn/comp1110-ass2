@@ -594,7 +594,7 @@ public class State {
                     recurssionLink(allCoords, current, longest, now);
 
                     // if the score is bigger, update the Set
-                    if(scoreForLink(current, islands) > scoreForLink(longest,islands)) {
+                    if(helperScoreForLink(current, islands) > helperScoreForLink(longest,islands)) {
                         longest.clear();
                         longest.addAll(current);
                     }
@@ -615,7 +615,7 @@ public class State {
         }
     }
 
-    public static int scoreForLink(Set<Coord> longestLink, Island[] islands) {
+    public static int helperScoreForLink(Set<Coord> longestLink, Island[] islands) {
         int numOfIslands = 0;
 
         outerLoop:
