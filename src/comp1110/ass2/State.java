@@ -567,31 +567,44 @@ public class State {
         return maxScore;
     }
 
+    /**
+     * Combines both the helper methods `DFSRecurssionLink` and `findScoreForLink` to find the link set that has the
+     * highest score from a set all Player's pieces coordinates
+     * @param allCoords all coordinates of a Player's pieces
+     * @param islands the set of islands from the generated world
+     * @return the highest score from a player's linked pieces
+     */
     public static int findLongestLinkScore ( Set<Coord> allCoords, Island[] islands) {
-        Set<Coord> longest = new HashSet<>();
-        Set<Coord> current = new HashSet<>();
+        Set<Coord> longestPath = new HashSet<>();
+        Set<Coord> currentPath = new HashSet<>();
 
-        Coord now;
-        int max = helperScoreForLink(longest,islands);
+        Coord startingPoint;
+        int maxScore = findScoreForLink(longestPath,islands);
 
-        for(Island islandIter : islands) {
-            for ( Coord coords : allCoords) {
-                if(islandIter.containsCoord(coords)) {
-                    now = coords;
-                    current.add(coords);
-                    recursionLink(allCoords, current, longest, now);
+        for(Island i : islands) {
+            for ( Coord c : allCoords) {
+                if(i.containsCoord(c)) {
+
+                    startingPoint = c; // set starting Point
+
+                    // DFS Algo starts
+                    currentPath.add(startingPoint);
+                    DFSRecursionLink(allCoords, currentPath, longestPath, startingPoint);
 
                     // if the score is bigger, update the Set
-                    if(helperScoreForLink(current, islands) > max) {
-                        longest.clear();
-                        longest.addAll(current);
-                        max = helperScoreForLink(longest, islands);
+                    if(findScoreForLink(currentPath, islands) > maxScore) {
+                        longestPath.clear();
+                        longestPath.addAll(currentPath);
+
+                        maxScore = findScoreForLink(longestPath, islands);
                     }
-                    current = new HashSet<>();
+
+                    // clear the currentPath as well
+                    currentPath = new HashSet<>();
                 }
             }
         }
-        return max;
+        return maxScore;
     }
 
     /**
@@ -603,20 +616,21 @@ public class State {
      * @param longestPath a set to store the longest path
      * @param startingPoint the starting point of each step of DFS
      */
-    public static void recursionLink(Set<Coord> allCoords, Set<Coord> currentPath, Set<Coord> longestPath, Coord startingPoint) {
+    public static void DFSRecursionLink(Set<Coord> allCoords, Set<Coord> currentPath, Set<Coord> longestPath, Coord startingPoint) {
 
         // Add the staring point to the `history` of the path that has been taken by the algorithm
         currentPath.add(startingPoint);
 
         for(Coord c : allCoords) {
-            //if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
+
+            // if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
             // if the startingPoint of the step is adjacent with the coords from allCoords and currentPath
             // i.e. the `history tracker` of the path so far does not have `c` coords from allCoords
             if( startingPoint.isAdjacentDiagonal(c) && !currentPath.contains(c) ) {
 
                 // if the currentPath is bigger than the longestPath, update the longest Path
                 if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
-                recursionLink(allCoords, currentPath, longestPath, c);
+                DFSRecursionLink(allCoords, currentPath, longestPath, c);
             }
         }
     }
@@ -628,7 +642,7 @@ public class State {
      * @param islands the islands within the world
      * @return the score of the link set
      */
-    public static int helperScoreForLink(Set<Coord> longestLink, Island[] islands) {
+    public static int findScoreForLink(Set<Coord> longestLink, Island[] islands) {
         Set<Island> connectedIslands = new HashSet<>(); // Container for connected Islands within the longest Link set
 
         for (Coord c : longestLink) {
