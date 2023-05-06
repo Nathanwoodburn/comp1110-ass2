@@ -572,7 +572,7 @@ public class State {
         Set<Coord> current = new HashSet<>();
 
         Coord now;
-        int max = scoreForLink(longest,islands);
+        int max = helperScoreForLink(longest,islands);
 
         for(Island islandIter : islands) {
             for ( Coord coords : allCoords) {
@@ -582,10 +582,10 @@ public class State {
                     recursionLink(allCoords, current, longest, now);
 
                     // if the score is bigger, update the Set
-                    if(scoreForLink(current, islands) > max) {
+                    if(helperScoreForLink(current, islands) > max) {
                         longest.clear();
                         longest.addAll(current);
-                        max = scoreForLink(longest, islands);
+                        max = helperScoreForLink(longest, islands);
                     }
                     current = new HashSet<>();
                 }
@@ -594,18 +594,43 @@ public class State {
         return max;
     }
 
-    public static void recursionLink(Set<Coord> allCoords, Set<Coord> current, Set<Coord> longest, Coord now) {
+    /**
+     * a DFS (Depth-First-Search) Recursion algorithm that traverses all the coordinates of a player's pieces with
+     * each step of the DFS algorithm determined by if the current coordinate is adjacent with other coordinates
+     * within the allCoords set and wether or not the currentPath is contained inside the allCoords.
+     * @param allCoords all coordinates of a Player's pieces
+     * @param currentPath a set to store the path that the algorithm has gone through
+     * @param longestPath a set to store the longest path
+     * @param startingPoint the starting point of each step of DFS
+     */
+    public static void recursionLink(Set<Coord> allCoords, Set<Coord> currentPath, Set<Coord> longestPath, Coord startingPoint) {
 
-        current.add(now);
+        // Add the staring point to the `history` of the path that has been taken by the algorithm
+        currentPath.add(startingPoint);
+
         for(Coord c : allCoords) {
-            if( now.isAdjacentDiagonal(c) && !current.contains(c) ) {
-                recursionLink(allCoords, current, longest, c);
+            //if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
+            // if the startingPoint of the step is adjacent with the coords from allCoords and currentPath
+            // i.e. the `history tracker` of the path so far does not have `c` coords from allCoords
+            if( startingPoint.isAdjacentDiagonal(c) && !currentPath.contains(c) ) {
+
+                // if the currentPath is bigger than the longestPath, update the longest Path
+                if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
+                recursionLink(allCoords, currentPath, longestPath, c);
             }
         }
     }
 
-    public static int scoreForLink(Set<Coord> longestLink, Island[] islands) {
-        Set<Island> connectedIslands = new HashSet<>();
+    /**
+     * Helper method for finding the scores for a link set. This helper method is purely to help the
+     * `findLongestLink` method.
+     * @param longestLink the link that wants to be searched the score for
+     * @param islands the islands within the world
+     * @return the score of the link set
+     */
+    public static int helperScoreForLink(Set<Coord> longestLink, Island[] islands) {
+        Set<Island> connectedIslands = new HashSet<>(); // Container for connected Islands within the longest Link set
+
         for (Coord c : longestLink) {
             for (Island i : islands) {
                 if (i.containsCoord(c)) {
