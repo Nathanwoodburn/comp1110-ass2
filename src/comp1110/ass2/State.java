@@ -563,9 +563,7 @@ public class State {
     public int scoreLinks(int playerID) {
         Coord[] playerCoords = players[playerID].getPieces();
         Set<Coord> playerCoordsSet = new HashSet<>(Arrays.asList(playerCoords));
-
         int maxScore = findLongestLinkScore(playerCoordsSet, islands);
-
         return maxScore;
     }
 
@@ -574,7 +572,6 @@ public class State {
         Set<Coord> current = new HashSet<>();
 
         Coord now;
-
         int max = scoreForLink(longest,islands);
 
         for(Island islandIter : islands) {
@@ -608,19 +605,16 @@ public class State {
     }
 
     public static int scoreForLink(Set<Coord> longestLink, Island[] islands) {
-        int numOfIslands = 0;
-
-        outerLoop:
-        for (Island i : islands) {
-            for ( Coord c : longestLink ) {
+        Set<Island> connectedIslands = new HashSet<>();
+        for (Coord c : longestLink) {
+            for (Island i : islands) {
                 if (i.containsCoord(c)) {
-                    numOfIslands++;
-                    continue outerLoop;
+                    connectedIslands.add(i);
+                    break;
                 }
             }
         }
-
-        return numOfIslands * 5;
+        return connectedIslands.size() * 5;
     }
 
     /**
