@@ -561,61 +561,53 @@ public class State {
      */
 
     public int scoreLinks(int playerID) {
-        int numOfIslands = 0;
-        Coord[] playerCoords = players[playerID].getPieces(); // playerCoords
+        Coord[] playerCoords = players[playerID].getPieces();
         Set<Coord> playerCoordsSet = new HashSet<>(Arrays.asList(playerCoords));
 
-        Set<Coord> playerLongestLink = findLongestLink(playerCoordsSet, islands);
+        int maxScore = findLongestLinkScore(playerCoordsSet, islands);
 
-        outerLoop:
-        for(Island island : islands) {
-            for ( Coord playerCoord : playerLongestLink ) {
-                if (island.containsCoord(playerCoord)) {
-                    numOfIslands++;
-                    continue outerLoop;
-                }
-            }
-        }
-
-        return numOfIslands * 5;
+        return maxScore;
     }
 
-    public static Set<Coord> findLongestLink ( Set<Coord> allCoords, Island[] islands) {
+    public static int findLongestLinkScore ( Set<Coord> allCoords, Island[] islands) {
         Set<Coord> longest = new HashSet<>();
         Set<Coord> current = new HashSet<>();
 
         Coord now;
+
+        int max = scoreForLink(longest,islands);
 
         for(Island islandIter : islands) {
             for ( Coord coords : allCoords) {
                 if(islandIter.containsCoord(coords)) {
                     now = coords;
                     current.add(coords);
-                    recurssionLink(allCoords, current, longest, now);
+                    recursionLink(allCoords, current, longest, now);
 
                     // if the score is bigger, update the Set
-                    if(helperScoreForLink(current, islands) > helperScoreForLink(longest,islands)) {
+                    if(scoreForLink(current, islands) > max) {
                         longest.clear();
                         longest.addAll(current);
+                        max = scoreForLink(longest, islands);
                     }
                     current = new HashSet<>();
                 }
             }
         }
-        return longest;
+        return max;
     }
 
-    public static void recurssionLink (Set<Coord> allCoords, Set<Coord> current, Set<Coord> longest, Coord now) {
+    public static void recursionLink(Set<Coord> allCoords, Set<Coord> current, Set<Coord> longest, Coord now) {
 
         current.add(now);
         for(Coord c : allCoords) {
-            if( (now.isAdjacent(c) || now.isAdjacentDiagonal(c)) && !current.contains(c) ) {
-                recurssionLink(allCoords, current, longest, c);
+            if( now.isAdjacentDiagonal(c) && !current.contains(c) ) {
+                recursionLink(allCoords, current, longest, c);
             }
         }
     }
 
-    public static int helperScoreForLink(Set<Coord> longestLink, Island[] islands) {
+    public static int scoreForLink(Set<Coord> longestLink, Island[] islands) {
         int numOfIslands = 0;
 
         outerLoop:

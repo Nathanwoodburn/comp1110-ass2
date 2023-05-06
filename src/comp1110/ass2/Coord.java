@@ -70,10 +70,20 @@ public record Coord(int y, int x) {
      */
     public boolean isAdjacentDiagonal(Coord coord) {
         if (isAdjacent(coord)) return true;
-        if (this.x == coord.x - 1 && this.y == coord.y - 1) return true;
-        if (this.x == coord.x - 1 && this.y == coord.y + 1) return true;
-        if (this.x == coord.x + 1 && this.y == coord.y - 1) return true;
-        return (this.x == coord.x + 1 && this.y == coord.y + 1);
+
+        // Consider hex offsets
+        if (y%2 == 0){
+            if (this.x == coord.x && this.y == coord.y + 1) return true;
+            if (this.x == coord.x && this.y == coord.y - 1) return true;
+            if (this.x == coord.x - 1 && this.y == coord.y + 1) return true;
+            return (this.x == coord.x - 1 && this.y == coord.y - 1);
+        }
+        else {
+            if (this.x == coord.x && this.y == coord.y + 1) return true;
+            if (this.x == coord.x && this.y == coord.y - 1) return true;
+            if (this.x == coord.x + 1 && this.y == coord.y + 1) return true;
+            return (this.x == coord.x + 1 && this.y == coord.y - 1);
+        }
     }
 
     /**
