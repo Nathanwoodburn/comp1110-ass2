@@ -409,28 +409,20 @@ public class State {
      * Defaults to simple mode
      */
     public boolean isPhaseOver() {
-        return isPhaseOver(true);
-    }
-
-    /**
-     * is the phase over?
-     * @param simple boolean don't check all player moves
-     */
-    public boolean isPhaseOver(boolean simple){
         boolean resourcesLeft = false;
         for (Resource r : resources) {
             if (r.isAvailable() && r.getType() != 'S') resourcesLeft = true;
         }
-
         boolean moveLeft = false;
-        if (simple) {
-            if (getCurrentPlayer().canPlay(this)) moveLeft = true;
-        }
-        else
-        {
-            for (Player player : players) {
-                if (player.canPlay(this)) moveLeft = true;
+        int numSettlers = 30 - ((numPlayers - 2) * 5);
+        for (Player p: players) {
+            boolean canPlay = false;
+            if (p.getVillages().length < 5) canPlay = true;
+            if (p.getSettlers().length < numSettlers) canPlay = true;
+            if (canPlay) {
+                if (p.canPlay(this)) moveLeft = true;
             }
+
         }
         return !resourcesLeft || !moveLeft;
     }
