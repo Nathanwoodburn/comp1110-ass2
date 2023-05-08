@@ -416,8 +416,7 @@ public class State {
         boolean moveLeft = false;
         int numSettlers = 30 - ((numPlayers - 2) * 5);
         for (Player p: players) {
-            boolean canPlay = false;
-            if (p.getVillages().length < 5) canPlay = true;
+            boolean canPlay = p.getVillages().length < 5;
             if (p.getSettlers().length < numSettlers) canPlay = true;
             if (canPlay) {
                 if (p.canPlay(this)) moveLeft = true;
