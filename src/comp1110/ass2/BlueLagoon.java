@@ -664,16 +664,25 @@ public class BlueLagoon {
         int y = Integer.parseInt(coordStr.split(",")[1]);
         Coord coord = new Coord(x, y);
 
+        // if the move is valid, place it
         if ( isMoveValid(stateString, moveString)) state.placePiece(coord, pieceType);
-        // while (!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
 
+        // if the move ends the phase
         if (state.isPhaseOver()){
+
+            // Applying end of Phase rules
+            // For Exploration Phase
+            // Tally up the score, clean the board, distribute resources, change to next Phase
             if (state.getCurrentPhase() == 'E') {
                 state.scorePhase();
                 state.cleanBoard();
                 state.distributeResources();
+                // if(!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
                 state.nextPhase();
             }
+
+            // For Settlement Phase
+            // Tally up the score, if the current Player does not have any more move, go to next player
             else if (state.getCurrentPhase() == 'S') {
                 state.scorePhase();
                 state.nextPlayer();
