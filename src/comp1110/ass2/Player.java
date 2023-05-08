@@ -241,15 +241,13 @@ public class Player {
     public boolean canPlay(State state) {
 
         // Check if the player has placed all their settlers or villages
-        int startNumSettlers = switch (state.getNumPlayers()) {
-            case 2 -> 30;
-            case 3 -> 25;
-            case 4 -> 20;
-            default -> 0;
-        };
-        boolean hasSettler = (settlers.length < startNumSettlers);
+        int numSettlers = 30 - ((state.getNumPlayers() - 2) * 5);
+        boolean hasSettler = (settlers.length < numSettlers);
         boolean hasVillage = (settlers.length < 5);
-        if (!hasSettler && !(hasVillage && state.getCurrentPhase() == 'E')) return false;
+        if (state.getCurrentPhase() != 'E'){
+            if (!hasSettler && !hasVillage) return false;
+        }
+
 
         // Add used coords
         ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
@@ -265,7 +263,6 @@ public class Player {
                 villageCoords.add(c.toString());
             }
         }
-
         for (Coord c: settlers){
             playerSettlerCoords.add(c.toString());
         }
@@ -305,24 +302,13 @@ public class Player {
             else if(y > state.boardHeight - 1) continue;
             switch (state.getCurrentPhase()) {
                 case 'E' -> {
-                    if (!islandCoords.contains(cord)) {
-                        if (hasSettler) return true;
-                        break;
-                    }
-                    // If the Village is being placed on the sea return false
-                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
-                        // Add the move to the set
-                        if (hasVillage) return true;
-                        if (hasSettler) return true;
-                    }
+                    if (!islandCoords.contains(cord)) return true;
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) return true;
                 }
                 // Settlement Phase
                 case 'S' -> {
-                    // if the settler is not adjacent with any of the pieces return false
-                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
-                        // Add the move to the set
-                        if (hasSettler) return true;
-                    }
+                    // if the settler is adjacent with any of the pieces return true
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) return true;
                 }
             }
         }
