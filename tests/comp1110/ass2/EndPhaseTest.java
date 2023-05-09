@@ -28,7 +28,7 @@ public class EndPhaseTest implements TestMapNamePlayerCount {
             String result = BlueLagoon.endPhase(pre.get(i));
             List<String> errors = sc.compare(post.get(i), result);
             if(errors.size() > 0){
-                Assertions.fail("\n"+"expected: " + post.get(i) + "\nactual:   " + result + "\nerrors:\n" + String.join("\n", errors));
+                Assertions.fail("\nError ending phase on input: " + pre.get(i) + "\nexpected: " + post.get(i) + "\nactual:   " + result + "\nerrors:\n" + String.join("\n", errors));
             }
         }
     }

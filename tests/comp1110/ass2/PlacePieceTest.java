@@ -29,7 +29,7 @@ public class PlacePieceTest implements TestMapNamePlayerCount {
             String result = BlueLagoon.placePiece(game.get(i-2), game.get(i-1));
             List<String> errors = sc.compare(solutions.get(i / 2 - 1), result);
             if(errors.size() > 0){
-                Assertions.fail("\n"+"expected: " + solutions.get(i / 2 - 1) + "\nactual:   " + result + "\nerrors:\n" + String.join("\n", errors));
+                Assertions.fail("\nError on input game: " + game.get(i-2) + "\nMove: " + game.get(i-1) + "\nexpected: " + solutions.get(i / 2 - 1) + "\nactual:   " + result + "\nerrors:\n" + String.join("\n", errors));
             }
         }
     }

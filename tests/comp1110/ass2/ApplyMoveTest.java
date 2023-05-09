@@ -30,7 +30,7 @@ public class ApplyMoveTest implements TestMapNamePlayerCount {
             String result = BlueLagoon.applyMove(game.get(i-2), game.get(i-1));
             List<String> errors = sc.compare(game.get(i), result);
             if(errors.size() > 0){
-                Assertions.fail("\n"+"expected: " + game.get(i) + "\nactual:   " + result + "\nerrors:\n" + String.join("\n", errors));
+                Assertions.fail("\nError on input game: " + game.get(i-2) + "\nMove: " + game.get(i-1) + "\nexpected: " + game.get(i) + "\nactual:   " + result + "\nerrors:\n" + String.join("\n", errors));
             }
         }
     }
