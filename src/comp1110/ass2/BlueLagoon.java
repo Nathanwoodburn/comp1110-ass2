@@ -660,9 +660,9 @@ public class BlueLagoon {
         State state = new State(stateString);
         char pieceType = moveString.charAt(0);
         String coordStr = moveString.substring(2);
-        int x = Integer.parseInt(coordStr.split(",")[0]);
-        int y = Integer.parseInt(coordStr.split(",")[1]);
-        Coord coord = new Coord(x, y);
+        int y = Integer.parseInt(coordStr.split(",")[0]);
+        int x = Integer.parseInt(coordStr.split(",")[1]);
+        Coord coord = new Coord(y, x);
 
         // if the move is valid, place it
         if ( isMoveValid(stateString, moveString)) state.placePiece(coord, pieceType);
@@ -677,7 +677,6 @@ public class BlueLagoon {
                 state.scorePhase();
                 state.cleanBoard();
                 state.distributeResources();
-                // if(!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
                 state.nextPhase();
             }
 
@@ -685,11 +684,13 @@ public class BlueLagoon {
             // Tally up the score, if the current Player does not have any more move, go to next player
             else if (state.getCurrentPhase() == 'S') {
                 state.scorePhase();
-                state.nextPlayer();
             }
         }
 
         state.nextPlayer();
+
+        if (!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
+
         return state.toString();
     }
 
