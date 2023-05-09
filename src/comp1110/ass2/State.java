@@ -406,7 +406,6 @@ public class State {
 
     /**
      * is the phase over?
-     * Defaults to simple mode
      */
     public boolean isPhaseOver() {
         boolean resourcesLeft = false;
