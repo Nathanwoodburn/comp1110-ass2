@@ -243,10 +243,11 @@ public class Player {
         // Check if the player has placed all their settlers or villages
         int numSettlers = 30 - ((state.getNumPlayers() - 2) * 5);
         boolean hasSettler = (settlers.length < numSettlers);
-        boolean hasVillage = (settlers.length < 5);
-        if (state.getCurrentPhase() != 'E'){
-            if (!hasSettler && !hasVillage) return false;
-        }
+        boolean hasVillage = (villages.length < 5);
+        if (!hasSettler && !hasVillage) return false;
+//        if (state.getCurrentPhase() != 'E'){
+//            if (!hasSettler && !hasVillage) return false;
+//        }
 
 
         // Add used coords
@@ -302,13 +303,13 @@ public class Player {
             else if(y > state.boardHeight - 1) continue;
             switch (state.getCurrentPhase()) {
                 case 'E' -> {
-                    if (!islandCoords.contains(cord)) return true;
+                    if (!islandCoords.contains(cord) && hasSettler) return true;
                     if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) return true;
                 }
                 // Settlement Phase
                 case 'S' -> {
                     // if the settler is adjacent with any of the pieces return true
-                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) return true;
+                    if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords)) && hasSettler) return true;
                 }
             }
         }
