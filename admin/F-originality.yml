@@ -31,9 +31,9 @@ declaration: >-
 # Add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external code)
 # code:
-#   - comment:
-#     url:
-#     licence:
+#   - comment: CSS styling for buttons + comboboxes
+#     url: http://fxexperience.com/2011/12/styling-fx-buttons-with-css/
+#     licence: Public Domain
 
 # Use this to list any assets (artwork, sound, etc) that you used.
 # Provide a comment explaining your use of that asset and the URL
@@ -54,5 +54,5 @@ signatures:
     uid: u7156831
   - name:
     uid:
-  - name:
-    uid:
+  - name: Justin Ryu
+    uid: u7492895

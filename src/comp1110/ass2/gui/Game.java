@@ -10,6 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -76,7 +78,7 @@ public class Game extends Application {
         stage.show();
         // Create a new game
         newGame(2);
-        scene.setFill(Color.TRANSPARENT);
+        scene.setFill(Color.valueOf("#38AEF2"));
     }
 
 
@@ -349,7 +351,7 @@ public class Game extends Application {
             scene.setFill(Color.BLACK);
         } else {
             Scene scene = root.getScene();
-            scene.setFill(Color.WHITE);
+            scene.setFill(Color.valueOf("#38AEF2"));
         }
 
 
@@ -359,7 +361,7 @@ public class Game extends Application {
 
         // Add the message
         Label messageLabel = new Label(message);
-        messageLabel.setLayoutX(0);
+        messageLabel.setLayoutX(35);
         messageLabel.setLayoutY(250);
         messageLabel.setFont(Font.font("Sans Serif",FontWeight.BOLD, 20));
         if (messageError){
@@ -389,7 +391,7 @@ public class Game extends Application {
         for(int i = 0; i < boardHeight; i++){
             for(int j = 0; j < boardHeight - (-1 * i % 2 + 1); j++){
                 addBoardTile(viewerGrid, boardHeightPx/boardHeight,
-                        String.format("%s,%s", i, j), Color.DARKBLUE);
+                        String.format("%s,%s", i, j), Color.valueOf("#387CFF"));
             }
         }
 
@@ -411,7 +413,7 @@ public class Game extends Application {
                 playerId + "\nCurrent Phase: " + currentPhase);
         currentStateText.setFont(Font.font("Sans Serif", FontWeight.BOLD, 20));
         currentStateText.setX((double) WINDOW_WIDTH / 2 + ((double) WINDOW_WIDTH /5) - 175);
-        currentStateText.setY(25);
+        currentStateText.setY(30);
         currentStateText.setTextAlignment(TextAlignment.CENTER);
         root.getChildren().add(currentStateText);
         currentStateText.setFill(Color.GREEN);
@@ -419,7 +421,7 @@ public class Game extends Application {
         // For each island render the island
         for (Island island: currentGame.getIslands()){
             for (Coord c: island.getCoords()){
-                addBoardTile(viewerGrid, tileSize, c.toString(), Color.GREEN);
+                addBoardTile(viewerGrid, tileSize, c.toString(), Color.valueOf("#64CA00"));
             }
         }
 
@@ -462,7 +464,7 @@ public class Game extends Application {
         Text playerStateText = new Text();
         playerStateText.setText(playerData.toString());
         playerStateText.setFont(Font.font("Sans Serif", FontWeight.BOLD, 25));
-        playerStateText.setX(0);
+        playerStateText.setX(35);
         playerStateText.setY(100);
 
         if (darkMode) playerStateText.setFill(Color.WHITE);
@@ -496,6 +498,12 @@ public class Game extends Application {
         Label aiLabel = new Label("How many AI players:");
         Label stuckLabel = new Label("Stuck?");
         Button stuckButton = new Button("Skip my turn");
+
+        // Button styling
+        twoPlayer.setStyle("-fx-padding: 3 10 10 10; -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0; -fx-background-radius: 8; -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #69CC00 0%, #83CA00 100%), #69CC00, #83CA00, radial-gradient(center 50% 50%, radius 100%, #83CA00, #A1DF00); -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 ); -fx-font-weight: bold; -fx-font-size: 1.0em;");
+        threePlayer.setStyle("-fx-padding: 3 10 10 10; -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0; -fx-background-radius: 8; -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #69CC00 0%, #83CA00 100%), #69CC00, #83CA00, radial-gradient(center 50% 50%, radius 100%, #83CA00, #A1DF00); -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 ); -fx-font-weight: bold; -fx-font-size: 1.0em;");
+        fourPlayer.setStyle("-fx-padding: 3 10 10 10; -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0; -fx-background-radius: 8; -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #69CC00 0%, #83CA00 100%), #69CC00, #83CA00, radial-gradient(center 50% 50%, radius 100%, #83CA00, #A1DF00); -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 ); -fx-font-weight: bold; -fx-font-size: 1.0em;");
+        stuckButton.setStyle("-fx-padding: 3 10 10 10; -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0; -fx-background-radius: 8; -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%), #9d4024, #d86e3a, radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c); -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 ); -fx-font-weight: bold; -fx-font-size: 1.0em;");
 
         CheckBox darkToggle = new CheckBox("Dark Mode");
         darkToggle.setSelected(darkMode);
@@ -537,6 +545,10 @@ public class Game extends Application {
         mapSelector.getItems().add("Sides");
         mapSelector.getItems().add("Space Invaders");
         mapSelector.setPromptText("Default");
+
+        // Combobox styling
+        aiSelector.setStyle("-fx-padding: -1 5 5 5; -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0; -fx-background-radius: 8; -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #69CC00 0%, #83CA00 100%), #69CC00, #83CA00, radial-gradient(center 50% 50%, radius 100%, #83CA00, #A1DF00); -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 ); -fx-font-weight: bold; -fx-font-size: 1.0em;");
+        mapSelector.setStyle("-fx-padding: -1 5 5 5; -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0; -fx-background-radius: 8; -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #69CC00 0%, #83CA00 100%), #69CC00, #83CA00, radial-gradient(center 50% 50%, radius 100%, #83CA00, #A1DF00); -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 ); -fx-font-weight: bold; -fx-font-size: 1.0em;");
 
         // Set the map when the map is selected
         mapSelector.setOnAction(new EventHandler<ActionEvent>() {
