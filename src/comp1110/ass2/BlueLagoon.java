@@ -1,6 +1,5 @@
 package comp1110.ass2;
 
-import java.lang.module.FindException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -151,9 +150,9 @@ public class BlueLagoon {
         // Coords of the island tiles
         ArrayList<String> coordsContainer = new ArrayList<>();
 
-        int numberOfPlayer = 0; // Number of player
+        int numberOfPlayer; // Number of player
         String playerId = ""; // Player ID
-        String pStatePlayerId = ""; // the current Player's move ID
+        String pStatePlayerId; // the current Player's move ID
         ArrayList<String> settlerCoords = new ArrayList<>(); // Placed Settler Coordinates
         ArrayList<String> villageCoords = new ArrayList<>(); // Placed villages coordinates
         ArrayList<String> playerSettlerCoords = new ArrayList<>(); // The current Player's settler coords
@@ -414,7 +413,7 @@ public class BlueLagoon {
                     // if the settler is not adjacent with any of the pieces return false
                     if ((isAdjacent(cord, playerVillageCoords) || isAdjacent(cord, playerSettlerCoords))) {
                         // Add the move to the set
-                        if (hasSettler) allMoves.add("S " + cord);
+                        allMoves.add("S " + cord);
                     }
                 }
             }
@@ -626,23 +625,6 @@ public class BlueLagoon {
          return state.toString();
     }
 
-    public static void main(String[] args) {
-        applyMove(GameData.DEFAULT_GAME, "S 0,2");
-    }
-
-    /**
-     * Given a state string and a move string, apply the move to the board.
-     * <p>
-     * If the move ends the phase, apply the end of phase rules.
-     * <p>
-     * Advance current player to the next player in turn order that has a valid
-     * move they can make.
-     *
-     * @param stateString a string representing a game state
-     * @param moveString a string representing the current player's move
-     * @return a string representing the new state after the move is applied to the board
-     */
-
     // 2 phases, exploration and settlement
     /**
      * Given a state string and a move string, apply the move to the board.
@@ -681,14 +663,16 @@ public class BlueLagoon {
             }
 
             // For Settlement Phase
-            // Tally up the score, if the current Player does not have any more move, go to next player
+            // Tally up the score
             else if (state.getCurrentPhase() == 'S') {
                 state.scorePhase();
             }
         }
 
-        state.nextPlayer();
+        // After the endPhase is over, move to the next player
+         state.nextPlayer();
 
+        // if the current player cannot play the move, move to the next player
         if (!state.getCurrentPlayer().canPlay(state)) state.nextPlayer();
 
         return state.toString();
