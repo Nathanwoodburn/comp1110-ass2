@@ -269,19 +269,23 @@ public class Game extends Application {
      * Do a full AI game. This is good to visualize the AI
      */
     void AIGame(){
-        while (!currentGame.isPhaseOver()){
-            currentGame.getCurrentPlayer().doAIMove(currentGame);
+        while (!game_over){
+            if (!currentGame.getCurrentPlayer().doAIMove(currentGame)){
+                currentGame.nextPlayer();
+            }
+            if (currentGame.isPhaseOver()){
+                if (currentGame.getCurrentPhase() == 'E') {
+                    currentGame.scorePhase();
+                    currentGame.cleanBoard();
+                    currentGame.distributeResources();
+                    currentGame.nextPhase();
+                }
+                else {
+                    game_over = true;
+                }
+            }
         }
-        currentGame.scorePhase();
-        currentGame.cleanBoard();
-        currentGame.distributeResources();
-        currentGame.nextPhase();
-        while (!currentGame.isPhaseOver()){
-            currentGame.getCurrentPlayer().doAIMove(currentGame);
-        }
-        currentGame.scorePhase();
         sendMessage("Game over!",true);
-        game_over = true;
         refresh();
 
     }
@@ -472,6 +476,9 @@ public class Game extends Application {
         Label mapLabel = new Label("Select Map:");
         Label aiLabel = new Label("How many AI players:");
 
+        Label stuckLabel = new Label("Stuck?");
+        Button stuckButton = new Button("Skip my turn");
+
         // Numeric select for AI
         ComboBox aiSelector = new ComboBox();
         aiSelector.getItems().add("0");
@@ -528,8 +535,21 @@ public class Game extends Application {
             }
         });
 
+        stuckButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                currentGame.nextPlayer();
+                StringBuilder message = new StringBuilder("You skipped your turn");
+                while (currentGame.getCurrentPlayer().isAI()) {
+                    message.append("\n").append(doAIMove());
+                }
+                sendMessage(message.toString());
+                refresh();
+            }
+        });
+
         HBox hb = new HBox();
-        hb.getChildren().addAll(mapLabel,mapSelector,aiLabel,aiSelector,newLabel, twoPlayer,threePlayer,fourPlayer);
+        hb.getChildren().addAll(mapLabel,mapSelector,aiLabel,aiSelector,newLabel, twoPlayer,threePlayer,fourPlayer,stuckLabel,stuckButton);
         hb.setSpacing(10);
         hb.setLayoutX(50);
         hb.setLayoutY(WINDOW_HEIGHT - 50);

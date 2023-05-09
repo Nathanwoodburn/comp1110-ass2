@@ -385,9 +385,13 @@ public class Player {
     /**
      * Do a calculated move
      */
-    public void doAIMove(State state){
+    public Boolean doAIMove(State state){
 
         String bestMove = createAIMove(state);
+        if (bestMove.equals("")){
+            System.out.println("No AI moves");
+            return false;
+        }
         char pieceType = bestMove.charAt(0);
         String coordStr = bestMove.substring(2);
         int y = Integer.parseInt(coordStr.split(",")[0]);
@@ -396,6 +400,7 @@ public class Player {
         lastMove = coord;
         state.placePiece(coord, pieceType);
         state.nextPlayer();
+        return true;
     }
 
     /**
