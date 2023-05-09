@@ -9,5 +9,5 @@ of our project implements the following features:
  - Playable against a computer opponent / AI (Task 16)
  - Generalised GUI to more than two players (Task 17)
  - Generalised GUI to different sized boards (Task 17)
-
-additional features...
+ - Allow more than one AI player (up to 4)
+ - Toggleable Dark mode
