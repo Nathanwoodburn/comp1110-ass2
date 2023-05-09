@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
@@ -35,6 +36,8 @@ public class Game extends Application {
     Boolean messageError;
     Coord selectedTile;
     int AI;
+
+    Boolean darkMode = false;
 
     // Store the selected map 0 = default, 1 = wheels, 2 = face, 3 = sides, 4 = space invaders
     private int game_selected = 0;
@@ -69,9 +72,11 @@ public class Game extends Application {
         stage.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(
                 Game.class.getResourceAsStream("favicon.png"))));
         stage.setResizable(false);
+
         stage.show();
         // Create a new game
         newGame(2);
+        scene.setFill(Color.TRANSPARENT);
     }
 
 
@@ -337,6 +342,17 @@ public class Game extends Application {
      * It will clear the whole thing and then render it again
      */
     private void refresh() {
+
+        if (darkMode){
+            // Make the background black of the scene
+            Scene scene = root.getScene();
+            scene.setFill(Color.BLACK);
+        } else {
+            Scene scene = root.getScene();
+            scene.setFill(Color.WHITE);
+        }
+
+
         // When refreshing, it clears the whole thing and update it
         root.getChildren().clear();
         root.getChildren().add(controls);
@@ -350,7 +366,8 @@ public class Game extends Application {
             messageLabel.setTextFill(Color.RED);
         }
         else {
-            messageLabel.setTextFill(Color.BLACK);
+            if (darkMode) messageLabel.setTextFill(Color.WHITE);
+            else messageLabel.setTextFill(Color.BLACK);
         }
 
         root.getChildren().add(messageLabel);
@@ -447,7 +464,9 @@ public class Game extends Application {
         playerStateText.setFont(Font.font("Sans Serif", FontWeight.BOLD, 25));
         playerStateText.setX(0);
         playerStateText.setY(100);
-        playerStateText.setFill(Color.BLACK);
+
+        if (darkMode) playerStateText.setFill(Color.WHITE);
+        else playerStateText.setFill(Color.BLACK);
         root.getChildren().add(playerStateText);
 
         // Add the grid to the root
@@ -475,9 +494,31 @@ public class Game extends Application {
         Button fourPlayer = new Button("4 Player");
         Label mapLabel = new Label("Select Map:");
         Label aiLabel = new Label("How many AI players:");
-
         Label stuckLabel = new Label("Stuck?");
         Button stuckButton = new Button("Skip my turn");
+
+        CheckBox darkToggle = new CheckBox("Dark Mode");
+        darkToggle.setSelected(darkMode);
+
+        darkToggle.setOnAction(e -> {
+            darkMode = !darkMode;
+            makeControls();
+            refresh();
+        });
+
+        // Make everything white if dark mode is on
+        if (darkMode) {
+            newLabel.setTextFill(Color.WHITE);
+            mapLabel.setTextFill(Color.WHITE);
+            aiLabel.setTextFill(Color.WHITE);
+            stuckLabel.setTextFill(Color.WHITE);
+            stuckButton.setTextFill(Color.BLACK);
+            twoPlayer.setTextFill(Color.BLACK);
+            threePlayer.setTextFill(Color.BLACK);
+            fourPlayer.setTextFill(Color.BLACK);
+            darkToggle.setTextFill(Color.WHITE);
+        }
+
 
         // Numeric select for AI
         ComboBox aiSelector = new ComboBox();
@@ -540,7 +581,7 @@ public class Game extends Application {
             public void handle(ActionEvent e) {
                 currentGame.nextPlayer();
                 StringBuilder message = new StringBuilder("You skipped your turn");
-                while (currentGame.getCurrentPlayer().isAI()) {
+                while (currentGame.getCurrentPlayer().isAI() && !game_over) {
                     message.append("\n").append(doAIMove());
                 }
                 sendMessage(message.toString());
@@ -549,7 +590,8 @@ public class Game extends Application {
         });
 
         HBox hb = new HBox();
-        hb.getChildren().addAll(mapLabel,mapSelector,aiLabel,aiSelector,newLabel, twoPlayer,threePlayer,fourPlayer,stuckLabel,stuckButton);
+        hb.getChildren().addAll(mapLabel,mapSelector,aiLabel,aiSelector,newLabel, twoPlayer,threePlayer,fourPlayer,
+                stuckLabel,stuckButton,darkToggle);
         hb.setSpacing(10);
         hb.setLayoutX(50);
         hb.setLayoutY(WINDOW_HEIGHT - 50);
