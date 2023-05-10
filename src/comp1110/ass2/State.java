@@ -175,7 +175,7 @@ public class State {
             // Create a temporary array to store the shuffled stone circles
             Coord[] tempStoneCircleRandom = new Coord[32];
             // Create a list to store the used cords (to avoid duplicates)
-            List<Coord> usedCords = new ArrayList<Coord>();
+            List<Coord> usedCords = new ArrayList<>();
 
             // Shuffle the array
             for (int j = 0; j < 32; j++) {
@@ -553,8 +553,7 @@ public class State {
     public int scoreLinks(int playerID) {
         Coord[] playerCoords = players[playerID].getPieces();
         Set<Coord> playerCoordsSet = new HashSet<>(Arrays.asList(playerCoords));
-        int maxScore = findLongestLinkScore(playerCoordsSet, islands);
-        return maxScore;
+        return findLongestLinkScore(playerCoordsSet, islands);
     }
 
     /**
