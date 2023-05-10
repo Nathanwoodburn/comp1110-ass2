@@ -565,17 +565,17 @@ public class State {
      * @return the highest score from a player's linked pieces
      */
     public static int findLongestLinkScore ( Set<Coord> allCoords, Island[] islands) {
-        Set<Coord> longestPath = new HashSet<>();
-        Set<Coord> currentPath = new HashSet<>();
+        Set<Coord> longestPath = new HashSet<>(); // Container for Longest Path
+        Set<Coord> currentPath = new HashSet<>(); // Container for Current Path
 
-        Coord startingPoint;
+        Coord startingPoint; // Starting point of the DFS Algo
         int maxScore = findScoreForLink(longestPath,islands);
 
         for(Island i : islands) {
             for ( Coord c : allCoords) {
                 if(i.containsCoord(c)) {
 
-                    startingPoint = c; // set starting Point
+                    startingPoint = c; // set starting Point with the current Coords in the Player's all pieces coords
 
                     // DFS Algo starts
                     currentPath.add(startingPoint);
@@ -598,8 +598,8 @@ public class State {
     }
 
     /**
-     * a DFS (Depth-First-Search) Recursion algorithm that traverses all the coordinates of a player's pieces with
-     * each step of the DFS algorithm determined by if the current coordinate is adjacent with other coordinates
+     * a DFS (Depth-First-Search) Recursion algorithm that traverses all the coordinates of a player's pieces, with
+     * each step of the DFS algorithm determined if the current coordinate is adjacent with other coordinates
      * within the allCoords set and wether or not the currentPath is contained inside the allCoords.
      * @param allCoords all coordinates of a Player's pieces
      * @param currentPath a set to store the path that the algorithm has gone through
@@ -613,14 +613,14 @@ public class State {
 
         for(Coord c : allCoords) {
 
-            // if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
             // if the startingPoint of the step is adjacent with the coords from allCoords and currentPath
             // i.e. the `history tracker` of the path so far does not have `c` coords from allCoords
             if( startingPoint.isAdjacentDiagonal(c) && !currentPath.contains(c) ) {
 
                 // if the currentPath is bigger than the longestPath, update the longest Path
                 if (currentPath.size() > longestPath.size() ) longestPath = currentPath;
-                DFSRecursionLink(allCoords, currentPath, longestPath, c);
+
+                DFSRecursionLink(allCoords, currentPath, longestPath, c); // Repeat the step for all coords
             }
         }
     }
