@@ -169,6 +169,9 @@ public class Game extends Application {
                     sendMessage("You have placed all your villages");
                     return;
                 }
+            } else if (currentGame.getCurrentPlayer().getSettlers().length >= (40-(currentGame.getNumPlayers()*5))){
+                sendMessage("You have placed all your settlers");
+                return;
             }
 
             // If the move is valid, do it
@@ -232,23 +235,26 @@ public class Game extends Application {
         String message = "";
         if (!currentGame.isPhaseOver()){
             Player player = currentGame.getCurrentPlayer();
-            player.doAIMove(currentGame);
+            if (player.doAIMove(currentGame)) {
 
-            if (currentGame.isPhaseOver()){
-                message = "Starting next phase";
-            }
-            if (!player.getLastMove().equals(new Coord(-1,-1))){
-                Coord lastMove = player.getLastMove();
-                if (currentGame.isStone(lastMove)){
-                    for (Resource resource : currentGame.getResources()) {
-                        if (resource.getCoord().equals(lastMove) ) {
-                            message = "AI "+ player.getPlayerID() + " picked up " + resource.getTypeString().toLowerCase();
+                if (currentGame.isPhaseOver()) {
+                    message = "Starting next phase";
+                }
+                if (!player.getLastMove().equals(new Coord(-1, -1))) {
+                    Coord lastMove = player.getLastMove();
+                    if (currentGame.isStone(lastMove)) {
+                        for (Resource resource : currentGame.getResources()) {
+                            if (resource.getCoord().equals(lastMove)) {
+                                message = "AI " + player.getPlayerID() + " picked up " + resource.getTypeString().toLowerCase();
+                            }
                         }
+                    } else {
+                        message = "AI " + player.getPlayerID() + " placed at " + lastMove.toString();
                     }
                 }
-                else {
-                    message = "AI " + player.getPlayerID() + " placed at " + lastMove.toString();
-                }
+            } else {
+                message += "AI " + player.getPlayerID() + " passed";
+                currentGame.nextPlayer();
             }
         }
         if (currentGame.isPhaseOver()){
@@ -607,6 +613,7 @@ public class Game extends Application {
         hb.setSpacing(10);
         hb.setLayoutX(50);
         hb.setLayoutY(WINDOW_HEIGHT - 50);
+        controls.getChildren().clear();
         controls.getChildren().add(hb);
     }
 
